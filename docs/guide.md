@@ -40,13 +40,13 @@ STEP 3에서는 조사할 수 있는 정보를 먼저 기록하고 설치 식별
 
 ## 제공 예제의 정확한 위치와 역할
 
-현재 PC의 원본 소스 위치는 `/home/jake/project1-python-start`입니다.
+현재 PC의 원본 소스 위치는 `/home/jake/workspace/projects/kant/project1-python-start`입니다.
 
 | 파일 | 참고할 내용 |
 | --- | --- |
-| [01_ollama_chat.py](/home/jake/project1-python-start/01_ollama_chat.py) | Ollama 단일 호출. `MODEL`과 `QUESTION`을 찾고 변경하는 출발점 |
-| [02_luna_chat.py](/home/jake/project1-python-start/02_luna_chat.py) | Cloud 단일 호출. 모델·입력·오류 처리를 읽고 필요한 기록을 직접 확장하는 출발점 |
-| [03_measure_time.py](/home/jake/project1-python-start/03_measure_time.py) | 요청 전후의 전체 응답 시간 측정과 해석 |
+| [01_ollama_chat.py](/home/jake/workspace/projects/kant/project1-python-start/01_ollama_chat.py) | Ollama 단일 호출. `MODEL`과 `QUESTION`을 찾고 변경하는 출발점 |
+| [02_luna_chat.py](/home/jake/workspace/projects/kant/project1-python-start/02_luna_chat.py) | Cloud 단일 호출. 모델·입력·오류 처리를 읽고 필요한 기록을 직접 확장하는 출발점 |
+| [03_measure_time.py](/home/jake/workspace/projects/kant/project1-python-start/03_measure_time.py) | 요청 전후의 전체 응답 시간 측정과 해석 |
 
 예제는 자동 복사·실행하지 않습니다. 사용자가 필요한 단계에서 파일을 열어 현재 내용을 확인하고 직접 참고·복사·수정합니다. 원문이 참조하는 위 파일명과 `.py` 형식을 유지해 출발점을 찾을 수 있게 합니다. 제공 예제 자체가 프로젝트의 반복·저장·집계 구현 완료를 뜻하지 않습니다.
 
