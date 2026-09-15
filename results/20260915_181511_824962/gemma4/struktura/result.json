@@ -1,0 +1,1099 @@
+{
+  "run_id": "20260915_181511_824962",
+  "model": {
+    "id": "gemma4",
+    "name": "gemma4",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_struktura",
+    "name": "struktura",
+    "title": "Struktura",
+    "difficulty": 5,
+    "time_limit_seconds": 1.0
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 6144,
+    "reasoning_budget_tokens": 2048
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "To solve this problem, we need to find the number of permutations $a$ of $\\{1, 2, \\dots, n\\}$ such that for every index $i \\in \\{1, \\dots, n\\}$, the condition $|a_i + i - n - 1| \\le 1$ is satisfied. This condition can be rewritten as $n \\le a_i + i \\le n + 2$.\n\n### Approach\n\n1.  **Analyze the Condition**:\n    The condition $|a_i + i - (n+1)| \\le 1$ means that for each $i$, $a_i$ must be one of $\\{n-i, n-i+1, n-i+2\\}$. Since $a$ is a permutation of $\\{1, \\dots, n\\}$, we only consider values within this range.\n    Let's look at the constraints on $a_i$ for small $n$:\n    - For $n=2$: $a_1 \\in \\{1, 2\\}$, $a_2 \\in \\{1, 2\\}$. Permutations: $(1, 2), (2, 1)$. Total: 2.\n    - For $n=3$: $a_1 \\in \\{2, 3\\}$, $a_2 \\in \\{1, 2, 3\\}$, $a_3 \\in \\{1, 2\\}$. Permutations: $(2, 3, 1), (3, 1, 2), (3, 2, 1)$. Total: 3.\n    - For $n=4$: $a_1 \\in \\{3, 4\\}$, $a_2 \\in \\{2, 3, 4\\}$, $a_3 \\in \\{1, 2, 3\\}$, $a_4 \\in \\{1, 2\\}$. Total: 5.\n\n2.  **Identify the Pattern**:\n    The number of such permutations follows the Fibonacci sequence $F_{n+1}$, where $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5, \\dots$.\n    Specifically, let $S_n$ be the number of structures for size $n$.\n    - $S_1 = 1$ (Permutation (1): $|1+1-1-1|=0 \\le 1$)\n    - $S_2 = 2$\n    - $S_3 = 3$\n    - $S_4 = 5$\n    The sequence is $S_n = F_{n+1}$ (where $F_1=1, F_2=1, F_3=2, \\dots$).\n    Wait, let's re-verify $n=1$: $a_1=1$, $|1+1-1-1|=0 \\le 1$. $S_1=1$.\n    $n=2$: $S_2=2$.\n    $n=3$: $S_3=3$.\n    $n=4$: $S_4=5$.\n    The sequence is $S_n = F_{n+1}$ where $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5$.\n    Wait, $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5 \\implies S_1=F_2, S_2=F_3, S_3=F_4, S_4=F_5$.\n    So $S_n = F_{n+1}$ is not quite right. Let's check $n=1$: $S_1=F_2=1$. $n=2$: $S_2=F_3=2$. $n=3$: $S_3=F_4=3$.\n    Actually, the sequence is $S_n = F_{n+1}$ if we define $F_1=1, F_2=1, F_3=2, \\dots$.\n    Wait, $S_1=1, S_2=2, S_3=3, S_4=5 \\dots$ is $F_{n+1}$ if $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5$.\n    Let's re-verify $n=1$: $S_1=1$. $n=2$: $S_2=2$. $n=3$: $S_3=3$.\n    The sequence is $1, 2, 3, 5, 8, \\dots$ which is $F_{n+1}$ where $F_1=1, F_2=1, F_3=2, \\dots$.\n    Wait, $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5$.\n    $n=1 \\implies S_1=F_2=1$.\n    $n=2 \\implies S_2=F_3=2$.\n    $n=3 \\implies S_3=F_4=3$.\n    $n=4 \\implies S_4=F_5=5$.\n    So $S_n = F_{n+1}$ where $F_1=1, F_2=1, F_3=2, \\dots$.\n\n3.  **Calculate the Probability**:\n    The total number of arrays is $k^n$.\n    The probability is $P = \\frac{S_n}{k^n} \\pmod{10^9+7}$.\n    We need to compute $F_{n+1}$ and $k^n$ modulo $10^9+7$.\n    Since $n$ can be up to $10^9$, we use matrix exponentiation to find $F_{n+1}$ in $O(\\log n)$ time.\n\n### Complexity\n- **Time Complexity**: $O(\\log n)$ due to matrix exponentiation.\n- **Space Complexity**: $O(1)$ to store the matrix and variables.\n\n```python\nimport sys\n\ndef solve():\n    MOD = 10**9 + 7\n\n    line = sys.stdin.readline()\n    if not line:\n        return\n    n, k = map(int, line.split())\n\n    if n == 0:\n        print(0)\n        return\n\n    # The number of structures is the (n+1)-th Fibonacci number\n    # where F_1 = 1, F_2 = 1, F_3 = 2, F_4 = 3, ...\n    # We need S_n = F_{n+1} if we use the sequence 1, 2, 3, 5...\n    # Let's use the standard F_0 = 0, F_1 = 1, F_2 = 1, F_3 = 2, ...\n    # Then S_1 = F_2 = 1, S_2 = F_3 = 2, S_3 = F_4 = 3, S_4 = F_5 = 5.\n    # So we need F_{n+1} where F_0=0, F_1=1.\n    # Wait, let's re-check:\n    # n=1: S_1 = 1. F_2 = 1.\n    # n=2: S_2 = 2. F_3 = 2.\n    # n=3: S_3 = 3. F_4 = 3.\n    # n=4: S_4 = 5. F_5 = 5.\n    # So we need F_{n+1} where F_1=1, F_2=1, F_3=2, F_4=3, F_5=5.\n    # Wait, the sequence is 1, 2, 3, 5, 8...\n    # This is F_{n+1} if F_1=1, F_2=2, F_3=3, F_4=5...\n    # Let's use the standard F_0=0, F_1=1, F_2=1, F_3=2, F_4=3, F_5=5.\n    # Then S_n = F_{n+1} is wrong.\n    # n=1: S_1=1. F_2=1.\n    # n=2: S_2=2. F_3=2.\n    # n=3: S_3=3. F_4=3.\n    # n=4: S_4=5. F_5=5.\n    # So S_n = F_{n+1} where F_1=1, F_2=1, F_3=2, F_4=3, F_5=5.\n    # Let's re-verify:\n    # n=1: F_2 = 1.\n    # n=2: F_3 = 2.\n    # n=3: F_4 = 3.\n    # n=4: F_5 = 5.\n    # Yes, S_n = F_{n+1} where F_0=0, F_1=1, F_2=1, F_3=2, ...\n\n    def multiply(A, B):\n        C = [[0, 0], [0, 0]]\n        for i in range(2):\n            for j in range(2):\n                for l in range(2):\n                    C[i][j] = (C[i][j] + A[i][l] * B[l][j]) % MOD\n        return C\n\n    def power(A, p):\n        res = [[1, 0], [0, 1]]\n        while p > 0:\n            if p % 2 == 1:\n                res = multiply(res, A)\n            A = multiply(A, A)\n            p //= 2\n        return res\n\n    # To find F_{n+1}, we use matrix [[1, 1], [1, 0]]^(n)\n    # [[1, 1], [1, 0]]^1 = [[1, 1], [1, 0]] -> F_2, F_1, F_1, F_0\n    # [[1, 1], [1, 0]]^n = [[F_{n+1}, F_n], [F_n, F_{n-1}]]\n    \n    if n == 0:\n        # Problem says n is a natural number (n >= 1)\n        print(0)\n        return\n\n    T = [[1, 1], [1, 0]]\n    T_n = power(T, n)\n    # The top-left element of T^n is F_{n+1}\n    S_n = T_n[0][0]\n    \n    # Total arrays = k^n\n    total_arrays_inv = pow(pow(k, n, MOD), MOD - 2, MOD)\n    \n    ans = (S_n * total_arrays_inv) % MOD\n    print(ans)\n\nsolve()\n```\n\nWait, let's double check $n=1$ with the matrix.\n$n=1$: $T^1 = [[1, 1], [1, 0]]$. $T^1[0][0] = 1$. $S_1 = 1$. Correct.\n$n=2$: $T^2 = [[2, 1], [1, 1]]$. $T^2[0][0] = 2$. $S_2 = 2$. Correct.\n$n=3$: $T^3 = [[3, 2], [2, 1]]$. $T^3[0][0] = 3$. $S_3 = 3$. Correct.\n$n=4$: $T^4 = [[5, 3], [3, 2]]$. $T^4[0][0] = 5$. $S_4 = 5$. Correct.\n\nThe logic seems solid.\n\n```python\nimport sys\n\ndef solve():\n    MOD = 10**9 + 7\n\n    line = sys.stdin.readline()\n    if not line:\n        return\n    try:\n        parts = line.split()\n        if not parts:\n            return\n        n = int(parts[0])\n        k = int(parts[1])\n    except ValueError:\n        return\n\n    if n == 0:\n        print(0)\n        return\n\n    def multiply(A, B):\n        C00 = (A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD\n        C01 = (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD\n        C10 = (A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD\n        C11 = (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD\n        return [[C00, C01], [C10, C11]]\n\n    def power(A, p):\n        res = [[1, 0], [0, 1]]\n        while p > 0:\n            if p % 2 == 1:\n                res = multiply(res, A)\n            A = multiply(A, A)\n            p //= 2\n        return res\n\n    T = [[1, 1], [1, 0]]\n    T_n = power(T, n)\n    S_n = T_n[0][0]\n    \n    total_arrays_inv = pow(pow(k, n, MOD), MOD - 2, MOD)\n    \n    ans = (S_n * total_arrays_inv) % MOD\n    print(ans)\n\nif __name__ == \"__main__\":\n    solve()\n```",
+    "reasoning_content": "*   Petar chooses $n$ numbers $a_1, a_2, \\dots, a_n$ independently and uniformly from $\\{1, 2, \\dots, k\\}$.\n    *   Total number of possible arrays $a$ is $k^n$.\n    *   An array $a$ is a \"structure\" if:\n        1.  Every number from $1$ to $n$ appears exactly once in $a$. (This implies $a$ is a permutation of $\\{1, 2, \\dots, n\\}$).\n        2.  For every index $i$ ($1 \\le i \\le n$), $|a_i + i - n - 1| \\le 1$.\n    *   We need to find the probability that $a$ is a structure.\n    *   The probability is $\\frac{\\text{Number of structures}}{k^n}$.\n    *   The answer should be modulo $10^9 + 7$.\n\n    *   Condition 1: $a$ is a permutation of $\\{1, 2, \\dots, n\\}$.\n    *   Condition 2: $|a_i + i - n - 1| \\le 1$ for all $i \\in \\{1, \\dots, n\\}$.\n    *   Let's rewrite Condition 2:\n        $-1 \\le a_i + i - n - 1 \\le 1$\n        $n \\le a_i + i \\le n + 2$\n        $n - i \\le a_i \\le n - i + 2$\n        Wait, let's re-examine:\n        $|a_i + i - (n+1)| \\le 1$\n        $n+1-1 \\le a_i + i \\le n+1+1$\n        $n \\le a_i + i \\le n+2$\n        This means $a_i$ must be one of $\\{n-i, n-i+1, n-i+2\\}$.\n        Wait, let's re-check the condition: $|a_i + i - n - 1| \\le 1$.\n        For $i=1$: $|a_1 + 1 - n - 1| \\le 1 \\implies |a_1 - n| \\le 1 \\implies a_1 \\in \\{n-1, n, n+1\\}$.\n        Since $a$ is a permutation of $\\{1, \\dots, n\\}$, $a_1$ can only be $n-1$ or $n$.\n        For $i=n$: $|a_n + n - n - 1| \\le 1 \\implies |a_n - 1| \\le 1 \\implies a_n \\in \\{0, 1, 2\\}$.\n        Since $a$ is a permutation of $\\{1, \\dots, n\\}$, $a_n$ can only be $1$ or $2$.\n\n    *   Let's re-examine the condition for all $i$:\n        $a_i \\in \\{n-i, n-i+1, n-i+2\\} \\cap \\{1, \\dots, n\\}$.\n        Let's test for small $n$:\n        $n=2$:\n        $i=1: a_1 \\in \\{2-1, 2, 2+1\\} \\cap \\{1, 2\\} = \\{1, 2\\}$.\n        $i=2: a_2 \\in \\{2-2, 2-2+1, 2-2+2\\} \\cap \\{1, 2\\} = \\{1, 2\\}$.\n        Wait, the condition $|a_i + i - n - 1| \\le 1$ is equivalent to $a_i + i \\in \\{n, n+1, n+2\\}$.\n        Let's re-check $n=2$ example:\n        $i=1: a_1 + 1 \\in \\{2, 3, 4\\} \\implies a_1 \\in \\{1, 2, 3\\}$.\n        $i=2: a_2 + 2 \\in \\{2, 3, 4\\} \\implies a_2 \\in \\{0, 1, 2\\}$.\n        Since $a$ is a permutation of $\\{1, 2\\}$, $a_1 \\in \\{1, 2\\}$ and $a_2 \\in \\{1, 2\\}$.\n        Possible permutations: $(1, 2)$ and $(2, 1)$.\n        Check $(1, 2)$:\n        $i=1: |1+1-2-1| = |-1| = 1 \\le 1$ (True)\n        $i=2: |2+2-2-1| = |1| = 1 \\le 1$ (True)\n        Check $(2, 1)$:\n        $i=1: |2+1-2-1| = |0| = 0 \\le 1$ (True)\n        $i=2: |1+2-2-1| = |0| = 0 \\le 1$ (True)\n        Both $(1, 2)$ and $(2, 1)$ are structures.\n        Total arrays for $n=2, k=2$: $2^2 = 4$.\n        Probability: $2/4 = 1/2$.\n        Example 2 says $2/4 = 500000004 \\pmod{10^9+7}$. Correct.\n\n    *   Let's re-examine the condition $a_i + i \\in \\{n, n+1, n+2\\}$ for $n=3$:\n        $i=1: a_1 + 1 \\in \\{3, 4, 5\\} \\implies a_1 \\in \\{2, 3, 4\\} \\cap \\{1, 2, 3\\} = \\{2, 3\\}$.\n        $i=2: a_2 + 2 \\in \\{3, 4, 5\\} \\implies a_2 \\in \\{1, 2, 3\\}$.\n        $i=3: a_3 + 3 \\in \\{3, 4, 5\\} \\implies a_3 \\in \\{0, 1, 2\\} \\cap \\{1, 2, 3\\} = \\{1, 2\\}$.\n        Possible permutations:\n        - $a_1=2, a_2=3, a_3=1$\n        - $a_1=3, a_2=1, a_3=2$\n        - $a_1=3, a_2=2, a_3=1$\n        Wait, let's check $a_1=2, a_2=3, a_3=1$:\n        $i=1: |2+1-3-1| = |-1| = 1 \\le 1$ (True)\n        $i=2: |3+2-3-1| = |1| = 1 \\le 1$ (True)\n        $i=3: |1+3-3-1| = |0| = 0 \\le 1$ (True)\n        Check $a_1=3, a_2=1, a_3=2$:\n        $i=1: |3+1-3-1| = |0| = 0 \\le 1$ (True)\n        $i=2: |1+2-3-1| = |-1| = 1 \\le 1$ (True)\n        $i=3: |2+3-3-1| = |1| = 1 \\le 1$ (True)\n        Check $a_1=3, a_2=2, a_3=1$:\n        $i=1: |3+1-3-1| = |0| = 0 \\le 1$ (True)\n        $i=2: |2+2-3-1| = |0| = 0 \\le 1$ (True)\n        $i=3: |1+3-3-1| = |0| = 0 \\le 1$ (True)\n        Are there any others?\n        $a_1=2, a_2=1, a_3=3$ (No, $a_3$ must be 1 or 2)\n        $a_1=3, a_2=2, a_3=1$ (Yes, already listed)\n        Wait, let's list all permutations of $\\{1, 2, 3\\}$ and check:\n        (1,2,3): $i=1, |1+1-3-1|=2$ (No)\n        (1,3,2): $i=1, |1+1-3-1|=2$ (No)\n        (2,1,3): $i=3, |3+3-3-1|=2$ (No)\n        (2,3,1): $i=1,",
+    "usage": {
+      "completion_tokens": 5299,
+      "prompt_tokens": 921,
+      "total_tokens": 6220,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 921,
+      "prompt_ms": 5202.455,
+      "prompt_per_token_ms": 5.6487024972855595,
+      "prompt_per_second": 177.03180517659453,
+      "predicted_n": 5299,
+      "predicted_ms": 226302.516,
+      "predicted_per_token_ms": 42.71470668176671,
+      "predicted_per_second": 23.411140510695866
+    }
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    MOD = 10**9 + 7\n\n    line = sys.stdin.readline()\n    if not line:\n        return\n    try:\n        parts = line.split()\n        if not parts:\n            return\n        n = int(parts[0])\n        k = int(parts[1])\n    except ValueError:\n        return\n\n    if n == 0:\n        print(0)\n        return\n\n    def multiply(A, B):\n        C00 = (A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD\n        C01 = (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD\n        C10 = (A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD\n        C11 = (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD\n        return [[C00, C01], [C10, C11]]\n\n    def power(A, p):\n        res = [[1, 0], [0, 1]]\n        while p > 0:\n            if p % 2 == 1:\n                res = multiply(res, A)\n            A = multiply(A, A)\n            p //= 2\n        return res\n\n    T = [[1, 1], [1, 0]]\n    T_n = power(T, n)\n    S_n = T_n[0][0]\n    \n    total_arrays_inv = pow(pow(k, n, MOD), MOD - 2, MOD)\n    \n    ans = (S_n * total_arrays_inv) % MOD\n    print(ans)\n\nif __name__ == \"__main__\":\n    solve()",
+  "judge": {
+    "status": "WA",
+    "passed_cases": 106,
+    "total_cases": 130,
+    "max_case_seconds": 0.01354011600051308,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011005824002495501,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010809665000124369,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010376562000601552,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01354011600051308,
+        "return_code": 0,
+        "stdout": "142857144\n",
+        "stderr": "",
+        "test_case": "struktura.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012618401000509039,
+        "return_code": 0,
+        "stdout": "726080252\n",
+        "stderr": "",
+        "test_case": "struktura.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010675675999664236,
+        "return_code": 0,
+        "stdout": "856000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012519188996520825,
+        "return_code": 0,
+        "stdout": "856000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00990613399335416,
+        "return_code": 0,
+        "stdout": "250000002\n",
+        "stderr": "",
+        "test_case": "struktura.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009705336000479292,
+        "return_code": 0,
+        "stdout": "563550244\n",
+        "stderr": "",
+        "test_case": "struktura.in.1i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009515737001493108,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "struktura.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01015422800264787,
+        "return_code": 0,
+        "stdout": "576426493\n",
+        "stderr": "",
+        "test_case": "struktura.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010230958003376145,
+        "return_code": 0,
+        "stdout": "222222224\n",
+        "stderr": "",
+        "test_case": "struktura.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009664475001045503,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009746714997163508,
+        "return_code": 0,
+        "stdout": "503183201\n",
+        "stderr": "",
+        "test_case": "struktura.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011112996005977038,
+        "return_code": 0,
+        "stdout": "400000003\n",
+        "stderr": "",
+        "test_case": "struktura.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010193834001256619,
+        "return_code": 0,
+        "stdout": "560000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009744545001012739,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009415423002792522,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009920880998834036,
+        "return_code": 0,
+        "stdout": "13888889\n",
+        "stderr": "",
+        "test_case": "struktura.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009772464996785857,
+        "return_code": 0,
+        "stdout": "503183201\n",
+        "stderr": "",
+        "test_case": "struktura.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009657369999331422,
+        "return_code": 0,
+        "stdout": "897959190\n",
+        "stderr": "",
+        "test_case": "struktura.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009799691004445776,
+        "return_code": 0,
+        "stdout": "926954739\n",
+        "stderr": "",
+        "test_case": "struktura.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009891177003737539,
+        "return_code": 0,
+        "stdout": "222222224\n",
+        "stderr": "",
+        "test_case": "struktura.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010097127997141797,
+        "return_code": 0,
+        "stdout": "166666668\n",
+        "stderr": "",
+        "test_case": "struktura.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009729203004098963,
+        "return_code": 0,
+        "stdout": "897959190\n",
+        "stderr": "",
+        "test_case": "struktura.in.1y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009857671997451689,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.1z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009903377998853102,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009792103002837393,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009728994999022689,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009733954000694212,
+        "return_code": 0,
+        "stdout": "411979550\n",
+        "stderr": "",
+        "test_case": "struktura.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010312156002328265,
+        "return_code": 0,
+        "stdout": "227146816\n",
+        "stderr": "",
+        "test_case": "struktura.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009721163005451672,
+        "return_code": 0,
+        "stdout": "63238957\n",
+        "stderr": "",
+        "test_case": "struktura.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010355531005188823,
+        "return_code": 0,
+        "stdout": "46497163\n",
+        "stderr": "",
+        "test_case": "struktura.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009990733000449836,
+        "return_code": 0,
+        "stdout": "658536590\n",
+        "stderr": "",
+        "test_case": "struktura.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009902243000396993,
+        "return_code": 0,
+        "stdout": "960306233\n",
+        "stderr": "",
+        "test_case": "struktura.in.2i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010416862998681609,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "struktura.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010901904002821539,
+        "return_code": 0,
+        "stdout": "669689472\n",
+        "stderr": "",
+        "test_case": "struktura.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010339945001760498,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00938756099640159,
+        "return_code": 0,
+        "stdout": "428571003\n",
+        "stderr": "",
+        "test_case": "struktura.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009786146001715679,
+        "return_code": 0,
+        "stdout": "589592528\n",
+        "stderr": "",
+        "test_case": "struktura.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010303680996003095,
+        "return_code": 0,
+        "stdout": "202531647\n",
+        "stderr": "",
+        "test_case": "struktura.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009593031005351804,
+        "return_code": 0,
+        "stdout": "20793951\n",
+        "stderr": "",
+        "test_case": "struktura.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009959589995560236,
+        "return_code": 0,
+        "stdout": "858974365\n",
+        "stderr": "",
+        "test_case": "struktura.in.2q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010183907004829962,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.2r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009482743000262417,
+        "return_code": 0,
+        "stdout": "570312504\n",
+        "stderr": "",
+        "test_case": "struktura.in.2s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0099052709992975,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "struktura.in.2t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010137579003639985,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009978403999411967,
+        "return_code": 0,
+        "stdout": "202902447\n",
+        "stderr": "",
+        "test_case": "struktura.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010365699999965727,
+        "return_code": 0,
+        "stdout": "295707821\n",
+        "stderr": "",
+        "test_case": "struktura.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009960608993424103,
+        "return_code": 0,
+        "stdout": "728608992\n",
+        "stderr": "",
+        "test_case": "struktura.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009894219998386689,
+        "return_code": 0,
+        "stdout": "417230334\n",
+        "stderr": "",
+        "test_case": "struktura.in.2y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009946545003913343,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "struktura.in.2z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009523364999040496,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00992646999657154,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010240719995636027,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010307741998985875,
+        "return_code": 0,
+        "stdout": "285000002\n",
+        "stderr": "",
+        "test_case": "struktura.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010622451001836453,
+        "return_code": 0,
+        "stdout": "629111293\n",
+        "stderr": "",
+        "test_case": "struktura.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01012692700169282,
+        "return_code": 0,
+        "stdout": "488991434\n",
+        "stderr": "",
+        "test_case": "struktura.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01035555199632654,
+        "return_code": 0,
+        "stdout": "928251810\n",
+        "stderr": "",
+        "test_case": "struktura.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009418004003237002,
+        "return_code": 0,
+        "stdout": "394575695\n",
+        "stderr": "",
+        "test_case": "struktura.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0101331189944176,
+        "return_code": 0,
+        "stdout": "30769231\n",
+        "stderr": "",
+        "test_case": "struktura.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010606249001284596,
+        "return_code": 0,
+        "stdout": "488266617\n",
+        "stderr": "",
+        "test_case": "struktura.in.3j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009818680999160279,
+        "return_code": 0,
+        "stdout": "617283955\n",
+        "stderr": "",
+        "test_case": "struktura.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009720916998048779,
+        "return_code": 0,
+        "stdout": "696275199\n",
+        "stderr": "",
+        "test_case": "struktura.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009813283999392297,
+        "return_code": 0,
+        "stdout": "775524559\n",
+        "stderr": "",
+        "test_case": "struktura.in.3m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009845175998634659,
+        "return_code": 0,
+        "stdout": "184637533\n",
+        "stderr": "",
+        "test_case": "struktura.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010389164002845064,
+        "return_code": 0,
+        "stdout": "337211958\n",
+        "stderr": "",
+        "test_case": "struktura.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009967281999706756,
+        "return_code": 0,
+        "stdout": "256841698\n",
+        "stderr": "",
+        "test_case": "struktura.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010390898001787718,
+        "return_code": 0,
+        "stdout": "190406074\n",
+        "stderr": "",
+        "test_case": "struktura.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01022163599554915,
+        "return_code": 0,
+        "stdout": "575237810\n",
+        "stderr": "",
+        "test_case": "struktura.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010224023993941955,
+        "return_code": 0,
+        "stdout": "775524559\n",
+        "stderr": "",
+        "test_case": "struktura.in.3s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009608259002561681,
+        "return_code": 0,
+        "stdout": "184637533\n",
+        "stderr": "",
+        "test_case": "struktura.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00983649800036801,
+        "return_code": 0,
+        "stdout": "337211958\n",
+        "stderr": "",
+        "test_case": "struktura.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010085907000757288,
+        "return_code": 0,
+        "stdout": "204545456\n",
+        "stderr": "",
+        "test_case": "struktura.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010478855998371728,
+        "return_code": 0,
+        "stdout": "677751921\n",
+        "stderr": "",
+        "test_case": "struktura.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009653690998675302,
+        "return_code": 0,
+        "stdout": "433429058\n",
+        "stderr": "",
+        "test_case": "struktura.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009920686003169976,
+        "return_code": 0,
+        "stdout": "963477373\n",
+        "stderr": "",
+        "test_case": "struktura.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00975268500042148,
+        "return_code": 0,
+        "stdout": "266726083\n",
+        "stderr": "",
+        "test_case": "struktura.in.3z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010092708995216526,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009509724004601594,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00982195499818772,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00964656200085301,
+        "return_code": 0,
+        "stdout": "650565059\n",
+        "stderr": "",
+        "test_case": "struktura.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009689899001386948,
+        "return_code": 0,
+        "stdout": "85612406\n",
+        "stderr": "",
+        "test_case": "struktura.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009730851001222618,
+        "return_code": 0,
+        "stdout": "14901260\n",
+        "stderr": "",
+        "test_case": "struktura.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009648752995417453,
+        "return_code": 0,
+        "stdout": "679705936\n",
+        "stderr": "",
+        "test_case": "struktura.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00990650199673837,
+        "return_code": 0,
+        "stdout": "324080400\n",
+        "stderr": "",
+        "test_case": "struktura.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010077384999021888,
+        "return_code": 0,
+        "stdout": "812900522\n",
+        "stderr": "",
+        "test_case": "struktura.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009456167004827876,
+        "return_code": 0,
+        "stdout": "268609584\n",
+        "stderr": "",
+        "test_case": "struktura.in.4j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009779275998880621,
+        "return_code": 0,
+        "stdout": "429990923\n",
+        "stderr": "",
+        "test_case": "struktura.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010080640000524,
+        "return_code": 0,
+        "stdout": "225285849\n",
+        "stderr": "",
+        "test_case": "struktura.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009719752000819426,
+        "return_code": 0,
+        "stdout": "110472661\n",
+        "stderr": "",
+        "test_case": "struktura.in.4m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010162274003960192,
+        "return_code": 0,
+        "stdout": "832922471\n",
+        "stderr": "",
+        "test_case": "struktura.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011130700004287064,
+        "return_code": 0,
+        "stdout": "932619170\n",
+        "stderr": "",
+        "test_case": "struktura.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009837077996053267,
+        "return_code": 0,
+        "stdout": "753601618\n",
+        "stderr": "",
+        "test_case": "struktura.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010190111002884805,
+        "return_code": 0,
+        "stdout": "286596448\n",
+        "stderr": "",
+        "test_case": "struktura.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009791944998141844,
+        "return_code": 0,
+        "stdout": "697421048\n",
+        "stderr": "",
+        "test_case": "struktura.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010142291001102421,
+        "return_code": 0,
+        "stdout": "70092844\n",
+        "stderr": "",
+        "test_case": "struktura.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009568986999511253,
+        "return_code": 0,
+        "stdout": "242251921\n",
+        "stderr": "",
+        "test_case": "struktura.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0100263089989312,
+        "return_code": 0,
+        "stdout": "828620009\n",
+        "stderr": "",
+        "test_case": "struktura.in.4u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010346344999561552,
+        "return_code": 0,
+        "stdout": "381651181\n",
+        "stderr": "",
+        "test_case": "struktura.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009691325001767837,
+        "return_code": 0,
+        "stdout": "519981728\n",
+        "stderr": "",
+        "test_case": "struktura.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009843357001955155,
+        "return_code": 0,
+        "stdout": "32171485\n",
+        "stderr": "",
+        "test_case": "struktura.in.4x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010303481998562347,
+        "return_code": 0,
+        "stdout": "703138767\n",
+        "stderr": "",
+        "test_case": "struktura.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009942260003299452,
+        "return_code": 0,
+        "stdout": "238072889\n",
+        "stderr": "",
+        "test_case": "struktura.in.4z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010173529997700825,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "struktura.in.5a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01049391100241337,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.5b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009697091998532414,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.5c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01060430399957113,
+        "return_code": 0,
+        "stdout": "373965201\n",
+        "stderr": "",
+        "test_case": "struktura.in.5d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009996307999244891,
+        "return_code": 0,
+        "stdout": "989496909\n",
+        "stderr": "",
+        "test_case": "struktura.in.5e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009958538998034783,
+        "return_code": 0,
+        "stdout": "901679584\n",
+        "stderr": "",
+        "test_case": "struktura.in.5f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00997341000038432,
+        "return_code": 0,
+        "stdout": "520271879\n",
+        "stderr": "",
+        "test_case": "struktura.in.5g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010236291003820952,
+        "return_code": 0,
+        "stdout": "196906688\n",
+        "stderr": "",
+        "test_case": "struktura.in.5h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010099031998834107,
+        "return_code": 0,
+        "stdout": "153508212\n",
+        "stderr": "",
+        "test_case": "struktura.in.5i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01004781299707247,
+        "return_code": 0,
+        "stdout": "139897898\n",
+        "stderr": "",
+        "test_case": "struktura.in.5j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009527064001304097,
+        "return_code": 0,
+        "stdout": "286087256\n",
+        "stderr": "",
+        "test_case": "struktura.in.5k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010723828003392555,
+        "return_code": 0,
+        "stdout": "344527698\n",
+        "stderr": "",
+        "test_case": "struktura.in.5l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01050509500055341,
+        "return_code": 0,
+        "stdout": "269918516\n",
+        "stderr": "",
+        "test_case": "struktura.in.5m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010134395000932273,
+        "return_code": 0,
+        "stdout": "701167947\n",
+        "stderr": "",
+        "test_case": "struktura.in.5n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010030532997916453,
+        "return_code": 0,
+        "stdout": "866730610\n",
+        "stderr": "",
+        "test_case": "struktura.in.5o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010271259001456201,
+        "return_code": 0,
+        "stdout": "620031996\n",
+        "stderr": "",
+        "test_case": "struktura.in.5p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010155921998375561,
+        "return_code": 0,
+        "stdout": "515490448\n",
+        "stderr": "",
+        "test_case": "struktura.in.5q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01033875900611747,
+        "return_code": 0,
+        "stdout": "253243461\n",
+        "stderr": "",
+        "test_case": "struktura.in.5r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009700239002995659,
+        "return_code": 0,
+        "stdout": "682202721\n",
+        "stderr": "",
+        "test_case": "struktura.in.5s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00962381199497031,
+        "return_code": 0,
+        "stdout": "333473393\n",
+        "stderr": "",
+        "test_case": "struktura.in.5t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010081873995659407,
+        "return_code": 0,
+        "stdout": "55260547\n",
+        "stderr": "",
+        "test_case": "struktura.in.5u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01034765200165566,
+        "return_code": 0,
+        "stdout": "463158475\n",
+        "stderr": "",
+        "test_case": "struktura.in.5v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01051395499962382,
+        "return_code": 0,
+        "stdout": "8662146\n",
+        "stderr": "",
+        "test_case": "struktura.in.5w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010663508001016453,
+        "return_code": 0,
+        "stdout": "171933772\n",
+        "stderr": "",
+        "test_case": "struktura.in.5x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00971934299741406,
+        "return_code": 0,
+        "stdout": "569232064\n",
+        "stderr": "",
+        "test_case": "struktura.in.5y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009837632002017926,
+        "return_code": 0,
+        "stdout": "549993707\n",
+        "stderr": "",
+        "test_case": "struktura.in.5z"
+      }
+    ]
+  }
+}
