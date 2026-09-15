@@ -34,7 +34,7 @@ STEP 3에서는 조사할 수 있는 정보를 먼저 기록하고 설치 식별
 
 ## 현재 후보와 HyperCLOVA 제외 이력
 
-현재 후보 A는 Qwen, 후보 B는 `gemma4:26b-a4b-it-q4_K_M`이며 모두 Ollama로 진행합니다. 기존 Ollama 예제를 바탕으로 사용자가 후보별 CLI·Python 호출·저장·재읽기를 확인합니다. Gemma의 CLI·Python 기본 응답과 저장 JSON은 확인했습니다. 코딩테스트 실험과 품질 평가는 아직 진행하지 않았습니다.
+현재 후보는 Qwen과 Gemma다. Ollama에서 Skare 평가를 시도했으나 thinking 중 생성 한도가 소진돼 최종 답변이 비었다. 현재 upstream llama.cpp의 reasoning budget을 활용하는 전환을 준비 중이며 정상 로딩·답변 생성은 아직 미확인이다. 기본 Ollama 연결 이력은 보존합니다. 다음은 다운로드 완료·파일 상태 확인 후 Gemma 정상 로딩을 직접 확인하는 것입니다. 현재 Python 코드는 Ollama용이며 llama.cpp 연결은 아직 미구현입니다. 전환은 개인 선택이며 발제 측 승인으로 표시하지 않습니다.
 
 HyperCLOVA는 NAVER llama.cpp 실행 도구 예외로 진단했으나, 사용자가 현재 구성의 지시 수행 성능 미달로 제외했습니다. [교체 전 조사와 진단 이력](models.md#제외-이력-hyperclova)은 보존하며 현재 후보의 필수 절차로 적용하지 않습니다. 본 실험 40회·워밍업 2회·Cloud 5회와 개인 필수 실습은 유지합니다. 제외 전 연결 점검을 본 실험이나 세 번째 모델 비교 실습 완료로 집계하지 않습니다.
 
