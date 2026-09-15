@@ -123,33 +123,3 @@ def judge_problem(
         "time_limit_seconds": time_limit_seconds,
         "test_results": results,
     }
-
-
-if __name__ == "__main__":
-    # result = run_test_case(
-    #     code_path=Path("tmp/ac.py"),
-    #     # code_path=Path("tmp/wa.py"),
-    #     # code_path=Path("tmp/re.py"),
-    #     # code_path=Path("tmp/tle.py"),
-    #     input_path=Path("data/coci/2025_2026/contest5/testdata/skare/skare.in.1a"),
-    #     output_path=Path("data/coci/2025_2026/contest5/testdata/skare/skare.out.1a"),
-    #     time_limit_seconds=3.0,
-    # )
-
-    # print(result)
-
-    judge_result = judge_problem(
-        code_path=Path("tmp/skare_correct.py"),
-        problem_dir=Path("data/coci/2025_2026/contest5/testdata/skare"),
-        problem_name="skare",
-        time_limit_seconds=3.0,
-    )
-
-    print("최종 판정:", judge_result["status"])
-    print(
-        "통과:",
-        judge_result["passed_cases"],
-        "/",
-        judge_result["total_cases"],
-    )
-    print("최대 실행 시간:", judge_result["max_case_seconds"])

@@ -81,25 +81,25 @@ bash configs/llama.cpp/qwen36-moe-lowvram.sh
 
 ### 4. 문제 선택과 평가
 
-[scripts/run_one_problem.py](scripts/run_one_problem.py)에 모델·문제 ID·라운드를 전달합니다.
+[scripts/run_benchmark.py](scripts/run_benchmark.py)에 모델·문제 ID·라운드를 전달합니다.
 
 ```bash
-uv run python scripts/run_one_problem.py \
-  --model qwen36 --problem coci_2025_2026_c5_skare --round 1
+uv run python scripts/run_benchmark.py \
+  --model qwen36 --problems coci_2025_2026_c5_skare --round 1
 ```
 
-`--model`은 `qwen36` 또는 `gemma4`, `--problem`은 `problems.json`에 등록한 ID를 사용합니다. Round 2는 같은 문제·모델의 새 Round 1 최종 답변을 읽어 자체 검토하며, 외부 채점 결과는 프롬프트에 넣지 않습니다.
+`--model`은 `qwen36` 또는 `gemma4`, `--problems`은 `problems.json`에 등록한 ID를 사용합니다. Round 2는 같은 문제·모델의 새 Round 1 최종 답변을 읽어 자체 검토하며, 외부 채점 결과는 프롬프트에 넣지 않습니다.
 
 ```bash
-uv run python scripts/run_one_problem.py \
-  --model qwen36 --problem coci_2025_2026_c5_skare --round 2
+uv run python scripts/run_benchmark.py \
+  --model qwen36 --problems coci_2025_2026_c5_skare --round 2
 ```
 
-요청 설정은 실행기 상단의 `TEMPERATURE=0`, `MAX_TOKENS=8192`, `REASONING_BUDGET_TOKENS=2048`로 고정합니다. 서버 셸도 Context 12288·출력 8192·reasoning 2048·temperature 0으로 맞췄습니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. Context 12288에서의 VRAM 적합성과 긴 Round 2 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
+요청 설정은 [benchmark/runner.py](src/llm_eval/benchmark/runner.py)의 `TEMPERATURE=0`, `MAX_TOKENS=8192`, `REASONING_BUDGET_TOKENS=2048`로 고정합니다. 서버 셸도 Context 12288·출력 8192·reasoning 2048·temperature 0으로 맞췄습니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. Context 12288에서의 VRAM 적합성과 긴 Round 2 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
 
 실행기는 `http://127.0.0.1:8080/v1`에 연결합니다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있습니다. 연결 오류는 서버 터미널을, 테스트 케이스를 찾을 수 없다는 오류는 `problem_dir`와 압축 해제 위치를 확인합니다.
 
-기존 Ollama 호출·측정 실습은 `uv run python scripts/run_local.py`로 실행할 수 있습니다. 위 단일 문제 평가와는 별도 실행 경로입니다.
+과거 Ollama 실습과 HyperCLOVA 진단 코드는 [정리 전 Git 이력](docs/history/README.md)에서 확인할 수 있습니다.
 
 ## 결과 확인
 
@@ -112,9 +112,9 @@ results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
 └── result.json     # 생성 설정·응답·추론·사용량·채점 결과
 ```
 
-같은 라운드·문제·모델의 결과가 이미 있으면 덮어쓰지 않고 중단합니다.
+`--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 건너뜁니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다.
 
-기존 출력 한도 6144의 8회 실행은 [benchmark_pilot_6144](results/benchmark_pilot_6144/)에 보존했습니다. Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 된 것을 계기로 출력 한도를 늘렸습니다. reasoning 부족으로 단정하지 않고 2048을 유지했으며, 새 설정의 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계와 Round 2 입력에서 제외합니다.
+기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 된 것을 계기로 출력 한도를 늘렸습니다. reasoning 부족으로 단정하지 않고 2048을 유지했으며, 새 설정의 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계와 Round 2 입력에서 제외합니다.
 
 추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 `NO_CODE`로 기록합니다.
 
@@ -136,8 +136,9 @@ Judge는 `<문제 이름>.in.*`와 대응하는 `.out.*` 파일을 사용하며,
 
 ```text
 configs/llama.cpp/   모델 서버 실행 스크립트
-scripts/            실험 실행 진입점
-src/llm_eval/       모델 호출·코드 추출·채점·측정 유틸
+scripts/            benchmark·데이터 검증 진입점과 calibration 실행기
+src/llm_eval/benchmark/  CLI·프롬프트·문제별 실행
+src/llm_eval/       모델 호출·문제 선택·코드 추출·채점
 data/coci/         문제 목록과 모델 입력용 문제문
 results/            실행별 응답·후보 코드·채점 결과
 docs/               프로젝트 요구사항과 조사·학습 기록
@@ -151,3 +152,7 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 | [단계별 안내](docs/guide.md) | 실습 단계와 참고 자료 |
 | [진행 기록](STATE.md) | 학습 과정과 확인 근거 |
 | [튜터 지침](AGENTS.md) | AI 활용과 작업 범위 |
+
+실행 결과의 용도와 집계 범위는 [결과 분류](results/README.md), 이전 파일의 위치와 복원 방법은 [정리 이력](docs/history/README.md)에 정리했습니다.
+
+현재 benchmark는 llama.cpp 로컬 모델용입니다. 발제 STEP 7의 Cloud 모델 1개·공통 5문항·각 1회 비교는 이후 추가할 단계이며, 이번 구조화에 Cloud 호출 기능은 포함하지 않았습니다. 기존 문제 로딩·프롬프트·코드 추출·Judge를 재사용할 수 있도록 실행 진입점과 역할을 분리했습니다.

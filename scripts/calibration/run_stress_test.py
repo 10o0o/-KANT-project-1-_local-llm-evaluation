@@ -26,7 +26,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    root = Path(__file__).resolve().parents[1]
+    root = Path(__file__).resolve().parents[2]
 
     statement_path = root / "data/coci/2025_2026/contest5/statements/slaganje.md"
 
@@ -90,7 +90,7 @@ def main():
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
-    result_dir = root / "results" / "stress" / run_id / args.model / "slaganje"
+    result_dir = root / "results" / "calibration" / "stress" / run_id / args.model / "slaganje"
 
     result_dir.mkdir(parents=True, exist_ok=False)
 

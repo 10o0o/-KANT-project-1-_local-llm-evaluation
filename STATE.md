@@ -8,9 +8,9 @@
 
 ## 2026-09-14 수행 근거
 
-- [호출 코드](src/llm_eval/local_chat.py)를 직접 수정해 두 모델을 순차 호출했다. 모델마다 `hi`로 워밍업하고, 같은 Context·생성 설정으로 질문을 호출했다. 워밍업은 타이머 밖에 두고 저장·재읽기 후 모델을 내린다.
-- 실행 시각별 `results/<run_id>/`에 모델별 JSON을 저장했다. 루트의 이전 응답 파일은 의도적으로 삭제했고, 이후 결과부터 이 구조로 남긴다.
-- [첫 실행](results/20260914_192215_545834/)과 [워밍업 후 실행](results/20260914_193504_991782/)에 각각 두 모델의 응답을 보존했다. AI의 파일 재읽기 점검에서 네 JSON 모두 파싱되고 최종 답변과 `stop` 종료를 확인했다. 터미널의 재읽기 출력 원문은 별도 보관하지 않았다.
+- [당시 호출 코드의 Git 이력](docs/history/README.md)를 직접 수정해 두 모델을 순차 호출했다. 모델마다 `hi`로 워밍업하고, 같은 Context·생성 설정으로 질문을 호출했다. 워밍업은 타이머 밖에 두고 저장·재읽기 후 모델을 내린다.
+- 당시 실행 시각별 `results/<run_id>/`(현재 `results/archive/legacy-runs/<run_id>/`)에 모델별 JSON을 저장했다. 루트의 이전 응답 파일은 의도적으로 삭제했고, 이후 결과부터 이 구조로 남긴다.
+- [첫 실행](results/archive/legacy-runs/20260914_192215_545834/)과 [워밍업 후 실행](results/archive/legacy-runs/20260914_193504_991782/)에 각각 두 모델의 응답을 보존했다. AI의 파일 재읽기 점검에서 네 JSON 모두 파싱되고 최종 답변과 `stop` 종료를 확인했다. 터미널의 재읽기 출력 원문은 별도 보관하지 않았다.
 - Gemma CLI 답변과 `ollama ps` 출력을 대화에 남겼다. 당시 Context 4096, CPU/GPU 적재 비율 73%/27%였다. 이는 GPU 사용률이나 모든 실행의 고정 적재 비율이 아니다.
 - 당시 `perf_counter()`로 측정한 `elapsed`는 출력만 하고 JSON에는 저장하지 않았다. 입력 질문·요청 설정·워밍업 응답도 별도 기록 보완이 필요하다.
 
@@ -23,8 +23,8 @@
 
 ## 유지할 환경·진행 근거
 
-- [pyproject.toml](pyproject.toml)·[uv.lock](uv.lock)에 Ollama/OpenAI 의존성이 있다. 전체 환경 재현 검증은 별도다.
-- Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용한다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](docs/models.md)에 연결했다.
+- 정리 전 환경에는 Ollama/OpenAI 의존성이 있었다. 현재 [pyproject.toml](pyproject.toml)·[uv.lock](uv.lock)에는 OpenAI 의존성만 남겼다. 전체 환경 재현 검증은 별도다.
+- 당시 Ollama 실습에서 Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용했다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](docs/models.md)에 연결했다.
 - Context와 VRAM 관계를 고려해 실제 관측하며 설정을 정하기로 했다. 코딩테스트 요구사항 초안은 작성했지만 STEP 2의 필수 통과 조건·확인 방법 구체화는 남아 있다.
 
 ## 완료 상태 구분
@@ -43,13 +43,13 @@
 
 ## 2026-09-15 코드 구조 정리
 
-AI에 패키지 구조 정리를 요청해 `src/llm_eval/`로 실습 로직과 로깅 유틸을 분리했다. 새 실행 진입점은 `scripts/run_local.py`이고 기존 명령도 유지한다. 이후 직접 모델 실행을 완료했다. 현재 공통 함수는 `src/llm_eval/utils.py`에 모았고, 질문·chat_config·elapsed·생성 속도·로딩 시간·prefill 속도·VRAM을 저장한다.
+AI에 패키지 구조 정리를 요청해 `src/llm_eval/`로 실습 로직과 로깅 유틸을 분리했다. 당시 실행 진입점은 `scripts/run_local.py`였고 이전 명령도 호환했다. 현재는 정리 전 태그에서 확인할 수 있다. 이후 직접 모델 실행을 완료했다. 당시 공통 함수는 `src/llm_eval/utils.py`에 모았고, 질문·chat_config·elapsed·생성 속도·로딩 시간·prefill 속도·VRAM을 저장한다.
 
 ## 2026-09-15 지표·출력·오류 기록 정리
 
 직접 `warm_up`, `chat`, `get_metrics_from_response`, `get_vram_info`, `print_result_summary`로 역할을 나눴다. Rich 표·답변 패널과 진행 로그를 분리했다. AI에 VRAM·prefill 행과 사유 표시 추가를 요청했다. 누락값은 사유와 함께 null로 남기며 0과 구분한다.
 
-[최신 확인 결과](results/20260915_110551_990145/)는 두 모델 모두 stop 종료와 최종 답변이 있다. AI의 파일 점검으로 아래 값을 확인했다.
+[최신 확인 결과](results/archive/legacy-runs/20260915_110551_990145/)는 두 모델 모두 stop 종료와 최종 답변이 있다. AI의 파일 점검으로 아래 값을 확인했다.
 
 | 모델 | 전체 응답 시간 (초) | 생성 속도 (tok/s) | Prefill (tok/s) | 모델 VRAM (MiB) |
 | --- | --- | --- | --- | --- |
@@ -64,7 +64,7 @@ VRAM 조회 실패 분기는 가짜 클라이언트로 직접 확인했다는 �
 
 ## 2026-09-15 단일 문제 평가와 런타임 전환 준비
 
-직접 `scripts/run_one_problem.py`와 `src/llm_eval/code_extract.py`를 작성해 문제문 → Ollama 호출 → 응답 저장 → 코드 추출 → Judge 연결을 구현했다. 아래 저장 응답은 모두 `length` 종료이며 최종 content는 빈 문자열이다. candidate.py와 judge.json은 생성되지 않아 실제 모델 코드 채점 성공으로 보지 않는다.
+당시 `scripts/run_one_problem.py`(현재 `scripts/run_benchmark.py`와 benchmark 패키지로 분리)와 `src/llm_eval/code_extract.py`를 작성해 문제문 → Ollama 호출 → 응답 저장 → 코드 추출 → Judge 연결을 구현했다. 아래 저장 응답은 모두 `length` 종료이며 최종 content는 빈 문자열이다. candidate.py와 judge.json은 생성되지 않아 실제 모델 코드 채점 성공으로 보지 않는다.
 
 | 저장 실행 | 모델 | 생성 토큰 | thinking 문자 수 |
 | --- | --- | --- | --- |
@@ -84,7 +84,7 @@ AI 조회에서 `/home/jake/workspace/local-llm/runtimes/llama.cpp`의 빌드와
 
 ## 2026-09-15 Gemma 실행 성공과 추출 정책 보완
 
-Gemma 다운로드·서버 실행 후 Skare AC를 직접 확인했다. [저장 결과](results/20260915_160840_518693/gemma4/skare/)에는 stop 종료, 최종 답변 3859자, reasoning 5049자와 candidate.py가 있다. judge.json에는 설정·응답만 있어 통과 수와 코드 실행 시간은 저장 근거 미확보다. AI가 모델·채점을 재실행하지 않았다.
+Gemma 다운로드·서버 실행 후 Skare AC를 직접 확인했다. [저장 결과](results/archive/legacy-runs/20260915_160840_518693/gemma4/skare/)에는 stop 종료, 최종 답변 3859자, reasoning 5049자와 candidate.py가 있다. judge.json에는 설정·응답만 있어 통과 수와 코드 실행 시간은 저장 근거 미확보다. AI가 모델·채점을 재실행하지 않았다.
 
 답변에 Python 블록이 2개 있었고 기존 추출기는 첫 블록을 저장했다. 해당 블록에는 잘못된 solve()와 수정 main()이 공존했지만 실제 호출된 main()으로 통과했다. 기존 후보는 수정하지 않았다. 이후 프롬프트에 코드 블록 하나·중간 코드와 자체 수정본 금지를 추가했고 추출기를 마지막 Python 블록, 없으면 마지막 일반 블록 선택으로 바꿨다. 새 정책의 재실행 결과는 아직 확인하지 않았다.
 
@@ -92,8 +92,14 @@ Qwen standalone GGUF는 다운로드 중이라고 경과를 남겼으며 실행 
 
 ## 2026-09-15 생성 한도 변경과 benchmark 재시작
 
-Qwen Pet의 [저장 결과](results/benchmark_pilot_6144/round_1/pet/qwen36/result.json)는 `completion_tokens=6144`, `finish_reason=length`, `NO_CODE`였다. 전체 생성 한도가 소진된 근거로 출력 한도를 8192로 늘리고 reasoning 2048과 temperature 0은 유지하기로 했다. 이 결과만으로 reasoning 예산 부족이나 새 설정의 성공을 확정하지 않는다.
+Qwen Pet의 [저장 결과](results/pilot/6144/round_1/pet/qwen36/result.json)는 `completion_tokens=6144`, `finish_reason=length`, `NO_CODE`였다. 전체 생성 한도가 소진된 근거로 출력 한도를 8192로 늘리고 reasoning 2048과 temperature 0은 유지하기로 했다. 이 결과만으로 reasoning 예산 부족이나 새 설정의 성공을 확정하지 않는다.
 
-기존 8회 실행의 원본 23개 파일은 `results/benchmark_pilot_6144/`로 옮겼다. 원본 JSON의 실행 ID·설정·판정·experiment 값은 수정하지 않았으며 폴더 위치로 pilot을 구분한다. 새 본 실험은 `results/benchmark/round_<라운드>/<문제>/<모델>/`에 처음부터 저장하고, pilot을 집계하거나 Round 2 입력으로 재사용하지 않는다.
+기존 8회 실행의 원본 23개 파일은 `results/pilot/6144/`로 옮겼다. 원본 JSON의 실행 ID·설정·판정·experiment 값은 수정하지 않았으며 폴더 위치로 pilot을 구분한다. 새 본 실험은 `results/benchmark/round_<라운드>/<문제>/<모델>/`에 처음부터 저장하고, pilot을 집계하거나 Round 2 입력으로 재사용하지 않는다.
 
 직접 작성한 Round 2 프롬프트와 Round 1 답변 로딩 코드를 보존했다. 설정 변경과 파일 이동의 정적 검증은 AI 점검을 참고했으며, 모델 실행과 채점은 이번 변경 중 수행하지 않았다. 두 모델의 서버 셸에 Context 12288·출력 8192·reasoning 2048·temperature 0을 반영했고, 실제 서버 재시작과 메모리 적합성 확인은 다음 작업이다.
+
+## 2026-09-15 실행기 구조화와 과거 자료 정리
+
+현재 진입점은 `scripts/run_benchmark.py`다. CLI·프롬프트·문제별 실행을 `src/llm_eval/benchmark/`로 분리했고, 동작과 설정은 유지했다. 과거 코드의 복원 방법은 [정리 이력](docs/history/README.md), 결과 분류는 [results 안내](results/README.md)에 있다.
+
+정리 전 실행 프로세스 조회에서는 서버가 Context 8192·기본 출력 6144로 실행 중이었고, 저장소 셸의 12288·8192와 달랐다. 이후 benchmark 실행기를 직접 종료했다. 이 관측을 과거 모든 결과의 실제 Context로 일반화하지 않으며, 파일 설정을 변경한 것만으로 서버에 적용됐다고 보지 않는다. 이번 정리에서는 서버 재시작·모델 호출·채점을 하지 않았다. 다음 작업은 앞서 정한 서버 재시작 후 실제 설정·VRAM 확인이다.

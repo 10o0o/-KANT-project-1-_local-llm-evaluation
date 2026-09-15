@@ -34,7 +34,7 @@ STEP 3에서는 조사할 수 있는 정보를 먼저 기록하고 설치 식별
 
 ## 현재 후보와 HyperCLOVA 제외 이력
 
-현재 후보는 Qwen과 Gemma다. Gemma standalone GGUF 다운로드와 llama.cpp 서버 실행을 완료하고 Skare AC를 직접 확인했다. 저장 응답의 stop 종료·최종 답변·후보 코드는 AI가 확인했으며 AC 판정은 직접 실행 확인에 근거한다. Qwen standalone GGUF는 다운로드 중이며 실행은 미확인이다. 기본 Ollama 연결 이력은 보존합니다. 다음은 강화한 프롬프트·추출 정책으로 Gemma를 직접 재실행해 결과를 확인하는 것입니다. 단일 문제 실행기는 llama.cpp API를 사용하며 기존 Ollama 실습 코드는 보존합니다. 전환은 개인 선택이며 발제 측 승인으로 표시하지 않습니다.
+현재 후보와 실행·평가 진행 상태는 [STATE](../STATE.md)를 따른다. 현재 실행기는 `scripts/run_benchmark.py`이며 llama.cpp API를 사용한다. 과거 Ollama 실습 코드는 [정리 전 Git 이력](history/README.md)에, 응답은 결과 보관 폴더에 남긴다. 실행 도구 전환은 개인 선택이며 발제 측 승인으로 표시하지 않는다.
 
 HyperCLOVA는 NAVER llama.cpp 실행 도구 예외로 진단했으나, 사용자가 현재 구성의 지시 수행 성능 미달로 제외했습니다. [교체 전 조사와 진단 이력](models.md#제외-이력-hyperclova)은 보존하며 현재 후보의 필수 절차로 적용하지 않습니다. 본 실험 40회·워밍업 2회·Cloud 5회와 개인 필수 실습은 유지합니다. 제외 전 연결 점검을 본 실험이나 세 번째 모델 비교 실습 완료로 집계하지 않습니다.
 
