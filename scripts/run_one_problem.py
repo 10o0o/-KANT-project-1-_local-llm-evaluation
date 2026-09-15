@@ -116,19 +116,6 @@ def main():
             time_limit_seconds=time_limit_seconds,
         )
 
-    candidate_path = result_dir / "candidate.py"
-    candidate_path.write_text(code, encoding="utf-8")
-
-    print("\n===== 추출된 코드 =====\n")
-    print(code)
-
-    judge_result = judge_problem(
-        code_path=candidate_path,
-        problem_dir=problem_dir,
-        problem_name=problem_name,
-        time_limit_seconds=time_limit_seconds,
-    )
-
     print("\n===== 채점 결과 =====")
     print("최종 판정:", judge_result["status"])
     print(
