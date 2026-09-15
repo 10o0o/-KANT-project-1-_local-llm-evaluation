@@ -1,12 +1,3 @@
-# Task Težina
-
-Croatian Open Competition in Informatics — Round 5, February 21th 2026
-
-- Time limit: 2 seconds
-- Memory limit: 512 MiB
-- Score: 70 points
-- Source: [contest5_tasks.pdf](../contest5_tasks.pdf#page=4), PDF pages 4 (cover included).
-
 Strong Karlo is in the gym. An array $a$ of $n$ numbers is given, where each number represents the weight of one item in front of Karlo. An integer $k$ is also given, representing the number of different weights Karlo can use.
 
 For each weight type from $1$ to $k$ and for each item in the array, Karlo does the following:
@@ -27,15 +18,7 @@ The second line contains an array of $n$ numbers ($1 \le a_i \le 10^5$), the wei
 
 Print a single number, the answer to the question from the problem statement.
 
-## Scoring
-
-| Subtask | Points | Constraints |
-| --- | --- | --- |
-| 1 | 17 | $k \le 300$ |
-| 2 | 19 | The array $a$ will contain at most 300 distinct values. |
-| 3 | 34 | No additional constraints. |
-
-## Sample tests
+## Examples
 
 ### Example 1
 
@@ -82,6 +65,6 @@ Output
 414
 ```
 
-### Clarification of the second sample test:
+### Clarification of the second example:
 
 Karlo will transform the number 3 into $3 \cdot 5=15$, and the number 4 into $4 \cdot 6=24$. Their sum equals 39.

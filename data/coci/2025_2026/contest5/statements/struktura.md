@@ -1,12 +1,3 @@
-# Task Struktura
-
-Croatian Open Competition in Informatics — Round 5, February 21th 2026
-
-- Time limit: 1 second
-- Memory limit: 512 MiB
-- Score: 110 points
-- Source: [contest5_tasks.pdf](../contest5_tasks.pdf#page=9), PDF pages 9–10 (cover included).
-
 Petar and Ivana are bored during a long winter afternoon, so they decided to invent a game with numbers.
 
 Petar takes a sheet of paper and randomly writes down $n$ numbers. Each number is chosen **completely at random and independently** among the integers from $1$ to $k$. Using this procedure, Petar creates an array $a$ of $n$ numbers.
@@ -27,16 +18,6 @@ The first line contains the natural numbers $n$ and $k$ ($1 \le n,k \le 10^9$), 
 ## Output
 
 Output a single number, the answer to the question from the problem statement.
-
-## Scoring
-
-| Subtask | Points | Constraints |
-| --- | --- | --- |
-| 1 | 17 | $n,k \le 7$ |
-| 2 | 23 | $n \le 7, k \le 100$ |
-| 3 | 19 | $n \le 20, k \le 100$ |
-| 4 | 25 | $n,k \le 10^6$ |
-| 5 | 26 | No additional constraints. |
 
 ## Examples
 

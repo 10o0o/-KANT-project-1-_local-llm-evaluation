@@ -1,84 +1,147 @@
-# 로컬 LLM 비교 프로젝트 학습 공간
+# 로컬 LLM 코딩테스트 평가
 
-사용자가 환경 구성부터 구현·실험·평가·발표까지 직접 진행하고, AI는 설명과 리뷰를 맡는 저장소입니다.
+Qwen과 Gemma가 생성한 Python 풀이를 공개 테스트 데이터로 실행·채점하고 결과를 비교하는 프로젝트입니다. 정답 여부와 함께 풀이 설명, 추론 내용, 생성 속도를 살펴보며 코딩테스트 풀이에 적합한 로컬 모델을 찾습니다.
 
-현재 후보는 Qwen과 Gemma다. Gemma standalone GGUF 다운로드와 llama.cpp 서버 실행을 완료하고 Skare AC를 직접 확인했다. 저장 응답의 stop 종료·최종 답변·후보 코드는 AI가 확인했으며 AC 판정은 직접 실행 확인에 근거한다. Qwen standalone GGUF는 다운로드 중이며 실행은 미확인이다. [현재 학습 상태](STATE.md)에 근거를 기록했습니다.
+COCI에서 선정한 10문항을 사용합니다. 현재 실행기는 모델 하나에 문제 하나를 요청하고, 응답 저장부터 코드 추출·채점까지 이어서 처리합니다. 전체 문항의 반복 실험과 최종 비교는 진행 중입니다.
 
-[직접 수정한 코드](src/llm_eval/local_chat.py)와 [실행별 결과](results/)를 보존합니다. HyperCLOVA는 현재 구성의 지시 수행 성능 미달로 제외했습니다. 이번 응답은 연결·측정 연습이며 본 실험이나 품질 평가 완료 근거는 아닙니다.
-
-## 시작하기
-
-1. [프로젝트 발제 원문](docs/project-brief.md)에서 목표와 필수 범위를 확인합니다.
-2. [현재 학습 상태](STATE.md)에서 지금 단계와 다음 한 작업을 확인합니다.
-3. [단계별 안내](docs/guide.md)를 따라 직접 시도하고, 작성한 코드와 실행 결과를 바탕으로 AI와 대화합니다.
-
-다음 한 작업은 **강화한 프롬프트·추출 정책으로 Gemma를 직접 재실행해 결과 확인하기**입니다. [현재 상태](STATE.md)의 안내를 따릅니다. STEP 2의 필수 통과 조건과 확인 방법은 사용 사례에 맞게 구체화할 부분이 남아 있습니다.
-
-AI의 역할과 학습 완료 판단 기준은 [튜터 지침](AGENTS.md)에 있습니다. “다음 단계”, “도와줘”는 프로젝트 구현 대행 요청으로 취급하지 않습니다.
-
-## 문서와 참고 자료
-
-| 문서 | 역할 |
-| --- | --- |
-| [발제 원문](docs/project-brief.md) | 최신 첨부 HTML의 전체 본문·표·링크를 정리한 요구사항 기준. HTML 원본과 이전 발제도 별도 보존 |
-| [단계별 안내](docs/guide.md) | STEP 1~8과 개인 필수 실습의 할 일·완료 근거·예제 위치 연결 |
-| [현재 학습 상태](STATE.md) | 사용자 작성·실행·설명의 확인 근거와 다음 작업 |
-| [튜터 지침](AGENTS.md) | AI와 하위 에이전트의 작업 경계 |
-| [요구사항](docs/requirements.md) | 사용자가 정한 코딩테스트 풀이 목적·난이도·제출 및 선정 기준 |
-| [모델 조사](docs/models.md) | STEP 3 비교표, 후보 A lowvram 설정과 후보 B Gemma 조사·설치 확인 |
-
-제공 소스는 현재 PC의 `/home/jake/workspace/projects/kant/project1-python-start`에 있습니다. `01_ollama_chat.py`, `02_luna_chat.py`, `03_measure_time.py`를 필요한 단계에서 사용자가 직접 참고·복사·수정합니다. 정확한 위치와 역할은 단계별 안내에 있습니다. 사용자가 참고·수정한 실습 코드는 저장소에 보존합니다. AI가 실습 완성 코드를 대신 만들지 않습니다. Ollama 단일 호출 예제는 두 후보에 적용합니다. 기존 HyperCLOVA 호출 코드는 진단 이력으로 보존합니다.
-
-## 앞으로 사용자가 만들 산출물
-
-| 산출물 | 현재 상태 |
-| --- | --- |
-| 사용 사례·요구사항 | [초안 작성](docs/requirements.md), 필수 통과 조건·확인 방법은 구체화 필요 |
-| 후보 모델 조사 | [조사표 작성](docs/models.md), 후보 A 등록 설정·저장 응답 확인. 두 후보 기본 응답 확인. 코딩테스트 품질 비교는 미완료 |
-| Python 3.12 환경, `pyproject.toml`·`uv.lock`·사용 버전 기록 | [프로젝트 설정](pyproject.toml)·[잠금 파일](uv.lock) 존재. 실행 환경·사용 버전 기록은 별도 보완 |
-| 로컬·Cloud 호출과 측정·저장·반복 코드 | 두 모델 순차 호출·저장·재읽기·워밍업 후 시간 출력 구현. 측정값·질문·설정·VRAM 저장 구현. 본 실험 반복·Cloud는 미완료 |
-| 질문 10개·Cloud 공통 5개·품질 평가 기준 | 미작성 |
-| 로컬 본 실험 40회·워밍업 2회·Cloud 5회 원본 기록 | 미생성 |
-| 품질 평가·비교표·최종 로컬 모델 선정·운영 권고 | 미작성 |
-| 본인 또는 팀원의 README 재실행 확인 | 미수행 |
-| [발제 선택·사용자 필수 4개](docs/guide.md#발제-선택사용자-필수) | 각 실습의 수행 근거 미확인 |
-
-원문에 지정된 예제 파일명과 환경·기록 형식은 유지합니다. 그 밖의 파일명·폴더 구조·점수 척도·저장 스키마는 미리 강제하지 않습니다. 생성한 산출물의 실제 위치는 진행하면서 이 표에 연결합니다.
-
-안내에서는 **발제 필수**, **발제 선택·사용자 필수**, **사용자 정의 기준**, **추가 학습·방법 제안**을 구분합니다. 세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델 양자화 비교, Sentence Transformers 임베딩은 모두 개인 필수입니다. 기본 과제 완료와 개인 전체 학습 완료를 따로 표시하고, 개인 완료에는 4개 실습의 근거도 필요합니다. 사용자 정의 기준은 요구사항 문서에 있고, AI의 추가 제안은 완료 조건이 아닙니다. 실험 기록 항목은 실제 실행 단계에서 작성합니다.
-
-최종 제출 때는 이 저장소 안의 사용자 코드와 환경 정보로 재실행할 수 있어야 합니다. 현재 PC의 외부 참고 경로에 의존해 제출하지 않습니다. 모델 가중치·가상환경·API 키는 제출하지 않습니다.
-
-## 환경에 관한 구분
-
-발제의 공통 환경은 Windows, VS Code, uv, Python 3.12, Ollama입니다. 사용자가 선택한 실습 기준은 **현재 PC의 WSL2**이며, 환경을 직접 구성하고 차이를 기록합니다. 두 로컬 후보는 동일 PC에서 하나씩 비교합니다. Gemma는 llama.cpp로 실행을 확인했고 Qwen은 전환 준비 중이며 실제 런타임·설정·측정 출처를 기록합니다. 런타임이 다른 과거 결과와 속도를 직접 비교해 모델 자체의 차이로 단정하지 않습니다.
-
-이전 AI 작업의 코드·설정·가상환경은 저장소 밖에 백업했습니다. 시스템 도구와 원본 예제는 유지했으며, 백업은 사용자 실습이나 제출 근거가 아닙니다.
-
-## 패키지 설치와 실행
-
-저장소 루트에서 `uv sync --locked`로 의존성과 프로젝트 패키지를 설치합니다.
-
-```bash
-uv run python scripts/run_local.py
+```text
+문제문 → llama.cpp 모델 호출 → 응답 저장 → Python 코드 추출 → 로컬 Judge → 결과 저장
 ```
 
-`src/llm_eval/local_chat.py`의 `main()`에 호출·측정·저장 실습이 있고, `utils.py`는 로그 설정·지표 계산·VRAM 조회·Rich 결과 출력을 담당합니다. 설치 설정은 [Hatch 공식 문서](https://hatch.pypa.io/latest/config/build/)의 src 패키지 구성을 따릅니다. import만으로는 모델 호출이나 결과 폴더 생성이 일어나지 않습니다.
+## 실행 환경
 
-기존 명령 `uv run python src/scripts/ollama_chat.py`도 같은 `main()`을 호출합니다. 두 진입점 모두 설치된 패키지를 사용하며, 결과는 이 체크아웃의 `results/`에 저장합니다. HyperCLOVA 스크립트는 진단 이력으로 기존 위치에 보존합니다.
+- Python 3.12, uv
+- `--reasoning-budget`을 지원하는 llama.cpp 빌드와 `llama-server`
+- 해당 llama.cpp에서 로딩할 수 있는 Qwen·Gemma GGUF 가중치
+- COCI 문제별 테스트 입력·정답 파일
 
-## Gemma 단일 문제 실행
+개발 환경은 WSL2와 NVIDIA GeForce RTX 5060 Laptop GPU(8 GB VRAM)입니다. 서버 스크립트의 GPU 설정은 이 환경에서 사용한 값이므로 장비에 맞게 조정해야 합니다. 모델 가중치, llama.cpp 런타임, 테스트 데이터는 저장소에 포함하지 않습니다.
 
-서버를 별도 터미널에서 실행한 뒤 저장소 루트에서 문제 실행기를 실행합니다.
+## 설치와 실행
+
+### 1. Python 환경 준비
+
+저장소를 내려받은 뒤 루트에서 실행합니다.
 
 ```bash
+git clone https://github.com/10o0o/-KANT-project-1-_local-llm-evaluation.git
+cd -- -KANT-project-1-_local-llm-evaluation
+uv sync --locked
+```
+
+의존성과 패키지 설정은 [pyproject.toml](pyproject.toml), 고정된 버전은 [uv.lock](uv.lock)에 있습니다.
+
+### 2. 테스트 데이터 준비
+
+[COCI 공식 자료](https://hsin.hr/coci/)의 2025/2026 시즌 Contest 4·5·6에서 Test data를 내려받고, [problems.json](data/coci/problems.json)의 `problem_dir`에 맞춰 문제별 파일을 배치합니다. 예를 들어 Skare의 경로는 다음과 같습니다.
+
+```text
+data/coci/2025_2026/contest5/testdata/skare/
+├── skare.in.1a
+├── skare.out.1a
+└── ...
+```
+
+선정 문항의 영어 문제문은 같은 JSON의 `statement_path`에 있습니다. 모델에는 설명·입출력 조건·제약·예제를 전달하고, 제목·대회 정보·시간 제한·난이도 등 평가용 메타데이터는 분리합니다. 원본 PDF와 테스트 데이터의 출처는 COCI이며, 이 저장소가 해당 자료에 별도의 라이선스를 부여하지 않습니다.
+
+문제문에 포함된 그림은 Markdown에서 확인할 수 있습니다. 현재 호출기는 텍스트만 전송하므로 이미지 파일 자체는 모델에 전달되지 않습니다.
+
+### 3. 모델 서버 실행
+
+별도 터미널에서 사용할 모델의 서버 하나를 실행합니다. 아래 경로는 설치 위치에 맞게 바꿉니다.
+
+Gemma:
+
+```bash
+LLAMA_ROOT=/path/to/llama.cpp \
+GEMMA4_MODEL_PATH=/path/to/gemma4/model.gguf \
 bash configs/llama.cpp/gemma4.sh
 ```
+
+Qwen:
+
+```bash
+LLAMA_ROOT=/path/to/llama.cpp \
+QWEN36_MODEL_PATH=/path/to/qwen36/model.gguf \
+bash configs/llama.cpp/qwen36-moe-lowvram.sh
+```
+
+두 서버는 모두 `127.0.0.1:8080`을 사용합니다. 모델을 바꿀 때는 실행 중인 서버를 종료한 뒤 다른 서버를 시작합니다. 서버의 모델 로딩이 끝난 후 문제 실행기를 호출합니다.
+
+| 항목 | Gemma | Qwen |
+| --- | --- | --- |
+| API 모델 이름 | `gemma4` | `qwen36` |
+| Context | 8192 | 8192 |
+| GPU 설정 | `--gpu-layers auto` | `--gpu-layers all --n-cpu-moe 28` |
+| 서버 기본 출력 한도 | 4096 | 4096 |
+| 서버 기본 reasoning budget | `-1` | `-1` |
+
+서버 설정은 [configs/llama.cpp](configs/llama.cpp/)에 있습니다. Python 요청의 출력·추론 한도는 아래 실행기에서 별도로 지정합니다.
+
+### 4. 문제 선택과 평가
+
+[scripts/run_one_problem.py](scripts/run_one_problem.py) 상단에서 실행할 모델과 문제를 선택합니다.
+
+| 설정 | 의미 |
+| --- | --- |
+| `MODEL` | 서버의 API 모델 이름: `gemma4` 또는 `qwen36` |
+| `MODEL_NAME` | 결과 폴더에 사용할 모델 이름 |
+| `PROBLEM_ID` | `problems.json`에 등록된 문제의 `id` |
+| `TEMPERATURE` | 생성 temperature |
+| `MAX_TOKENS` | 요청의 출력 토큰 한도 |
+| `REASONING_BUDGET_TOKENS` | 요청의 추론 토큰 예산 |
 
 ```bash
 uv run python scripts/run_one_problem.py
 ```
 
-서버는 Context 8192, 출력 한도 4096, reasoning budget 2048, parallel 1을 사용합니다. `LLAMA_ROOT`와 `GEMMA4_MODEL_PATH`로 로컬 런타임·가중치 경로를 지정할 수 있습니다. 서버는 `127.0.0.1:8080`, Python은 `/v1` API에 연결합니다.
+실행기는 `http://127.0.0.1:8080/v1`에 연결합니다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있습니다. 연결 오류는 서버 터미널을, 테스트 케이스를 찾을 수 없다는 오류는 `problem_dir`와 압축 해제 위치를 확인합니다.
 
-문제문 5개는 `data/coci/2025_2026/contest5/statements/`에 보존합니다. Skare만 모델 입력에서 메타데이터를 제거했고 다른 네 문제는 정리가 남아 있습니다. PDF·채점 데이터는 기존 ignore 정책에 따라 별도로 준비합니다.
+기존 Ollama 호출·측정 실습은 `uv run python scripts/run_local.py`로 실행할 수 있습니다. 위 단일 문제 평가와는 별도 실행 경로입니다.
+
+## 결과 확인
+
+실행 결과는 다음 위치에 저장합니다.
+
+```text
+results/<실행 시각>/<모델 이름>/<문제 이름>/
+├── response.json   # API 원본 응답
+├── candidate.py    # 추출한 Python 코드가 있을 때 생성
+└── result.json     # 생성 설정·응답·추론·사용량·채점 결과
+```
+
+추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 `NO_CODE`로 기록합니다.
+
+Judge는 `<문제 이름>.in.*`와 대응하는 `.out.*` 파일을 사용하며, `.dummy.in.*` 예제 파일은 채점 대상에서 제외됩니다. 각 테스트를 별도 Python 프로세스로 실행하고 문제의 시간 제한을 적용합니다. 출력은 공백으로 나눈 토큰 단위로 비교합니다.
+
+| 판정 | 의미 |
+| --- | --- |
+| `AC` | 모든 테스트 통과 |
+| `WA` | 출력 불일치 |
+| `TLE` | 테스트 실행 시간 초과 |
+| `RE` | 실행 중 오류로 비정상 종료 |
+| `NO_CODE` | 추출할 코드 블록 없음 |
+
+`result.json`의 `judge`에서 통과 수·전체 테스트 수·테스트별 판정·최대 실행 시간을 확인할 수 있습니다. 실패가 여러 종류면 전체 판정에는 첫 실패의 상태를 기록합니다. 모델의 응답 생성 시간과 생성된 코드의 테스트 실행 시간은 별도 지표입니다. 풀이 설명의 정확성은 응답 원문을 읽고 평가합니다.
+
+현재 Judge는 메모리 제한과 샌드박스를 구현하지 않았으며, 생성 코드를 로컬 권한으로 실행합니다. 결과는 이 실행 환경의 관측값이며 대회 공식 채점 결과와 같음을 보장하지 않습니다.
+
+## 저장소 구성과 문서
+
+```text
+configs/llama.cpp/   모델 서버 실행 스크립트
+scripts/            실험 실행 진입점
+src/llm_eval/       모델 호출·코드 추출·채점·측정 유틸
+data/coci/         문제 목록과 모델 입력용 문제문
+results/            실행별 응답·후보 코드·채점 결과
+docs/               프로젝트 요구사항과 조사·학습 기록
+```
+
+| 문서 | 내용 |
+| --- | --- |
+| [요구사항](docs/requirements.md) | 평가 목적과 모델 선정 기준 |
+| [모델 조사](docs/models.md) | 후보 모델 정보와 실행 경과 |
+| [발제 원문](docs/project-brief.md) | 프로젝트 과제 기준 |
+| [단계별 안내](docs/guide.md) | 실습 단계와 참고 자료 |
+| [진행 기록](STATE.md) | 학습 과정과 확인 근거 |
+| [튜터 지침](AGENTS.md) | AI 활용과 작업 범위 |

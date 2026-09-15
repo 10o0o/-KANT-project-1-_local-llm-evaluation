@@ -1,12 +1,3 @@
-# Task Pet
-
-Croatian Open Competition in Informatics — Round 5, February 21th 2026
-
-- Time limit: 1 second
-- Memory limit: 512 MiB
-- Score: 110 points
-- Source: [contest5_tasks.pdf](../contest5_tasks.pdf#page=5), PDF pages 5–6 (cover included).
-
 Frog Maša is in a lake represented by a matrix with $n$ rows and $m$ columns. The cells of the matrix are marked with $0$ (water) or $1$ (water lily). From one water lily, Maša can jump to any other water lily in the same row or column. If in the previous jump Maša changed the column she was in, then in the next jump she must change the row she is in. If in the previous jump Maša changed the row she was in, then in the next jump she must change the column she is in. After Maša jumps from the water lily she is currently on, it sinks and can no longer be jumped on.
 
 Maša likes to have fun and wants to visit a total of 5 water lilies along her path (including the starting water lily).
@@ -22,15 +13,6 @@ In each of the following $n$ lines there are $m$ characters, which are either $0
 ## Output
 
 Print a single number, the answer to the question from the problem statement.
-
-## Scoring
-
-| Subtask | Points | Constraints |
-| --- | --- | --- |
-| 1 | 8 | $n,m \le 4$ |
-| 2 | 27 | $n,m \le 10$ |
-| 3 | 58 | $n,m \le 400$ |
-| 4 | 17 | No additional constraints. |
 
 ## Examples
 
