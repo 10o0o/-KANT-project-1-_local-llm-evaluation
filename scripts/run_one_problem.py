@@ -74,6 +74,24 @@ def main():
     model = args.model
     problem_name = problem["name"]
 
+    result_dir = (
+        project_root
+        / "results"
+        / "benchmark"
+        / f"round_{args.round}"
+        / problem_name
+        / model
+    )
+
+    if result_dir.exists():
+        raise SystemExit(
+            "\nABORT: benchmark result already exists\n"
+            f"round   : {args.round}\n"
+            f"model   : {model}\n"
+            f"problem : {problem['id']}\n"
+            f"path    : {result_dir}\n"
+        )
+
     problem_dir = project_root / problem["problem_dir"]
     statement_path = project_root / problem["statement_path"]
     time_limit_seconds = problem["time_limit_seconds"]
@@ -114,16 +132,6 @@ def main():
     code = extract_python_code(response_text)
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-
-    result_dir = (
-        project_root
-        / "results"
-        / "benchmark"
-        / f"round_{args.round}"
-        / run_id
-        / model
-        / problem_name
-    )
 
     result_dir.mkdir(parents=True, exist_ok=False)
 
