@@ -116,6 +116,9 @@ def main():
             time_limit_seconds=time_limit_seconds,
         )
 
+        print("\n===== 추출된 코드 =====\n")
+        print(code)
+
     print("\n===== 채점 결과 =====")
     print("최종 판정:", judge_result["status"])
     print(
