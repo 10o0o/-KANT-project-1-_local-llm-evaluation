@@ -7,11 +7,11 @@ from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat, create_client
 from llm_eval.problems import get_problem, load_problems
 
-# MODEL = "qwen36-35b-lowvram:latest"
-# MODEL_NAME = "qwen36"
-# MODEL = "gemma4:26b-a4b-it-q4_K_M"
-MODEL = "gemma4"
-MODEL_NAME = "gemma4"
+# MODEL = "gemma4"
+# MODEL_NAME = "gemma4"
+
+MODEL = "qwen36"
+MODEL_NAME = "qwen36"
 
 PROBLEM_ID = "coci_2025_2026_c5_skare"
 
