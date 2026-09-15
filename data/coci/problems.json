@@ -1,4 +1,4 @@
-{
+[{
   "id": "coci_2025_2026_c5_skare",
   "name": "skare",
   "season": "2025_2026",
@@ -11,4 +11,4 @@
   "memory_limit_mib": 512,
   "judge_type": "token",
   "title": "Škare"
-}
+}]

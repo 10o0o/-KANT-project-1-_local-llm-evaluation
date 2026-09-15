@@ -5,6 +5,7 @@ from pathlib import Path
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat, create_client
+from llm_eval.problems import get_problem, load_problems
 
 # MODEL = "qwen36-35b-lowvram:latest"
 # MODEL_NAME = "qwen36"
@@ -12,32 +13,19 @@ from llm_eval.llama_cpp import chat, create_client
 MODEL = "gemma4"
 MODEL_NAME = "gemma4"
 
-PROBLEM_NAME = "skare"
-TIME_LIMIT_SECONDS = 3.0
+PROBLEM_ID = "coci_2025_2026_c5_skare"
 
 
 def main():
     project_root = Path(__file__).resolve().parents[1]
 
-    problem_dir = (
-        project_root
-        / "data"
-        / "coci"
-        / "2025_2026"
-        / "contest5"
-        / "testdata"
-        / PROBLEM_NAME
-    )
+    problems = load_problems(project_root)
+    problem = get_problem(problems, PROBLEM_ID)
 
-    statement_path = (
-        project_root
-        / "data"
-        / "coci"
-        / "2025_2026"
-        / "contest5"
-        / "statements"
-        / f"{PROBLEM_NAME}.md"
-    )
+    problem_name = problem["name"]
+    problem_dir = project_root / problem["problem_dir"]
+    statement_path = project_root / problem["statement_path"]
+    time_limit_seconds = problem["time_limit_seconds"]
 
     statement = statement_path.read_text(encoding="utf-8")
 
@@ -100,7 +88,7 @@ def main():
     code = extract_python_code(response_text)
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    result_dir = project_root / "results" / run_id / MODEL_NAME / PROBLEM_NAME
+    result_dir = project_root / "results" / run_id / MODEL_NAME / problem_name
     result_dir.mkdir(parents=True, exist_ok=False)
 
     response_path = result_dir / "response.json"
@@ -127,8 +115,8 @@ def main():
     judge_result = judge_problem(
         code_path=candidate_path,
         problem_dir=problem_dir,
-        problem_name=PROBLEM_NAME,
-        time_limit_seconds=TIME_LIMIT_SECONDS,
+        problem_name=problem_name,
+        time_limit_seconds=time_limit_seconds,
     )
 
     print("\n===== 채점 결과 =====")
@@ -149,7 +137,10 @@ def main():
     with open(judge_path, "w", encoding="utf-8") as f:
         record = {
             "model": MODEL,
-            "problem": PROBLEM_NAME,
+            "model_name": MODEL_NAME,
+            "problem_id": problem["id"],
+            "problem_name": problem["name"],
+            "difficulty": problem["difficulty"],
             "settings": {
                 "temperature": 0,
                 "max_tokens": 4096,
