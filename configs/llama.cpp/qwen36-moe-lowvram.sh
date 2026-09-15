@@ -9,8 +9,8 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --alias qwen36 \
   --host 127.0.0.1 \
   --port 8080 \
-  --ctx-size 12288 \
-  --n-predict 8192 \
+  --ctx-size 8192 \
+  --n-predict 4096 \
   --parallel 1 \
   --gpu-layers all \
   --n-cpu-moe 28 \

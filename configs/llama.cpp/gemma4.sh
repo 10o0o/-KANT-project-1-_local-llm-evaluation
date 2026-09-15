@@ -15,4 +15,4 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --gpu-layers auto \
   --flash-attn on \
   --reasoning on \
-  --reasoning-budget 2048
+  --reasoning-budget -1

@@ -7,17 +7,17 @@ from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat, create_client
 from llm_eval.problems import get_problem, load_problems
 
-# MODEL = "gemma4"
-# MODEL_NAME = "gemma4"
+MODEL = "gemma4"
+MODEL_NAME = "gemma4"
 
-MODEL = "qwen36"
-MODEL_NAME = "qwen36"
+# MODEL = "qwen36"
+# MODEL_NAME = "qwen36"
 
 PROBLEM_ID = "coci_2025_2026_c5_struktura"
 
 TEMPERATURE = 0
-MAX_TOKENS = 8192
-REASONING_BUDGET_TOKENS = 4096
+MAX_TOKENS = 6144
+REASONING_BUDGET_TOKENS = 2048
 
 
 def main():
