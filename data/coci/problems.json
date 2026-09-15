@@ -11,4 +11,17 @@
   "memory_limit_mib": 512,
   "judge_type": "token",
   "title": "Škare"
+}, {
+  "id": "coci_2025_2026_c5_struktura",
+  "name": "struktura",
+  "season": "2025_2026",
+  "contest": 5,
+  "difficulty": 1,
+  "difficulty_reason": "기본 리스트 조작과 상태 갱신으로 해결할 수 있으며 입력 크기도 작다.",
+  "problem_dir": "data/coci/2025_2026/contest5/testdata/struktura",
+  "statement_path": "data/coci/2025_2026/contest5/statements/struktura.md",
+  "time_limit_seconds": 1.0,
+  "memory_limit_mib": 512,
+  "judge_type": "token",
+  "title": "Struktura"
 }]

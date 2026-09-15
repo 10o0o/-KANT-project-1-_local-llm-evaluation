@@ -13,7 +13,7 @@ from llm_eval.problems import get_problem, load_problems
 MODEL = "qwen36"
 MODEL_NAME = "qwen36"
 
-PROBLEM_ID = "coci_2025_2026_c5_skare"
+PROBLEM_ID = "coci_2025_2026_c5_struktura"
 
 
 def main():
