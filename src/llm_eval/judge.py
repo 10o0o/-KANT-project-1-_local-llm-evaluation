@@ -81,6 +81,9 @@ def judge_problem(
     input_paths = sorted(problem_dir.glob(f"{problem_name}.in.*"))
     results = []
 
+    if not input_paths:
+        raise ValueError(f"테스트 케이스를 찾을 수 없습니다: {problem_dir}")
+
     for input_path in input_paths:
         # print(input_path.name)
 
