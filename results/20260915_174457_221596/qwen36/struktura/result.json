@@ -1,0 +1,1099 @@
+{
+  "run_id": "20260915_174457_221596",
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_struktura",
+    "name": "struktura",
+    "title": "Struktura",
+    "difficulty": 5,
+    "time_limit_seconds": 1.0
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 8192,
+    "reasoning_budget_tokens": 4096
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n\n1. **조건 분석**:\n   - 배열 $a$의 각 원소 $a_i$는 $1$부터 $k$까지 독립적으로 균일하게 선택됩니다. 가능한 모든 배열의 수는 $k^n$입니다.\n   - 구조의 조건 1: $1$부터 $n$까지의 숫자가 정확히 한 번씩 등장합니다. 즉, $a$는 $\\{1, 2, \\dots, n\\}$의 순열입니다.\n   - 조건 2: 모든 $i$에 대해 $|a_i + i - n - 1| \\le 1$입니다. 이는 $|a_i - (n+1-i)| \\le 1$과 동일합니다.\n   - 배열을 거꾸로 뒤집어 $b_i = a_{n+1-i}$라고 정의하면, 조건은 $|b_i - i| \\le 1$이 됩니다. 이는 각 원소가 원래 위치에서 최대 1칸만 이동할 수 있는 순열을 의미합니다.\n   - 이러한 순열은 고정점($\\pi(i)=i$)과 인접한 두 원소의 교환($\\pi(i)=i+1, \\pi(i+1)=i$)으로만 구성됩니다. 이는 길이 $n$의 보드를 크기 1과 2의 타일로 채우는 방법의 수와 동일하며, 피보나치 수열 $F_{n+1}$ ($F_1=1, F_2=1$)로 주어집니다.\n\n2. **경우의 수 계산**:\n   - 만약 $k < n$이라면, $1$부터 $n$까지의 숫자를 모두 포함하는 순열을 만들 수 없으므로 유효한 구조의 수는 $0$입니다.\n   - 만약 $k \\ge n$이라면, 유효한 구조의 수는 $F_{n+1}$입니다.\n   - 확률은 $\\frac{F_{n+1}}{k^n} \\pmod{10^9+7}$입니다.\n\n3. **계산 방법**:\n   - $n$이 최대 $10^9$이므로 피보나치 수는 $O(\\log n)$ 시간에 계산해야 합니다. 빠른 제곱법(Fast Doubling)을 사용합니다.\n   - $k^n \\pmod{10^9+7}$은 모듈러 지수 함수로 계산합니다.\n   - 나눗셈은 모듈러 역수(Fermat's Little Theorem)를 사용하여 $P \\cdot Q^{MOD-2} \\pmod{MOD}$ 형태로 계산합니다.\n\n### 시간 및 공간 복잡도\n- **시간 복잡도**: 피보나치 수 계산에 $O(\\log n)$, 모듈러 지수 계산에 $O(\\log n)$이 소요됩니다. 전체 시간 복잡도는 $O(\\log n)$입니다.\n- **공간 복잡도**: 재귀 깊이 또는 반복 변수만 사용하므로 $O(1)$입니다.\n\n### Python 3 코드\n\n```python\nimport sys\n\nMOD = 10**9 + 7\n\ndef fib(n):\n    if n == 0:\n        return (0, 1)\n    a, b = fib(n >> 1)\n    c = (a * ((b << 1) - a)) % MOD\n    d = (a * a + b * b) % MOD\n    if n & 1:\n        return (d, (c + d) % MOD)\n    return (c, d)\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    n = int(input_data[0])\n    k = int(input_data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    # F_{n+1} 계산\n    _, fn_plus_1 = fib(n + 1)\n    \n    # k^n 계산\n    k_pow_n = pow(k, n, MOD)\n    \n    # k^n의 모듈러 역수 계산\n    inv_k_pow_n = pow(k_pow_n, MOD - 2, MOD)\n    \n    # 결과 출력\n    ans = (fn_plus_1 * inv_k_pow_n) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an array $a$ of length $n$.\n   - Each element $a_i$ is chosen independently and uniformly at random from $\\{1, 2, \\dots, k\\}$.\n   - Total number of possible arrays: $k^n$.\n   - An array is a \"structure\" if:\n     a. It's a permutation of $\\{1, 2, \\dots, n\\}$. (Every number from 1 to $n$ appears exactly once.)\n     b. For every index $i$ ($1 \\le i \\le n$), $|a_i + i - n - 1| \\le 1$.\n   - We need to find the probability that a randomly generated array is a structure, modulo $10^9+7$.\n   - Probability = (Number of valid structures) / $k^n \\pmod{10^9+7}$.\n\n2.  **Analyze Condition (b):**\n   - $|a_i + i - n - 1| \\le 1$\n   - This means $-1 \\le a_i + i - n - 1 \\le 1$\n   - $n - i \\le a_i \\le n - i + 2$\n   - So for each position $i$, $a_i$ can only take values in $\\{n-i, n-i+1, n-i+2\\}$.\n   - Let's check the range of possible values for $a_i$ given $1 \\le i \\le n$:\n     - For $i=1$: $a_1 \\in \\{n-1, n, n+1\\}$\n     - For $i=2$: $a_2 \\in \\{n-2, n-1, n\\}$\n     - ...\n     - For $i=n$: $a_n \\in \\{0, 1, 2\\}$\n   - But condition (a) says $a$ must be a permutation of $\\{1, \\dots, n\\}$. So $a_i \\in \\{1, \\dots, n\\}$.\n   - Combining with the range from (b), the valid values for $a_i$ are actually restricted to $\\{1, \\dots, n\\} \\cap \\{n-i, n-i+1, n-i+2\\}$.\n   - Let's list the possible values for each $i$ more carefully, considering $1 \\le a_i \\le n$:\n     - $i=1$: $a_1 \\in \\{n-1, n\\}$ (since $n+1 > n$)\n     - $i=2$: $a_2 \\in \\{n-2, n-1, n\\}$\n     - ...\n     - $i=n-2$: $a_{n-2} \\in \\{2, 3, 4\\}$\n     - $i=n-1$: $a_{n-1} \\in \\{1, 2, 3\\}$\n     - $i=n$: $a_n \\in \\{1, 2\\}$ (since $0 < 1$)\n   - Wait, let's verify the bounds carefully.\n     $a_i \\ge n-i$ and $a_i \\le n-i+2$.\n     Also $1 \\le a_i \\le n$.\n     So $a_i \\in [\\max(1, n-i), \\min(n, n-i+2)]$.\n     Let's compute the exact set of allowed values for each $i$:\n     - $i=1$: $[\\max(1, n-1), \\min(n, n+1)] = [n-1, n]$\n     - $i=2$: $[\\max(1, n-2), \\min(n, n)] = [n-2, n]$\n     - $i=3$: $[\\max(1, n-3), \\min(n, n-1)] = [n-3, n-1]$\n     - ...\n     - $i=n-2$: $[\\max(1, 2), \\min(n, 4)] = [2, 4]$\n     - $i=n-1$: $[\\max(1, 1), \\min(n, 3)] = [1, 3]$\n     - $i=n$: $[\\max(1, 0), \\min(n, 2)] = [1, 2]$\n   - This looks like a permutation problem with restricted positions. We need to count the number of permutations $\\pi$ of $\\{1, \\dots, n\\}$ such that $\\pi(i) \\in S_i$, where $S_i$ is the allowed set for position $i$.\n   - Let's list $S_i$ for small $n$ to see a pattern:\n     $n=1$: $i=1: [1, 2] \\cap [1,1] = \\{1\\}$. Count = 1.\n     $n=2$: $i=1: \\{1,2\\}$, $i=2: \\{1,2\\}$. Count = 2.\n     $n=3$: $i=1: \\{2,3\\}$, $i=2: \\{1,2,3\\}$, $i=3: \\{1,2\\}$. Count = ?\n       Permutations of {1,2,3}:\n       (1,2,3) -> $a_1=1 \\notin \\{2,3\\}$ X\n       (1,3,2) -> $a_1=1$ X\n       (2,1,3) -> $a_3=3 \\notin \\{1,2\\}$ X\n       (2,3,1) -> $a_1=2 \\in \\{2,3\\}$, $a_2=3 \\in \\{1,2,3\\}$, $a_3=1 \\in \\{1,2\\}$ OK\n       (3,1,2) -> $a_1=3 \\in \\{2,3\\}$, $a_2=1 \\in \\{1,2,3\\}$, $a_3=2 \\in \\{1,2\\}$ OK\n       (3,2,1) -> $a_2=2 \\in \\{1,2,3\\}$, $a_3=1 \\in \\{1,2\\}$ OK\n       Count = 3.\n     $n=4$: $i=1: \\{3,4\\}$, $i=2: \\{2,3,4\\}$, $i=3: \\{1,2,3\\}$, $i=4: \\{1,2\\}$.\n       Let's count manually or find a recurrence.\n       This is a classic problem: counting permutations with restricted positions where the allowed sets form a \"band\" or have a specific structure.\n       Actually, the condition $|a_i + i - n - 1| \\le 1$ is equivalent to $|a_i - (n+1-i)| \\le 1$.\n       Let $b_i = a_i$. The condition says $b_i$ is close to $n+1-i$.\n       This means $b_i$ can be $n+1-i-1$, $n+1-i$, or $n+1-i+1$.\n       So $b_i \\in \\{n-i, n+1-i, n+2-i\\}$.\n       This is exactly the condition for permutations that avoid certain patterns or are related to \"permutations with displacement at most 1\" but reversed.\n       Actually, if we reverse the array, let $c_i = a_{n+1-i}$. Then $c_i \\in \\{i-1, i, i+1\\}$.\n       This is a well-known problem: number of permutations $\\pi$ of $\\{1,\\dots,n\\}$ such that $|\\pi(i) - i| \\le 1$ for all $i$.\n       Wait, let's check: $c_i = a_{n+1-i}$. The condition $|a_j + j - n - 1| \\le 1$ becomes $|c_{n+1-j} + j - n - 1| \\le 1$. Let $i = n+1-j$, so $j = n+1-i$.\n       Then $|c_i + (n+1-i) - n - 1| = |c_i - i| \\le 1$.\n       Yes! So the problem is equivalent to counting permutations $\\pi$ of $\\{1,\\dots,n\\}$ such that $|\\pi(i) - i| \\le 1$ for all $i$.\n       These are permutations where each element moves at most 1 position from its original place.\n       Such permutations are composed of fixed points ($\\pi(i)=i$) and adjacent transpositions ($\\pi(i)=i+1, \\pi(i+1)=i$).\n       This is exactly the number of ways to tile a $1 \\times n$ board with monomers (size 1) and dimers (size 2).\n       The number of such permutations is the Fibonacci number $F_{n+1}$, where $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5, \\dots$\n       Let's verify with small $n$:\n       $n=1$: $F_2 = 1$. Correct.\n       $n=2$: $F_3 = 2$. Correct.\n       $n=3$: $F_4 = 3$. Correct.\n       $n=4$: $F_5 = 5$. Let's check manually:\n         Permutations of {1,2,3,4} with $|\\pi(i)-i|\\le 1$:\n         Identity: (1,2,3,4)\n         Swap (1,2): (2,1,3,4)\n         Swap (2,3): (1,3,2,4)\n         Swap (3,4): (1,2,4,3)\n         Swap (1,2) & (3,4): (2,1,4,3)\n         Total = 5. Matches $F_5$.\n       So the number of valid structures is $F_{n+1}$, where $F_1=1, F_2=1$.\n       Wait, standard Fibonacci: $F_0=0, F_1=1, F_2=1, F_3=2, F_4=3, F_5=5$.\n       So count = $F_{n+1}$.\n\n3.  **Check Constraints & Edge Cases:**\n   - $n, k \\le 10^9$.\n   - If $k < n$, then it's impossible to have a permutation of $\\{1,\\dots,n\\}$ because we only pick from $\\{1,\\dots,k\\}$. So count = 0.\n   - If $k \\ge n$, count = $F_{n+1}$.\n   - Total possible arrays = $k^n$.\n   - Probability = $F_{n+1} / k^n \\pmod{10^9+7}$.\n   - We need to compute $F_{n+1} \\pmod{10^9+7}$ and $k^n \\pmod{10^9+7}$, then multiply by modular inverse of $k^n$.\n   - Wait, is it always $F_{n+1}$? Let's double check the condition $|a_i + i - n - 1| \\le 1$.\n     For $n=1$: $|a_1 + 1 - 2| = |a_1 - 1| \\le 1 \\Rightarrow a_1 \\in \\{0,1,2\\}$. But $a_1 \\in \\{1\\}$, so $a_1=1$. Count=1. $F_2=1$. OK.\n     For $n=2$: $|a_1+2-3|=|a_1-1|\\le 1 \\Rightarrow a_1 \\in \\{1,2\\}$. $|a_2+2-3|=|a_2-1|\\le 1 \\Rightarrow a_2 \\in \\{1,2\\}$. Permutations of {1,2}: (1,2), (2,1). Both valid. Count=2. $F_3=2$. OK.\n     For $n=3$: $F_4=3$. OK.\n     So yes, count is $F_{n+1}$.\n   - What if $k < n$? The problem says each number is chosen from $1$ to $k$. If $k < n$, we can't form a permutation of $1$ to $n$. So probability is 0.\n   - So answer is 0 if $k < n$.\n   - Otherwise, answer is $F_{n+1} \\cdot (k^n)^{-1} \\pmod{10^9+7}$.\n\n4.  **Algorithm Design:**\n   - Read $n, k$.\n   - If $k < n$, print 0.\n   - Else, compute $F_{n+1} \\pmod{10^9+7}$ using matrix exponentiation or fast doubling. Since $n \\le 10^9$, $O(\\log n)$ is needed.\n   - Compute $k^n \\pmod{10^9+7}$ using modular exponentiation.\n   - Compute modular inverse of $k^n$ using Fermat's little theorem: $(k^n)^{MOD-2} \\pmod{MOD}$.\n   - Multiply $F_{n+1} \\cdot \\text{inv}(k^n) \\pmod{MOD}$.\n   - Output result.\n\n   Fast doubling for Fibonacci:\n   $F(2k) = F(k) \\cdot [2F(k+1) - F(k)]$\n   $F(2k+1) = F(k+1)^2 + F(k)^2$\n   Base cases: $F(0)=0, F(1)=1$.\n   We need $F_{n+1}$. Let's implement a function `fib(n)` that returns $(F_n, F_{n+1})$.\n   Actually, standard fast doubling returns $(F_n, F_{n+1})$.\n   Let's verify:\n   If $n=0$: returns $(0, 1)$\n   If $n=1$: returns $(1, 1)$\n   Recurrence:\n   Given $(F_k, F_{k+1})$, compute $(F_{2k}, F_{2k+1})$:\n   $c = F_k \\cdot (2F_{k+1} - F_k) \\pmod M$\n   $d = F_k^2 + F_{k+1}^2 \\pmod M$\n   Returns $(c, d)$.\n   This works.\n\n   MOD = $10^9+7$.\n\n   Complexity:\n   - Time: $O(\\log n)$ for Fibonacci, $O(\\log n)$ for modular exponentiation. Total $O(\\log n)$.\n   - Space: $O(1)$.\n   - Constraints $n, k \\le 10^9$ fit easily.\n\n5.  **Check Examples:**\n   - Ex 1: `2 1` -> $k=1 < n=2$, output 0. Matches.\n   - Ex 2: `2 2` -> $k=2 \\ge n=2$. $F_3 = 2$. $k^n = 2^2 = 4$. Prob = $2/4 = 1/2$. Mod inverse of 2 is $500000004$. Output matches.\n   - Ex 3: `7 94` -> $k=94 \\ge 7$. $F_8 = 21$. $k^n = 94^7$.\n     Let's compute $21 \\cdot (94^7)^{-1} \\pmod{10^9+7}$.\n     $94^7 \\pmod{10^9+7} = 94^7 \\mod 10^9+7$.\n     I'll trust the math. The example output is `100976822`.\n     Let's quickly verify with a script mentally or just trust the derivation. The derivation is solid.\n\n   Wait, is there any catch? \"Every number from 1 to n appears in the array exactly once.\" This means it's a permutation.\n   The condition $|a_i + i - n - 1| \\le 1$ is exactly $|a_i - (n+1-i)| \\le 1$.\n   Reversing the array gives $|\\pi(i) - i| \\le 1$.\n   The number of such permutations is indeed $F_{n+1}$.\n   This is a known result. See \"permutations with displacement at most 1\" or \"rook polynomials for a band matrix\".\n   Actually, it's exactly the number of ways to place non-attacking rooks on a board with cells $(i, i-1), (i, i), (i, i+1)$, which corresponds to Fibonacci.\n   So the count is correct.\n\n   One minor point: $F_{n+1}$ for $n=10^9$ needs fast doubling.\n   Implementation details:\n   - Use `pow(k, n, MOD)` for $k^n$.\n   - Use `pow(pow(k, n, MOD), MOD-2, MOD)` for inverse.\n   - Fast doubling function.\n\n   Let's write out the fast doubling carefully:\n   ```python\n   def fib(n):\n       if n == 0:\n           return (0, 1)\n       else:\n           a, b = fib(n >> 1)\n           c = (a * ((b << 1) - a)) % MOD\n           d = (a * a + b * b) % MOD\n           if n & 1:\n",
+    "usage": {
+      "completion_tokens": 5044,
+      "prompt_tokens": 917,
+      "total_tokens": 5961,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 913,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 913,
+      "prompt_n": 4,
+      "prompt_ms": 761.278,
+      "prompt_per_token_ms": 190.3195,
+      "prompt_per_second": 5.254322336912402,
+      "predicted_n": 5044,
+      "predicted_ms": 656983.615,
+      "predicted_per_token_ms": 130.27634642078127,
+      "predicted_per_second": 7.675990519185171
+    }
+  },
+  "extracted_code": "import sys\n\nMOD = 10**9 + 7\n\ndef fib(n):\n    if n == 0:\n        return (0, 1)\n    a, b = fib(n >> 1)\n    c = (a * ((b << 1) - a)) % MOD\n    d = (a * a + b * b) % MOD\n    if n & 1:\n        return (d, (c + d) % MOD)\n    return (c, d)\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    n = int(input_data[0])\n    k = int(input_data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    # F_{n+1} 계산\n    _, fn_plus_1 = fib(n + 1)\n    \n    # k^n 계산\n    k_pow_n = pow(k, n, MOD)\n    \n    # k^n의 모듈러 역수 계산\n    inv_k_pow_n = pow(k_pow_n, MOD - 2, MOD)\n    \n    # 결과 출력\n    ans = (fn_plus_1 * inv_k_pow_n) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "WA",
+    "passed_cases": 24,
+    "total_cases": 130,
+    "max_case_seconds": 0.011397997001040494,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010454596998897614,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00978348000353435,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009619606000342174,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "struktura.in.1c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009706100001494633,
+        "return_code": 0,
+        "stdout": "285714288\n",
+        "stderr": "",
+        "test_case": "struktura.in.1d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010101531999680446,
+        "return_code": 0,
+        "stdout": "561728399\n",
+        "stderr": "",
+        "test_case": "struktura.in.1e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009461544999794569,
+        "return_code": 0,
+        "stdout": "569600004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009431892998691183,
+        "return_code": 0,
+        "stdout": "569600004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009809389997826656,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009767526000359794,
+        "return_code": 0,
+        "stdout": "218042697\n",
+        "stderr": "",
+        "test_case": "struktura.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009735558000102174,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01012603399794898,
+        "return_code": 0,
+        "stdout": "522282386\n",
+        "stderr": "",
+        "test_case": "struktura.in.1k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009236207999492763,
+        "return_code": 0,
+        "stdout": "333333336\n",
+        "stderr": "",
+        "test_case": "struktura.in.1l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009506931997748325,
+        "return_code": 0,
+        "stdout": "851851858\n",
+        "stderr": "",
+        "test_case": "struktura.in.1m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009980937997170258,
+        "return_code": 0,
+        "stdout": "442672699\n",
+        "stderr": "",
+        "test_case": "struktura.in.1n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009983513002225664,
+        "return_code": 0,
+        "stdout": "800000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009681212999566924,
+        "return_code": 0,
+        "stdout": "840000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011397997001040494,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010319011002138723,
+        "return_code": 0,
+        "stdout": "851851858\n",
+        "stderr": "",
+        "test_case": "struktura.in.1r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011143900999741163,
+        "return_code": 0,
+        "stdout": "356481484\n",
+        "stderr": "",
+        "test_case": "struktura.in.1s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010155743999348488,
+        "return_code": 0,
+        "stdout": "442672699\n",
+        "stderr": "",
+        "test_case": "struktura.in.1t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01070453399734106,
+        "return_code": 0,
+        "stdout": "346938778\n",
+        "stderr": "",
+        "test_case": "struktura.in.1u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010040545999800088,
+        "return_code": 0,
+        "stdout": "381301443\n",
+        "stderr": "",
+        "test_case": "struktura.in.1v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009864351999567589,
+        "return_code": 0,
+        "stdout": "333333336\n",
+        "stderr": "",
+        "test_case": "struktura.in.1w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011208469997654902,
+        "return_code": 0,
+        "stdout": "333333336\n",
+        "stderr": "",
+        "test_case": "struktura.in.1x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009526737998385215,
+        "return_code": 0,
+        "stdout": "346938778\n",
+        "stderr": "",
+        "test_case": "struktura.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00969158000225434,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009360997999465326,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009194934002152877,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.2b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009919096002704464,
+        "return_code": 0,
+        "stdout": "401581523\n",
+        "stderr": "",
+        "test_case": "struktura.in.2c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010862781000469113,
+        "return_code": 0,
+        "stdout": "617969325\n",
+        "stderr": "",
+        "test_case": "struktura.in.2d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009347616000013659,
+        "return_code": 0,
+        "stdout": "340720224\n",
+        "stderr": "",
+        "test_case": "struktura.in.2e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010043030997621827,
+        "return_code": 0,
+        "stdout": "563693703\n",
+        "stderr": "",
+        "test_case": "struktura.in.2f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009512524000456324,
+        "return_code": 0,
+        "stdout": "674395465\n",
+        "stderr": "",
+        "test_case": "struktura.in.2g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010015116997237783,
+        "return_code": 0,
+        "stdout": "317073173\n",
+        "stderr": "",
+        "test_case": "struktura.in.2h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009120642000198131,
+        "return_code": 0,
+        "stdout": "243571598\n",
+        "stderr": "",
+        "test_case": "struktura.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009322537000116426,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009908752999763237,
+        "return_code": 0,
+        "stdout": "227116282\n",
+        "stderr": "",
+        "test_case": "struktura.in.2k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01125270900229225,
+        "return_code": 0,
+        "stdout": "851851858\n",
+        "stderr": "",
+        "test_case": "struktura.in.2l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00982183599990094,
+        "return_code": 0,
+        "stdout": "714285005\n",
+        "stderr": "",
+        "test_case": "struktura.in.2m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009904832997563062,
+        "return_code": 0,
+        "stdout": "958087858\n",
+        "stderr": "",
+        "test_case": "struktura.in.2n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009571553997375304,
+        "return_code": 0,
+        "stdout": "405063294\n",
+        "stderr": "",
+        "test_case": "struktura.in.2o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009547356999974,
+        "return_code": 0,
+        "stdout": "531190930\n",
+        "stderr": "",
+        "test_case": "struktura.in.2p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009735845000250265,
+        "return_code": 0,
+        "stdout": "717948723\n",
+        "stderr": "",
+        "test_case": "struktura.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010122752999450313,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009710282000014558,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009609788001398556,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010966939000354614,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010104385000886396,
+        "return_code": 0,
+        "stdout": "804353674\n",
+        "stderr": "",
+        "test_case": "struktura.in.2v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010325710998586146,
+        "return_code": 0,
+        "stdout": "826179704\n",
+        "stderr": "",
+        "test_case": "struktura.in.2w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009809504001168534,
+        "return_code": 0,
+        "stdout": "183989605\n",
+        "stderr": "",
+        "test_case": "struktura.in.2x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009276269000110915,
+        "return_code": 0,
+        "stdout": "625845501\n",
+        "stderr": "",
+        "test_case": "struktura.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009429697998712072,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009328305000963155,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00987681499827886,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.3b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009606403000361752,
+        "return_code": 0,
+        "stdout": "401581523\n",
+        "stderr": "",
+        "test_case": "struktura.in.3c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009491324999544304,
+        "return_code": 0,
+        "stdout": "427500003\n",
+        "stderr": "",
+        "test_case": "struktura.in.3d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00963027300167596,
+        "return_code": 0,
+        "stdout": "219325906\n",
+        "stderr": "",
+        "test_case": "struktura.in.3e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009687131001555827,
+        "return_code": 0,
+        "stdout": "791015555\n",
+        "stderr": "",
+        "test_case": "struktura.in.3f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009458508000534493,
+        "return_code": 0,
+        "stdout": "86160222\n",
+        "stderr": "",
+        "test_case": "struktura.in.3g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010641430999385193,
+        "return_code": 0,
+        "stdout": "464360422\n",
+        "stderr": "",
+        "test_case": "struktura.in.3h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009635029000492068,
+        "return_code": 0,
+        "stdout": "61538462\n",
+        "stderr": "",
+        "test_case": "struktura.in.3i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009400672002811916,
+        "return_code": 0,
+        "stdout": "418433250\n",
+        "stderr": "",
+        "test_case": "struktura.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009365793001052225,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009889495002425974,
+        "return_code": 0,
+        "stdout": "29479420\n",
+        "stderr": "",
+        "test_case": "struktura.in.3l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009527680998871801,
+        "return_code": 0,
+        "stdout": "914564041\n",
+        "stderr": "",
+        "test_case": "struktura.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009710531998280203,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009701363000203855,
+        "return_code": 0,
+        "stdout": "139539130\n",
+        "stderr": "",
+        "test_case": "struktura.in.3o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010325418999855174,
+        "return_code": 0,
+        "stdout": "491821205\n",
+        "stderr": "",
+        "test_case": "struktura.in.3p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009977764999348437,
+        "return_code": 0,
+        "stdout": "104649717\n",
+        "stderr": "",
+        "test_case": "struktura.in.3q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010440891001053387,
+        "return_code": 0,
+        "stdout": "990240765\n",
+        "stderr": "",
+        "test_case": "struktura.in.3r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01000873199882335,
+        "return_code": 0,
+        "stdout": "914564041\n",
+        "stderr": "",
+        "test_case": "struktura.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009767043000465492,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010410045000753598,
+        "return_code": 0,
+        "stdout": "139539130\n",
+        "stderr": "",
+        "test_case": "struktura.in.3u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010105361998284934,
+        "return_code": 0,
+        "stdout": "409090912\n",
+        "stderr": "",
+        "test_case": "struktura.in.3v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009566479002387496,
+        "return_code": 0,
+        "stdout": "947689784\n",
+        "stderr": "",
+        "test_case": "struktura.in.3w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00961369300057413,
+        "return_code": 0,
+        "stdout": "937423408\n",
+        "stderr": "",
+        "test_case": "struktura.in.3x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00977116399735678,
+        "return_code": 0,
+        "stdout": "272462279\n",
+        "stderr": "",
+        "test_case": "struktura.in.3y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010439465000672499,
+        "return_code": 0,
+        "stdout": "878833285\n",
+        "stderr": "",
+        "test_case": "struktura.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009844243999395985,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009054303998709656,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.4b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009329148000688292,
+        "return_code": 0,
+        "stdout": "401581523\n",
+        "stderr": "",
+        "test_case": "struktura.in.4c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009782436001842143,
+        "return_code": 0,
+        "stdout": "396336685\n",
+        "stderr": "",
+        "test_case": "struktura.in.4d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009713670999190072,
+        "return_code": 0,
+        "stdout": "662694984\n",
+        "stderr": "",
+        "test_case": "struktura.in.4e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009667525999248028,
+        "return_code": 0,
+        "stdout": "653990806\n",
+        "stderr": "",
+        "test_case": "struktura.in.4f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009954036999261007,
+        "return_code": 0,
+        "stdout": "485715780\n",
+        "stderr": "",
+        "test_case": "struktura.in.4g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009688070000265725,
+        "return_code": 0,
+        "stdout": "124382491\n",
+        "stderr": "",
+        "test_case": "struktura.in.4h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009317258001829032,
+        "return_code": 0,
+        "stdout": "836425320\n",
+        "stderr": "",
+        "test_case": "struktura.in.4i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009797747999982676,
+        "return_code": 0,
+        "stdout": "183910069\n",
+        "stderr": "",
+        "test_case": "struktura.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010095245997945312,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009322883001004811,
+        "return_code": 0,
+        "stdout": "508994977\n",
+        "stderr": "",
+        "test_case": "struktura.in.4l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00954889900094713,
+        "return_code": 0,
+        "stdout": "707271432\n",
+        "stderr": "",
+        "test_case": "struktura.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009702054998342646,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009855035001237411,
+        "return_code": 0,
+        "stdout": "941864672\n",
+        "stderr": "",
+        "test_case": "struktura.in.4o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010748332002549432,
+        "return_code": 0,
+        "stdout": "719034103\n",
+        "stderr": "",
+        "test_case": "struktura.in.4p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010597382999549154,
+        "return_code": 0,
+        "stdout": "703831328\n",
+        "stderr": "",
+        "test_case": "struktura.in.4q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009874467003101017,
+        "return_code": 0,
+        "stdout": "797025815\n",
+        "stderr": "",
+        "test_case": "struktura.in.4r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009806198999285698,
+        "return_code": 0,
+        "stdout": "334577259\n",
+        "stderr": "",
+        "test_case": "struktura.in.4s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010192494999500923,
+        "return_code": 0,
+        "stdout": "260809095\n",
+        "stderr": "",
+        "test_case": "struktura.in.4t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009875963998638326,
+        "return_code": 0,
+        "stdout": "563506142\n",
+        "stderr": "",
+        "test_case": "struktura.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010452423000970157,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010980252998706419,
+        "return_code": 0,
+        "stdout": "797205736\n",
+        "stderr": "",
+        "test_case": "struktura.in.4w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009454996998101706,
+        "return_code": 0,
+        "stdout": "825744480\n",
+        "stderr": "",
+        "test_case": "struktura.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009678290000010747,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009463982998568099,
+        "return_code": 0,
+        "stdout": "755010440\n",
+        "stderr": "",
+        "test_case": "struktura.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009805988000152865,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009822785003052559,
+        "return_code": 0,
+        "stdout": "750000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.5b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01064686899917433,
+        "return_code": 0,
+        "stdout": "401581523\n",
+        "stderr": "",
+        "test_case": "struktura.in.5c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010830418003024533,
+        "return_code": 0,
+        "stdout": "678965439\n",
+        "stderr": "",
+        "test_case": "struktura.in.5d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009761561999766855,
+        "return_code": 0,
+        "stdout": "526077013\n",
+        "stderr": "",
+        "test_case": "struktura.in.5e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009261545998015208,
+        "return_code": 0,
+        "stdout": "989473122\n",
+        "stderr": "",
+        "test_case": "struktura.in.5f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00964092199865263,
+        "return_code": 0,
+        "stdout": "23557976\n",
+        "stderr": "",
+        "test_case": "struktura.in.5g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009373156000947347,
+        "return_code": 0,
+        "stdout": "339586003\n",
+        "stderr": "",
+        "test_case": "struktura.in.5h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01059477099988726,
+        "return_code": 0,
+        "stdout": "580368726\n",
+        "stderr": "",
+        "test_case": "struktura.in.5i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00959928799784393,
+        "return_code": 0,
+        "stdout": "217951638\n",
+        "stderr": "",
+        "test_case": "struktura.in.5j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010721827999077505,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009742227997776354,
+        "return_code": 0,
+        "stdout": "514723082\n",
+        "stderr": "",
+        "test_case": "struktura.in.5l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010580743000900839,
+        "return_code": 0,
+        "stdout": "104551277\n",
+        "stderr": "",
+        "test_case": "struktura.in.5m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011254228000325384,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010551408999162959,
+        "return_code": 0,
+        "stdout": "196111922\n",
+        "stderr": "",
+        "test_case": "struktura.in.5o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010584417999780271,
+        "return_code": 0,
+        "stdout": "908327088\n",
+        "stderr": "",
+        "test_case": "struktura.in.5p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010260083003231557,
+        "return_code": 0,
+        "stdout": "461071606\n",
+        "stderr": "",
+        "test_case": "struktura.in.5q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010519759998715017,
+        "return_code": 0,
+        "stdout": "453670571\n",
+        "stderr": "",
+        "test_case": "struktura.in.5r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01057910700183129,
+        "return_code": 0,
+        "stdout": "907725052\n",
+        "stderr": "",
+        "test_case": "struktura.in.5s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01030507199902786,
+        "return_code": 0,
+        "stdout": "107492332\n",
+        "stderr": "",
+        "test_case": "struktura.in.5t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010329875000024913,
+        "return_code": 0,
+        "stdout": "275630329\n",
+        "stderr": "",
+        "test_case": "struktura.in.5u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009461901001486694,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010239107999950647,
+        "return_code": 0,
+        "stdout": "783418503\n",
+        "stderr": "",
+        "test_case": "struktura.in.5w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009954601999197621,
+        "return_code": 0,
+        "stdout": "221510320\n",
+        "stderr": "",
+        "test_case": "struktura.in.5x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009964510001736926,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010084069999720668,
+        "return_code": 0,
+        "stdout": "28643918\n",
+        "stderr": "",
+        "test_case": "struktura.in.5z"
+      }
+    ]
+  }
+}
