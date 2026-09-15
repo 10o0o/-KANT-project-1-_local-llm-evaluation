@@ -9,10 +9,11 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --alias gemma4 \
   --host 127.0.0.1 \
   --port 8080 \
-  --ctx-size 8192 \
-  --n-predict 6144 \
+  --ctx-size 12288 \
+  --n-predict 8192 \
   --parallel 1 \
   --gpu-layers auto \
   --flash-attn on \
+  --temp 0 \
   --reasoning on \
-  --reasoning-budget -1
+  --reasoning-budget 2048

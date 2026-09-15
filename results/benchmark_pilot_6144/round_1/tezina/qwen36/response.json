@@ -1,0 +1,51 @@
+{
+  "id": "chatcmpl-7dldnhig2I5RuszCKTqLMjMmpnLa1aJd",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "To solve this problem efficiently, we need to avoid the naive $O(n \\cdot k)$ approach, which would be too slow given the constraints ($n, k \\le 10^5$). Instead, we can leverage the mathematical property that the value of $\\lfloor v/w \\rfloor$ remains constant over ranges of $w$. This allows us to process multiple $w$ values simultaneously, reducing the complexity significantly.\n\n### Approach\n1. **Frequency Counting**: First, count the occurrences of each weight in the input array. This reduces the problem from iterating over $n$ items to iterating over at most $10^5$ distinct weights.\n2. **Harmonic Lemma / Square Root Decomposition**: For each distinct weight $v$, the value $q = \\lfloor v/w \\rfloor$ changes at most $2\\sqrt{v}$ times as $w$ increases. We can iterate through ranges $[L, R]$ where $\\lfloor v/w \\rfloor$ is constant.\n3. **Range Processing**: For each range $[L, R]$ of $w$ values:\n   - Calculate the constant quotient $q = \\lfloor v/L \\rfloor$.\n   - Determine the actual upper bound $R = \\min(\\lfloor v/q \\rfloor, k)$.\n   - Compute the contribution: `count_w * min(q * (v + 2), 10^8) * frequency[v]`.\n   - Update the total sum and move to the next range.\n4. **Complexity**: The nested loops run in $O(M \\sqrt{M})$ time where $M = \\max(a_i) \\le 10^5$. This results in approximately $3 \\times 10^7$ operations, which fits well within typical time limits. Space complexity is $O(M)$ for the frequency array.\n\n### Complexity\n- **Time Complexity**: $O(M \\sqrt{M})$, where $M = 10^5$. This is derived from the harmonic lemma property that $\\sum_{v=1}^{M} \\sqrt{v} \\approx \\frac{2}{3}M^{1.5}$.\n- **Space Complexity**: $O(M)$ to store the frequency counts of each weight.\n\n### Python 3 Code\n\n```python\nimport sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    iterator = iter(input_data)\n    n = int(next(iterator))\n    k = int(next(iterator))\n    \n    cnt = [0] * 100001\n    max_val = 0\n    \n    for _ in range(n):\n        val = int(next(iterator))\n        cnt[val] += 1\n        if val > max_val:\n            max_val = val\n            \n    total_sum = 0\n    LIMIT = 10**8\n    \n    for v in range(1, max_val + 1):\n        if cnt[v] == 0:\n            continue\n            \n        freq = cnt[v]\n        limit_w = k if k < v else v\n        w = 1\n        \n        while w <= limit_w:\n            q = v // w\n            if q == 0:\n                break\n                \n            r = v // q\n            if r > limit_w:\n                r = limit_w\n                \n            count_w = r - w + 1\n            val = q * (v + 2)\n            if val > LIMIT:\n                val = LIMIT\n                \n            total_sum += count_w * val * freq\n            w = r + 1\n            \n    print(total_sum)\n\nif __name__ == '__main__':\n    solve()\n```",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null,
+        "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - Input: `n`, `k` (1 ≤ n, k ≤ 10^5), and an array `a` of `n` integers (1 ≤ a_i ≤ 10^5).\n   - For each weight type `w` from 1 to `k`:\n     - For each item `x` in `a`:\n       - Compute `q = floor(x / w)`\n       - Compute `val = q * (x + 2)`\n       - If `val > 10^8`, set `val = 10^8`\n       - Add `val` to the strength for weight type `w`.\n     - Sum all strengths for `w = 1` to `k`.\n   - Output: The total sum.\n\n2.  **Analyze Constraints & Naive Approach:**\n   - `n, k ≤ 10^5`, `a_i ≤ 10^5`.\n   - Naive approach: Iterate `w` from 1 to `k`, iterate `x` in `a`, compute, sum.\n   - Complexity: O(n * k) = O(10^10), which is too slow. We need a more efficient approach.\n\n3.  **Identify Optimization Opportunities:**\n   - The formula for a single item `x` and weight type `w` is: `min(floor(x/w) * (x+2), 10^8)`.\n   - Notice that `floor(x/w)` only takes on a small number of distinct values for a fixed `x` as `w` varies. Specifically, for `w > x`, `floor(x/w) = 0`. So we only need to consider `w` from 1 to `min(k, x)`.\n   - Also, `floor(x/w)` changes values at most `2*sqrt(x)` times. This suggests we can use a technique similar to harmonic lemma or square root decomposition, or simply iterate over `w` and group items by `floor(x/w)`.\n   - Wait, let's look at the structure again. We need to compute:\n     `Total = sum_{w=1}^{k} sum_{x in a} min(floor(x/w) * (x+2), 10^8)`\n   - Since `a_i ≤ 10^5`, let `M = max(a_i) = 10^5`.\n   - We can count frequencies of each weight: `cnt[v]` = number of items with weight `v`.\n   - Then `Total = sum_{w=1}^{k} sum_{v=1}^{M} cnt[v] * min(floor(v/w) * (v+2), 10^8)`\n   - This is still O(M * k) in worst case, but `M` and `k` are both up to 10^5. Still potentially 10^10.\n   - Let's analyze `floor(v/w)`. For a fixed `w`, as `v` increases, `floor(v/w)` increases. But we can swap loops: iterate `w` from 1 to `k`, and for each `w`, iterate over possible values of `q = floor(v/w)`.\n   - Alternatively, iterate over `v` (weight values present in input), and for each `v`, iterate over `w` from 1 to `min(k, v)`. The number of pairs `(v, w)` where `1 ≤ w ≤ v ≤ M` is `M*(M+1)/2 ≈ 5*10^9`, still too big.\n   - Wait, `floor(v/w)` is constant for ranges of `w`. For a fixed `v`, `floor(v/w) = q` when `w` is in `(v/(q+1), v/q]`. The number of distinct values of `floor(v/w)` is `O(sqrt(v))`. So for each `v`, we can iterate over ranges of `w` where `floor(v/w)` is constant. Total complexity would be `O(M * sqrt(M))` ≈ `10^5 * 316 ≈ 3*10^7`, which is acceptable.\n   - Let's verify: For each distinct weight `v` present in `a`, we want to compute `sum_{w=1}^{min(k, v)} min(q * (v+2), 10^8)` where `q = floor(v/w)`.\n   - Actually, `q * (v+2)` grows with `q`. Since `q = floor(v/w)`, `q` decreases as `w` increases.\n   - We can iterate `w` from 1 to `min(k, v)`. But using the harmonic lemma approach: for a fixed `v`, the values of `l = floor(v/w)` change at most `2*sqrt(v)` times. We can find ranges `[L, R]` where `floor(v/w) = l`. For each range, we compute the contribution: `count_w * min(l * (v+2), 10^8)`, where `count_w` is the number of `w` in `[L, R]` that are `≤ k`.\n   - Wait, the condition `min(..., 10^8)` might cap the value. Since `v ≤ 10^5`, `v+2 ≤ 100002`. `l * (v+2)` exceeds `10^8` when `l > 10^8 / 100002 ≈ 999.98`. So `l ≥ 1000`. Since `l = floor(v/w)`, `l ≥ 1000` implies `w ≤ v/1000`. For `v=10^5`, `w ≤ 100`. So for small `w`, the value might be capped. For larger `w`, it's uncapped.\n   - Actually, we can just compute `val = l * (v+2)`, and if `val > 10^8`, use `10^8`. This is O(1) per range.\n   - So the algorithm:\n     1. Count frequencies of each `a_i`: `cnt[v]`.\n     2. Initialize `total_sum = 0`.\n     3. For each `v` from 1 to `M` (or only present `v`):\n        - If `cnt[v] == 0`, continue.\n        - Let `limit = min(k, v)`.\n        - Iterate `w` from 1 to `limit` using harmonic lemma:\n          - `l = v // w`\n          - If `l == 0`, break (since `w > v`, but we already limited `w ≤ v`, so `l ≥ 1`).\n          - `r = v // l`  (largest `w` such that `v // w == l`)\n          - `r = min(r, limit)`\n          - Number of `w` in `[w, r]` is `cnt_w = r - w + 1`.\n          - `val = l * (v + 2)`\n          - If `val > 10^8`, `val = 10^8`\n          - `total_sum += cnt_w * val * cnt[v]`\n          - `w = r + 1`\n     4. Print `total_sum`.\n\n   - Complexity: For each `v`, the loop runs `O(sqrt(v))` times. Sum over `v=1..M` is `O(M * sqrt(M))` ≈ `3.16 * 10^7` operations. With `M=10^5`, this is well within time limits (typically 1-2 seconds for Python might be tight, but usually acceptable. We can optimize further if needed, but let's check constraints and Python speed. `3*10^7` simple operations in Python might take ~2-3 seconds. We might need to be careful. Let's see if we can optimize or if it's fine. Usually, competitive programming limits are ~10^8 ops for C++, Python gets more time or we need to be efficient. I'll stick with this, but maybe use PyPy-friendly code or optimize the inner loop.)\n   - Wait, `M` is up to `10^5`. `sum_{v=1}^{M} 2*sqrt(v) ≈ 2 * (2/3) * M^{1.5} ≈ 1.33 * 10^8`. That's a bit high for Python. Let's reconsider.\n   - Actually, we can swap the loops differently. Instead of iterating `v` and using harmonic lemma on `w`, we can iterate `w` from 1 to `k`, and for each `w`, iterate over `v` using harmonic lemma on `v`? No, `floor(v/w)` changes with `v`.\n   - Let's think about iterating `w` from 1 to `k`. For a fixed `w`, we need `sum_{v} cnt[v] * min(floor(v/w)*(v+2), 10^8)`.\n   - `floor(v/w)` is constant for `v` in `[q"
+      }
+    }
+  ],
+  "created": 1789471098,
+  "model": "qwen36",
+  "object": "chat.completion",
+  "metadata": null,
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": "b10975-4c9233c03",
+  "usage": {
+    "completion_tokens": 2849,
+    "prompt_tokens": 642,
+    "total_tokens": 3491,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 154,
+      "image_tokens": null,
+      "text_tokens": null
+    }
+  },
+  "timings": {
+    "cache_n": 154,
+    "prompt_n": 488,
+    "prompt_ms": 1963.577,
+    "prompt_per_token_ms": 4.023723360655738,
+    "prompt_per_second": 248.5260318286474,
+    "predicted_n": 2849,
+    "predicted_ms": 153081.716,
+    "predicted_per_token_ms": 53.750602528089885,
+    "predicted_per_second": 18.604442610246153
+  }
+}

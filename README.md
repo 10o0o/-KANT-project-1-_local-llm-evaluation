@@ -71,29 +71,31 @@ bash configs/llama.cpp/qwen36-moe-lowvram.sh
 | 항목 | Gemma | Qwen |
 | --- | --- | --- |
 | API 모델 이름 | `gemma4` | `qwen36` |
-| Context | 8192 | 8192 |
+| Context | 12288 | 12288 |
 | GPU 설정 | `--gpu-layers auto` | `--gpu-layers all --n-cpu-moe 28` |
-| 서버 기본 출력 한도 | 4096 | 4096 |
-| 서버 기본 reasoning budget | `-1` | `-1` |
+| 서버 기본 출력 한도 | 8192 | 8192 |
+| 서버 기본 reasoning budget | 2048 | 2048 |
+| Temperature | 0 | 0 |
 
 서버 설정은 [configs/llama.cpp](configs/llama.cpp/)에 있습니다. Python 요청의 출력·추론 한도는 아래 실행기에서 별도로 지정합니다.
 
 ### 4. 문제 선택과 평가
 
-[scripts/run_one_problem.py](scripts/run_one_problem.py) 상단에서 실행할 모델과 문제를 선택합니다.
-
-| 설정 | 의미 |
-| --- | --- |
-| `MODEL` | 서버의 API 모델 이름: `gemma4` 또는 `qwen36` |
-| `MODEL_NAME` | 결과 폴더에 사용할 모델 이름 |
-| `PROBLEM_ID` | `problems.json`에 등록된 문제의 `id` |
-| `TEMPERATURE` | 생성 temperature |
-| `MAX_TOKENS` | 요청의 출력 토큰 한도 |
-| `REASONING_BUDGET_TOKENS` | 요청의 추론 토큰 예산 |
+[scripts/run_one_problem.py](scripts/run_one_problem.py)에 모델·문제 ID·라운드를 전달합니다.
 
 ```bash
-uv run python scripts/run_one_problem.py
+uv run python scripts/run_one_problem.py \
+  --model qwen36 --problem coci_2025_2026_c5_skare --round 1
 ```
+
+`--model`은 `qwen36` 또는 `gemma4`, `--problem`은 `problems.json`에 등록한 ID를 사용합니다. Round 2는 같은 문제·모델의 새 Round 1 최종 답변을 읽어 자체 검토하며, 외부 채점 결과는 프롬프트에 넣지 않습니다.
+
+```bash
+uv run python scripts/run_one_problem.py \
+  --model qwen36 --problem coci_2025_2026_c5_skare --round 2
+```
+
+요청 설정은 실행기 상단의 `TEMPERATURE=0`, `MAX_TOKENS=8192`, `REASONING_BUDGET_TOKENS=2048`로 고정합니다. 서버 셸도 Context 12288·출력 8192·reasoning 2048·temperature 0으로 맞췄습니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. Context 12288에서의 VRAM 적합성과 긴 Round 2 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
 
 실행기는 `http://127.0.0.1:8080/v1`에 연결합니다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있습니다. 연결 오류는 서버 터미널을, 테스트 케이스를 찾을 수 없다는 오류는 `problem_dir`와 압축 해제 위치를 확인합니다.
 
@@ -104,11 +106,15 @@ uv run python scripts/run_one_problem.py
 실행 결과는 다음 위치에 저장합니다.
 
 ```text
-results/<실행 시각>/<모델 이름>/<문제 이름>/
+results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
 ├── response.json   # API 원본 응답
 ├── candidate.py    # 추출한 Python 코드가 있을 때 생성
 └── result.json     # 생성 설정·응답·추론·사용량·채점 결과
 ```
+
+같은 라운드·문제·모델의 결과가 이미 있으면 덮어쓰지 않고 중단합니다.
+
+기존 출력 한도 6144의 8회 실행은 [benchmark_pilot_6144](results/benchmark_pilot_6144/)에 보존했습니다. Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 된 것을 계기로 출력 한도를 늘렸습니다. reasoning 부족으로 단정하지 않고 2048을 유지했으며, 새 설정의 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계와 Round 2 입력에서 제외합니다.
 
 추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 `NO_CODE`로 기록합니다.
 
