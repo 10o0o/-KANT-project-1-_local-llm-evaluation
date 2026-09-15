@@ -1,0 +1,1110 @@
+{
+  "run_id": "20260915_201138_292843",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c4_tomahawk",
+    "name": "tomahawk",
+    "title": "Tomahawk",
+    "difficulty": 4,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 6144,
+    "reasoning_budget_tokens": 2048
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n\n1. **문제 분석**: \n   - $n \\times n$ 행렬의 각 셀 $(r, c)$의 온도는 행 업데이트와 열 업데이트의 합으로 독립적으로 계산됩니다. 즉, $T(r, c) = R_r + C_c$입니다.\n   - 따라서 전체 행렬의 최대 온도는 $\\max_r R_r + \\max_c C_c$이고, 최소 온도는 $\\min_r R_r + \\min_c C_c$입니다.\n   - 목표는 $R$ 배열과 $C$ 배열의 최대/최소값을 찾는 것입니다.\n\n2. **업데이트 규칙**:\n   - **D (Down) $x$**: 행 $n-x+1$부터 $n$까지, 행 $i$에 $i - n + x$를 더합니다.\n   - **R (Right) $x$**: 열 $n-x+1$부터 $n$까지, 열 $j$에 $j - n + x$를 더합니다.\n   - **L (Left) $x$**: 열 $1$부터 $x$까지, 열 $j$에 $x - j + 1$을 더합니다.\n   - 각 업데이트는 특정 구간에서 인덱스에 대한 선형 함수(등차수열)를 추가합니다.\n\n3. **최적화 전략**:\n   - $n$이 매우 크므로 배열을 직접 유지할 수 없습니다. 하지만 $q$개의 업데이트로 인해 함수의 기울기가 변하는 지점(경계점)은 최대 $2q$개뿐입니다.\n   - 구간에서 정의된 함수는 선형이므로, 최대/최소값은 반드시 경계점 중 하나에서 발생합니다.\n   - 모든 업데이트의 경계점($1, n, n-x+1, x$)을 수집하고 정렬한 후, 각 지점에서 $R$과 $C$의 값을 계산하여 전역 최대/최소를 찾습니다.\n   - 값 계산은 각 업데이트가 현재 인덱스에 기여하는 값을 $O(1)$에 계산하여 누적합니다.\n\n4. **복잡도**:\n   - **시간 복잡도**: $O(q \\log q)$ (경계점 정렬 및 각 지점에서의 $O(q)$ 계산).\n   - **공간 복잡도**: $O(q)$ (업데이트 정보 및 경계점 저장).\n\n### Python 3 코드\n\n```python\nimport sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    \n    n = int(data[0])\n    q = int(data[1])\n    \n    ops = []\n    boundaries = {1, n}\n    \n    idx = 2\n    for _ in range(q):\n        s = data[idx]\n        x = int(data[idx+1])\n        idx += 2\n        ops.append((s, x))\n        \n        if s == 'D':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'R':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'L':\n            boundaries.add(x)\n            boundaries.add(x + 1)\n            \n    sorted_pts = sorted(list(boundaries))\n    \n    max_r = -float('inf')\n    min_r = float('inf')\n    max_c = -float('inf')\n    min_c = float('inf')\n    \n    for pt in sorted_pts:\n        if pt < 1 or pt > n:\n            continue\n            \n        val_r = 0\n        val_c = 0\n        \n        for s, x in ops:\n            if s == 'D':\n                if n - x + 1 <= pt <= n:\n                    val_r += pt - n + x\n            elif s == 'R':\n                if n - x + 1 <= pt <= n:\n                    val_c += pt - n + x\n            elif s == 'L':\n                if 1 <= pt <= x:\n                    val_c += x - pt + 1\n                    \n        if val_r > max_r: max_r = val_r\n        if val_r < min_r: min_r = val_r\n        if val_c > max_c: max_c = val_c\n        if val_c < min_c: min_c = val_c\n        \n    print((max_r + max_c) - (min_r + min_c))\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an $n \\times n$ matrix of temperatures, initially all 0.\n   - $n$ can be up to $10^9$, $q$ up to $10^5$.\n   - We perform $q$ operations. Each operation specifies a side (L, R, D) and a duration $x$.\n   - Each operation increases temperatures in certain rows/columns by a decreasing sequence of values.\n   - Specifically:\n     - **Down (D) side:** Baking on the bottom edge. The $n$-th row gets $+x$, $(n-1)$-th row gets $+(x-1)$, ..., down to row $n-x+1$ getting $+1$. This affects *all columns* in those rows. So it's a row-wise update.\n     - **Right (R) side:** Baking on the right edge. The $n$-th column gets $+x$, $(n-1)$-th column gets $+(x-1)$, ..., down to column $n-x+1$ getting $+1$. This affects *all rows* in those columns. So it's a column-wise update.\n     - **Left (L) side:** Baking on the left edge. The 1st column gets $+x$, 2nd column gets $+(x-1)$, ..., down to $x$-th column getting $+1$. This affects *all rows* in those columns. So it's a column-wise update.\n   - We need to find the difference between the maximum and minimum temperature in the entire $n \\times n$ matrix after all operations.\n\n2.  **Analyze the Updates:**\n   - The matrix is huge ($10^9 \\times 10^9$), so we cannot simulate it.\n   - Each operation adds a value to a set of rows or columns.\n   - The temperature of a cell $(r, c)$ is the sum of contributions from all row updates and all column updates.\n   - Let $R_i$ be the total value added to row $i$ from all \"Down\" operations.\n   - Let $C_j$ be the total value added to column $j$ from all \"Left\" and \"Right\" operations.\n   - Then, the temperature of cell $(r, c)$ is $R_r + C_c$.\n   - We need $\\max_{r,c} (R_r + C_c) - \\min_{r,c} (R_r + C_c)$.\n   - This simplifies to $(\\max_r R_r + \\max_c C_c) - (\\min_r R_r + \\min_c C_c)$.\n   - So we just need to compute the maximum and minimum values in the row array $R$ and column array $C$.\n\n3.  **Model Row and Column Updates:**\n   - Initially, $R_i = 0$ for all $i \\in [1, n]$, and $C_j = 0$ for all $j \\in [1, n]$.\n   - **Down (D, x):** Adds $x, x-1, \\dots, 1$ to rows $n, n-1, \\dots, n-x+1$.\n     - This is a range update on rows: for $i \\in [n-x+1, n]$, $R_i \\leftarrow R_i + (n - i + 1)$.\n     - Wait, let's check the indexing carefully.\n     - Row $n$ gets $+x$. Row $n-1$ gets $+(x-1)$. Row $n-k$ gets $+(x-k)$.\n     - So for row index $i$ (1-based from top), the added value is $x - (n - i) = i - n + x$.\n     - This applies for $i$ from $n-x+1$ to $n$.\n     - This is an arithmetic progression added to a suffix of rows.\n   - **Right (R, x):** Adds $x, x-1, \\dots, 1$ to columns $n, n-1, \\dots, n-x+1$.\n     - Similar to Down, but on columns. For column $j$, added value is $j - n + x$.\n     - Applies for $j \\in [n-x+1, n]$.\n   - **Left (L, x):** Adds $x, x-1, \\dots, 1$ to columns $1, 2, \\dots, x$.\n     - For column $j$, added value is $x - (j - 1) = x - j + 1$.\n     - Applies for $j \\in [1, x]$.\n\n   - So we have three types of updates:\n     1. D x: Add arithmetic progression to $R[n-x+1 \\dots n]$.\n     2. R x: Add arithmetic progression to $C[n-x+1 \\dots n]$.\n     3. L x: Add arithmetic progression to $C[1 \\dots x]$.\n\n   - We need to maintain the max and min of $R$ and $C$ after all updates. Since $n$ is huge, we can't store arrays. But we only have $q$ updates. The functions $R_i$ and $C_j$ are piecewise linear (specifically, sums of arithmetic progressions).\n   - Actually, each update adds a linear function $f(i) = i + b$ over a range. The sum of such functions is also a linear function over each segment defined by the update boundaries.\n   - The boundaries are all of the form $1, n, n-x+1, x$. There are at most $2q+2$ distinct boundaries.\n   - We can use a coordinate compression or sweep-line approach, or simply track the max/min analytically.\n   - Wait, $R_i$ and $C_j$ are sums of terms like $\\max(0, \\min(i, \\text{end}) - \\text{start} + 1 + \\text{offset})$. Actually, each update adds a value that depends linearly on the index within the range.\n   - Let's formalize $R_i$:\n     $R_i = \\sum_{\\text{D ops}} \\max(0, \\min(i, n) - (n - x + 1) + 1) \\times \\text{something?}$ No.\n     For a D op with parameter $x$, the value added to row $i$ is:\n     $v_D(i, x) = \\begin{cases} i - n + x & \\text{if } n-x+1 \\le i \\le n \\\\ 0 & \\text{otherwise} \\end{cases}$\n     This is a linear function of $i$ on the interval $[n-x+1, n]$.\n     Similarly, for R op with parameter $x$:\n     $v_R(j, x) = \\begin{cases} j - n + x & \\text{if } n-x+1 \\le j \\le n \\\\ 0 & \\text{otherwise} \\end{cases}$\n     For L op with parameter $x$:\n     $v_L(j, x) = \\begin{cases} x - j + 1 & \\text{if } 1 \\le j \\le x \\\\ 0 & \\text{otherwise} \\end{cases}$\n\n   - So $R_i$ is a sum of functions of the form $\\max(0, \\min(i, n) - a + 1)$? Actually, it's simpler: each update adds a term that is linear in $i$ on some interval, and 0 elsewhere.\n   - The sum of such functions is a piecewise linear function. The \"breakpoints\" occur at $1, n, n-x+1, x$ for each operation.\n   - Since $q \\le 10^5$, there are at most $2 \\cdot 10^5$ breakpoints. We can collect all interesting indices, sort them, and evaluate the function at these indices (and possibly their neighbors) to find the global max and min.\n   - Wait, a piecewise linear function on an interval achieves its max/min at the endpoints of the linear segments. So evaluating at all breakpoints is sufficient.\n   - Let's verify: $R_i$ is a sum of functions $f_k(i)$. Each $f_k(i)$ is either 0 or $i + c_k$ on some interval $[l_k, r_k]$. So $R_i = A \\cdot i + B$ on each segment between breakpoints. Since it's linear, extrema are at the boundaries.\n   - So we can collect all candidate indices: $1, n$, and for each op: $n-x+1, n-x, x, x+1$ (to be safe, include boundaries and maybe $\\pm 1$). Actually, just $n-x+1$ and $n$ for D/R, and $1$ and $x$ for L. Also include $1$ and $n$ globally.\n   - Wait, for L op, the interval is $[1, x]$. The function is $x - i + 1$, which is decreasing in $i$. So max at $i=1$,",
+    "usage": {
+      "completion_tokens": 3037,
+      "prompt_tokens": 1373,
+      "total_tokens": 4410,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 154,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 154,
+      "prompt_n": 1219,
+      "prompt_ms": 5369.646,
+      "prompt_per_token_ms": 4.404959803117309,
+      "prompt_per_second": 227.01682755250533,
+      "predicted_n": 3037,
+      "predicted_ms": 126120.284,
+      "predicted_per_token_ms": 41.54159552042161,
+      "predicted_per_second": 24.072257877249942
+    }
+  },
+  "metrics": {
+    "prompt_tokens": 1373,
+    "completion_tokens": 3037,
+    "generation_tokens_per_second": 24.072257877249942
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    \n    n = int(data[0])\n    q = int(data[1])\n    \n    ops = []\n    boundaries = {1, n}\n    \n    idx = 2\n    for _ in range(q):\n        s = data[idx]\n        x = int(data[idx+1])\n        idx += 2\n        ops.append((s, x))\n        \n        if s == 'D':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'R':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'L':\n            boundaries.add(x)\n            boundaries.add(x + 1)\n            \n    sorted_pts = sorted(list(boundaries))\n    \n    max_r = -float('inf')\n    min_r = float('inf')\n    max_c = -float('inf')\n    min_c = float('inf')\n    \n    for pt in sorted_pts:\n        if pt < 1 or pt > n:\n            continue\n            \n        val_r = 0\n        val_c = 0\n        \n        for s, x in ops:\n            if s == 'D':\n                if n - x + 1 <= pt <= n:\n                    val_r += pt - n + x\n            elif s == 'R':\n                if n - x + 1 <= pt <= n:\n                    val_c += pt - n + x\n            elif s == 'L':\n                if 1 <= pt <= x:\n                    val_c += x - pt + 1\n                    \n        if val_r > max_r: max_r = val_r\n        if val_r < min_r: min_r = val_r\n        if val_c > max_c: max_c = val_c\n        if val_c < min_c: min_c = val_c\n        \n    print((max_r + max_c) - (min_r + min_c))\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "TLE",
+    "passed_cases": 57,
+    "total_cases": 130,
+    "max_case_seconds": 1.004442805002327,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009692979998362716,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008677604993863497,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009714754000015091,
+        "return_code": 0,
+        "stdout": "150\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010180591001699213,
+        "return_code": 0,
+        "stdout": "206\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010146414002520032,
+        "return_code": 0,
+        "stdout": "169\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010271674000250641,
+        "return_code": 0,
+        "stdout": "192\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009644734003813937,
+        "return_code": 0,
+        "stdout": "176\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010147173998120707,
+        "return_code": 0,
+        "stdout": "115\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010414488999231253,
+        "return_code": 0,
+        "stdout": "177\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009699731999717187,
+        "return_code": 0,
+        "stdout": "140\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00995707800029777,
+        "return_code": 0,
+        "stdout": "179\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009928881001542322,
+        "return_code": 0,
+        "stdout": "139\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010328404998290353,
+        "return_code": 0,
+        "stdout": "137\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0099749509972753,
+        "return_code": 0,
+        "stdout": "204\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01017577500169864,
+        "return_code": 0,
+        "stdout": "164\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009851757997239474,
+        "return_code": 0,
+        "stdout": "210\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010272872998029925,
+        "return_code": 0,
+        "stdout": "224\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009255414006474894,
+        "return_code": 0,
+        "stdout": "159\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010014148996560834,
+        "return_code": 0,
+        "stdout": "142\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010176011994190048,
+        "return_code": 0,
+        "stdout": "167\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009856743999989703,
+        "return_code": 0,
+        "stdout": "145\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010121872001036536,
+        "return_code": 0,
+        "stdout": "106\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009808180002437439,
+        "return_code": 0,
+        "stdout": "172\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009773215002496727,
+        "return_code": 0,
+        "stdout": "164\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009480148000875488,
+        "return_code": 0,
+        "stdout": "141\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009677264002675656,
+        "return_code": 0,
+        "stdout": "185\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009564101004798431,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009308761000283994,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.035868377999577206,
+        "return_code": 0,
+        "stdout": "355874\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03633374500350328,
+        "return_code": 0,
+        "stdout": "382841\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.035209145993576385,
+        "return_code": 0,
+        "stdout": "394406\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.034053469003993087,
+        "return_code": 0,
+        "stdout": "379500\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.035549054002331104,
+        "return_code": 0,
+        "stdout": "380358\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03476680799940368,
+        "return_code": 0,
+        "stdout": "384193\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03577472100005252,
+        "return_code": 0,
+        "stdout": "381069\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03583578300458612,
+        "return_code": 0,
+        "stdout": "389523\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03441302499413723,
+        "return_code": 0,
+        "stdout": "384888\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03592769199894974,
+        "return_code": 0,
+        "stdout": "372746\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03483543800393818,
+        "return_code": 0,
+        "stdout": "383076\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03767119399708463,
+        "return_code": 0,
+        "stdout": "371189\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.035808253996947315,
+        "return_code": 0,
+        "stdout": "380951\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.034384744001727086,
+        "return_code": 0,
+        "stdout": "376142\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03517920900048921,
+        "return_code": 0,
+        "stdout": "391927\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03642686599778244,
+        "return_code": 0,
+        "stdout": "382900\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03378199799772119,
+        "return_code": 0,
+        "stdout": "371839\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0352272960008122,
+        "return_code": 0,
+        "stdout": "370113\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.033888099002069794,
+        "return_code": 0,
+        "stdout": "389105\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03595755500282394,
+        "return_code": 0,
+        "stdout": "383102\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03482418099883944,
+        "return_code": 0,
+        "stdout": "391256\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0350743339949986,
+        "return_code": 0,
+        "stdout": "380281\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0347712539951317,
+        "return_code": 0,
+        "stdout": "382835\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03719524900225224,
+        "return_code": 0,
+        "stdout": "371418\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009144032002950553,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009454971994273365,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3b"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029229970023152,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3c"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029728779991274,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3d"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031249889943865,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3e"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0024694349995116,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3f"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0030650499975309,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3g"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0033315129985567,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.003054284999962,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3i"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025348080016556,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3j"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029283039984875,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3k"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025637650032877,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3l"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025244650023524,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3m"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0033785149935284,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3n"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0023410939975292,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3o"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0026245359986206,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3p"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0024687640034244,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3q"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027659249972203,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3r"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0032846210015123,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3s"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0026267510038451,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3t"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.002565479997429,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3u"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0026834640011657,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3v"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.002461078001943,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3w"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.002834241000528,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3x"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0036287550028646,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3y"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.002906923997216,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008985284999653231,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4a"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0035858999981428,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4b"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0033957400009967,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4c"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029217140036053,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4d"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0033994230034295,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4e"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027394380012993,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4f"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0036515219981084,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4g"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0033498269986012,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031661550019635,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4i"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027062959998148,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4j"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031098409963306,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4k"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0037499120007851,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4l"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031283999996958,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4m"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0036179999951855,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4n"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0026877780037466,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4o"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0028258689999348,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4p"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0034324760054005,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4q"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.003546252999513,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4r"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031458209996345,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4s"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031272769992938,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4t"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0034455860004527,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4u"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.003570219996618,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4v"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031515490045422,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4w"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029287180004758,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4x"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029378560066107,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4y"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025281210037065,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010356976003095042,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0103930789991864,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5b"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027440909980214,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5c"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029079420055496,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5d"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0032493580001756,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5e"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.004442805002327,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5f"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.002521207999962,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5g"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031955140002538,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025878559972625,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5i"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0035937860011472,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5j"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0020703849950223,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5k"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0035064609983237,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5l"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0034219769950141,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5m"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.003206469998986,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5n"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0029844650052837,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5o"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0025248559977626,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5p"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0034813420061255,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5q"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0035794220020762,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5r"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0032764569987194,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5s"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0031657139988965,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5t"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.003164938003465,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5u"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0026443240058143,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5v"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0035157490056008,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5w"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027929339994444,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5x"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0028165519979666,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5y"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0027662810025504,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "tomahawk.in.5z"
+      }
+    ]
+  }
+}

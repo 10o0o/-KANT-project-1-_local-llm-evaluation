@@ -1,0 +1,1110 @@
+{
+  "run_id": "20260915_195952_674566",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_prepisivanje",
+    "name": "prepisivanje",
+    "title": "Prepisivanje",
+    "difficulty": 7,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 6144,
+    "reasoning_budget_tokens": 2048
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "To solve this problem, we need to maximize the total number of students seated in an $n \\times m$ grid while ensuring that no mischievous students cheat. The rules state that a mischievous student cheats if they are adjacent (up, down, left, right) to any other student (well-behaved or mischievous). Well-behaved students (`2`) are fixed and cannot be moved. Forbidden seats (`1`) cannot be occupied. Empty seats (`0`) can be occupied by mischievous students.\n\n### Problem Analysis\n1. **Constraints on Mischievous Students**: A mischievous student can only be placed in an empty seat (`0`) if none of its four neighbors contain a student (`2` or another mischievous student). This means:\n   - Mischievous students cannot be adjacent to well-behaved students (`2`).\n   - Mischievous students cannot be adjacent to each other.\n2. **Graph Representation**: We can model the valid empty seats (those not adjacent to any `2`) as vertices in a graph. Edges connect adjacent valid seats. The problem then reduces to finding the **Maximum Independent Set (MIS)** on this graph, which represents the maximum number of mischievous students we can place without adjacency.\n3. **Bipartite Matching**: The grid graph is bipartite (cells can be colored black/white like a chessboard based on $(r+c) \\pmod 2$). For any bipartite graph, the size of the Maximum Independent Set equals the total number of vertices minus the size of the Maximum Matching (Konig's Theorem).\n4. **Algorithm**:\n   - Identify all `0` cells that are not adjacent to any `2`. Let this count be $V_{valid}$.\n   - Build a bipartite graph where vertices are these valid cells, partitioned by $(r+c) \\pmod 2$.\n   - Compute the Maximum Matching using the Hopcroft-Karp algorithm (efficient for bipartite graphs).\n   - The maximum number of mischievous students = $V_{valid} - \\text{max\\_matching}$.\n   - Total students = (number of `2`s) + (maximum mischievous students).\n\n### Complexity\n- **Time Complexity**: $O(E\\sqrt{V})$ for Hopcroft-Karp, where $V \\le N \\times M$ and $E \\le 2V$. With $N, M \\le 80$, $V \\le 6400$, making it extremely fast.\n- **Space Complexity**: $O(V + E)$ to store the graph and matching arrays.\n\n### Python 3 Implementation\n```python\nimport sys\nfrom collections import deque\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    if not data:\n        return\n    \n    n, m = int(data[0]), int(data[1])\n    grid = data[2:2+n]\n    \n    fixed_students = 0\n    valid_seats = []\n    seat_to_idx = {}\n    \n    # Directions for neighbors\n    dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n    \n    # Identify valid empty seats (0s not adjacent to any 2)\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] == '2':\n                fixed_students += 1\n            elif grid[r][c] == '0':\n                is_valid = True\n                for dr, dc in dirs:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < m:\n                        if grid[nr][nc] == '2':\n                            is_valid = False\n                            break\n                if is_valid:\n                    idx = len(valid_seats)\n                    valid_seats.append((r, c))\n                    seat_to_idx[(r, c)] = idx\n                    \n    num_valid = len(valid_seats)\n    if num_valid == 0:\n        print(fixed_students)\n        return\n        \n    # Build adjacency list for bipartite graph\n    adj = [[] for _ in range(num_valid)]\n    for i, (r, c) in enumerate(valid_seats):\n        for dr, dc in dirs:\n            nr, nc = r + dr, c + dc\n            if (nr, nc) in seat_to_idx:\n                j = seat_to_idx[(nr, nc)]\n                adj[i].append(j)\n                \n    # Hopcroft-Karp Algorithm for Maximum Bipartite Matching\n    # Partition vertices based on (r+c) % 2\n    U = [i for i, (r, c) in enumerate(valid_seats) if (r + c) % 2 == 0]\n    V = [i for i, (r, c) in enumerate(valid_seats) if (r + c) % 2 == 1]\n    \n    pair_u = [-1] * num_valid\n    pair_v = [-1] * num_valid\n    dist = [-1] * num_valid\n    \n    def bfs():\n        queue = deque()\n        for u in U:\n            if pair_u[u] == -1:\n                dist[u] = 0\n                queue.append(u)\n            else:\n                dist[u] = float('inf')\n        dist[-1] = float('inf')\n        \n        while queue:\n            u = queue.popleft()\n            if dist[u] < dist[-1]:\n                for v in adj[u]:\n                    if pair_v[v] == -1:\n                        if dist[pair_v[v]] == float('inf'):\n                            dist[pair_v[v]] = dist[u] + 1\n                            queue.append(pair_v[v])\n                    else:\n                        if dist[pair_v[v]] == float('inf'):\n                            dist[pair_v[v]] = dist[u] + 1\n                            queue.append(pair_v[v])\n        return dist[-1] != float('inf')\n    \n    def dfs(u):\n        if u != -1:\n            for v in adj[u]:\n                if dist[pair_v[v]] == dist[u] + 1:\n                    if dfs(pair_v[v]):\n                        pair_v[v] = u\n                        pair_u[u] = v\n                        return True\n            dist[u] = float('inf')\n            return False\n        return True\n        \n    matching = 0\n    while bfs():\n        for u in U:\n            if pair_u[u] == -1:\n                if dfs(u):\n                    matching += 1\n                    \n    max_mischievous = num_valid - matching\n    print(fixed_students + max_mischievous)\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an $n \\times m$ grid.\n   - Cells contain:\n     - `2`: Well-behaved student (fixed, cannot be moved or removed).\n     - `1`: Forbidden seat (cannot be occupied).\n     - `0`: Empty seat (can be occupied by a mischievous student or left empty).\n   - We need to decide which `0`s to fill with mischievous students.\n   - Rule: A mischievous student cheats if they have at least one neighbor (up, down, left, right) that is a student (either well-behaved `2` or mischievous).\n   - Goal: Maximize the total number of students (fixed `2`s + placed mischievous students) such that *no cheating occurs*.\n   - Wait, the rule says: \"A mischievous student will cheat if they have at least one neighboring student...\". It doesn't say well-behaved students cheat. It only restricts mischievous students.\n   - So, we can place a mischievous student in a `0` cell if and only if *none* of its 4 neighbors contain a student (`2` or another mischievous student).\n   - Actually, the condition is: For every placed mischievous student, all its neighbors must be either `1` (forbidden) or `0` (empty, not occupied by anyone). Wait, if a neighbor is `0` but we also place a student there, then they are adjacent students, which would cause cheating. So, mischievous students cannot be adjacent to *any* student (well-behaved or mischievous).\n   - This means mischievous students must be placed in `0` cells such that they are not adjacent to any `2` or any other placed mischievous student.\n   - In other words, the set of mischievous students must form an independent set on the grid graph, and additionally, they cannot be adjacent to any fixed `2`s.\n   - Wait, let's re-read carefully: \"A mischievous student will cheat if they have at least one neighboring student (in one of the four directions: up, down, left, right), whether well-behaved or mischievous.\"\n   - So, a mischievous student is safe if and only if all its neighbors are either `1` (forbidden) or `0` (empty/unoccupied).\n   - This implies that mischievous students cannot be adjacent to each other, and cannot be adjacent to well-behaved students (`2`).\n   - Therefore, we need to select a maximum number of `0` cells to place mischievous students such that no two selected cells are adjacent, and no selected cell is adjacent to a `2`.\n   - This is exactly the Maximum Independent Set problem on a grid graph, but with some vertices (the `2`s and their neighbors) removed or restricted. Actually, it's simpler: We can only place mischievous students in `0` cells that are not adjacent to any `2`. Let's call these \"valid empty seats\". Among these valid empty seats, we want to place the maximum number of students such that no two are adjacent. This is the Maximum Independent Set on the subgraph induced by these valid empty seats.\n   - Since the grid is bipartite, Maximum Independent Set on a bipartite graph can be solved efficiently using Maximum Matching (Konig's theorem: MIS size = Total vertices - Maximum Matching size).\n   - Wait, is the grid bipartite? Yes, a grid graph is bipartite. Any subgraph of a bipartite graph is also bipartite.\n   - So the algorithm would be:\n     1. Identify all `0` cells that are not adjacent to any `2`. Let this set be $S$.\n     2. Build a bipartite graph where vertices are cells in $S$, and edges connect adjacent cells in $S$.\n     3. Find the maximum matching in this bipartite graph.\n     4. The maximum number of mischievous students we can place is $|S| - \\text{max\\_matching}$.\n     5. Total students = (number of `2`s) + ($|S| - \\text{max\\_matching}$).\n   - Let's verify this logic.\n   - Condition: Mischievous students cannot be adjacent to any student (`2` or mischievous).\n   - So if we place a mischievous student at $(r,c)$, then $(r,c)$ must be `0`, and all neighbors must not be `2` or mischievous.\n   - This means neighbors must be `1` or `0` (empty). If a neighbor is `0`, we simply choose not to place a student there.\n   - So indeed, we just need to pick a subset of `0`s that are not adjacent to `2`s, such that no two picked cells are adjacent. This is exactly MIS on the subgraph of valid `0`s.\n   - Since the grid is bipartite, we can use max flow or Hopcroft-Karp to find max matching. $N, M \\le 80$, so total cells $\\le 6400$. Max matching is very fast.\n   - Wait, is there any catch? \"A mischievous student will cheat if they have at least one neighboring student...\". This applies to mischievous students. Well-behaved students don't cheat. So we don't care if `2`s are adjacent to each other or to `1`s. We only care about placing mischievous students safely.\n   - So the logic holds.\n\n2.  **Algorithm Details:**\n   - Read $n, m$.\n   - Read grid.\n   - Count fixed students: `cnt2`.\n   - Identify valid empty seats: cells with `0` where all 4 neighbors are not `2`. (Neighbors outside grid are ignored).\n   - Let these valid seats be vertices in a bipartite graph. Color them black/white based on $(r+c) \\% 2$.\n   - Add edges between adjacent valid seats.\n   - Compute maximum matching.\n   - Result = `cnt2` + (number of valid seats - max_matching).\n   - Complexity: $O(V \\sqrt{E})$ for Hopcroft-Karp, or $O(VE)$ for DFS/BFS based matching. With $V \\le 6400$, $E \\le 2V$, it's very fast. Python's recursion limit might be an issue for DFS matching, so I'll use BFS or increase recursion limit, or use a standard max flow implementation. Actually, a simple DFS-based bipartite matching is fine for $N,M \\le 80$. I'll implement Hopcroft-Karp or just DFS with recursion limit increased. Given constraints, DFS is simpler.\n   - Wait, Python's recursion limit is usually 1000. $V$ can be up to 6400. DFS matching might hit recursion limit. I'll use an iterative approach or set `sys.setrecursionlimit(10000)`. Or better, use BFS-based matching (Hopcroft-Karp) or just standard DFS with increased limit. I'll stick to DFS with `sys.setrecursionlimit(20000)`.\n\n   Let's double check the bipartite matching approach.\n   Grid is bipartite. We partition valid `0`s into two sets: $U$ (where $(r+c)$ is even) and $V$ (where $(r+c)$ is odd).\n   Edges only go between $U$ and $V$.\n   We want maximum independent set on this bipartite graph.\n   MIS size = Total vertices - Maximum Matching size.\n   This is correct.\n\n   Let's trace Example 1:\n   4 4\n   0100\n   0202\n   1000\n   2120\n   Grid:\n   (0,0)=0, (0,1)=1, (0,2)=0, (0,3)=0\n   (1,0)=0, (1,1)=2, (1,2)=0, (1,3)=2\n   (2,0)=1, (2,1)=0, (2,2)=0, (2,3)=0\n   (3,0)=2, (3,1)=1, (3,2)=2, (3,3)=0\n   Fixed `2`s: (1,1), (1,3), (3,0), (3,2) -> count = 4.\n   Valid `0`s (not adjacent to `2`):\n   Check each `0`:\n   (0,0): neighbors (0,1)=1, (1,0)=0. No `2`. Valid.\n   (0,2): neighbors (0,1)=1, (0,3)=0, (1,2)=0. No `2`. Valid.\n   (0,3): neighbors (0,2)=0, (1,3)=2. Adjacent to `2`. Invalid.\n   (1,0): neighbors (0,0)=0, (1,1)=2, (2,0)=1. Adjacent to `2`. Invalid.\n   (1",
+    "usage": {
+      "completion_tokens": 3534,
+      "prompt_tokens": 670,
+      "total_tokens": 4204,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 670,
+      "prompt_ms": 3511.227,
+      "prompt_per_token_ms": 5.240637313432836,
+      "prompt_per_second": 190.81648665836758,
+      "predicted_n": 3534,
+      "predicted_ms": 153221.188,
+      "predicted_per_token_ms": 43.368578545145766,
+      "predicted_per_second": 23.058168691395345
+    }
+  },
+  "metrics": {
+    "prompt_tokens": 670,
+    "completion_tokens": 3534,
+    "generation_tokens_per_second": 23.058168691395345
+  },
+  "extracted_code": "import sys\nfrom collections import deque\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    if not data:\n        return\n    \n    n, m = int(data[0]), int(data[1])\n    grid = data[2:2+n]\n    \n    fixed_students = 0\n    valid_seats = []\n    seat_to_idx = {}\n    \n    # Directions for neighbors\n    dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n    \n    # Identify valid empty seats (0s not adjacent to any 2)\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] == '2':\n                fixed_students += 1\n            elif grid[r][c] == '0':\n                is_valid = True\n                for dr, dc in dirs:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < m:\n                        if grid[nr][nc] == '2':\n                            is_valid = False\n                            break\n                if is_valid:\n                    idx = len(valid_seats)\n                    valid_seats.append((r, c))\n                    seat_to_idx[(r, c)] = idx\n                    \n    num_valid = len(valid_seats)\n    if num_valid == 0:\n        print(fixed_students)\n        return\n        \n    # Build adjacency list for bipartite graph\n    adj = [[] for _ in range(num_valid)]\n    for i, (r, c) in enumerate(valid_seats):\n        for dr, dc in dirs:\n            nr, nc = r + dr, c + dc\n            if (nr, nc) in seat_to_idx:\n                j = seat_to_idx[(nr, nc)]\n                adj[i].append(j)\n                \n    # Hopcroft-Karp Algorithm for Maximum Bipartite Matching\n    # Partition vertices based on (r+c) % 2\n    U = [i for i, (r, c) in enumerate(valid_seats) if (r + c) % 2 == 0]\n    V = [i for i, (r, c) in enumerate(valid_seats) if (r + c) % 2 == 1]\n    \n    pair_u = [-1] * num_valid\n    pair_v = [-1] * num_valid\n    dist = [-1] * num_valid\n    \n    def bfs():\n        queue = deque()\n        for u in U:\n            if pair_u[u] == -1:\n                dist[u] = 0\n                queue.append(u)\n            else:\n                dist[u] = float('inf')\n        dist[-1] = float('inf')\n        \n        while queue:\n            u = queue.popleft()\n            if dist[u] < dist[-1]:\n                for v in adj[u]:\n                    if pair_v[v] == -1:\n                        if dist[pair_v[v]] == float('inf'):\n                            dist[pair_v[v]] = dist[u] + 1\n                            queue.append(pair_v[v])\n                    else:\n                        if dist[pair_v[v]] == float('inf'):\n                            dist[pair_v[v]] = dist[u] + 1\n                            queue.append(pair_v[v])\n        return dist[-1] != float('inf')\n    \n    def dfs(u):\n        if u != -1:\n            for v in adj[u]:\n                if dist[pair_v[v]] == dist[u] + 1:\n                    if dfs(pair_v[v]):\n                        pair_v[v] = u\n                        pair_u[u] = v\n                        return True\n            dist[u] = float('inf')\n            return False\n        return True\n        \n    matching = 0\n    while bfs():\n        for u in U:\n            if pair_u[u] == -1:\n                if dfs(u):\n                    matching += 1\n                    \n    max_mischievous = num_valid - matching\n    print(fixed_students + max_mischievous)\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "WA",
+    "passed_cases": 95,
+    "total_cases": 130,
+    "max_case_seconds": 0.028210352000314742,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010588249999273103,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.008964128996012732,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009937806993548293,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010090481999213807,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011307815999316517,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010570054997515399,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010078815997985657,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009960161994968075,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009576493001077324,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009739476998220198,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010017194996180478,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009661231997597497,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01036332499643322,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010260343995469157,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009787087998120114,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010496743998373859,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010081191998324357,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009481415996560827,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010134039002878126,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010240939998766407,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01032250199932605,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009981793999031652,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010683612003049348,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009373588000016753,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010275454995280597,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010845436998351943,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01012122999964049,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01483663399994839,
+        "return_code": 0,
+        "stdout": "2117\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01543461099936394,
+        "return_code": 0,
+        "stdout": "2017\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012297080000280403,
+        "return_code": 0,
+        "stdout": "1289\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012888436001958326,
+        "return_code": 0,
+        "stdout": "1395\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012058150001394097,
+        "return_code": 0,
+        "stdout": "989\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013710801002162043,
+        "return_code": 0,
+        "stdout": "1462\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014166385000862647,
+        "return_code": 0,
+        "stdout": "1708\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014013956999406219,
+        "return_code": 0,
+        "stdout": "1742\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01307790499413386,
+        "return_code": 0,
+        "stdout": "1799\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0143653679988347,
+        "return_code": 0,
+        "stdout": "2070\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013337203003175091,
+        "return_code": 0,
+        "stdout": "1553\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012993332995392848,
+        "return_code": 0,
+        "stdout": "1272\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.013110123996739276,
+        "return_code": 0,
+        "stdout": "1513\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.013940837001428008,
+        "return_code": 0,
+        "stdout": "1925\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012820423005905468,
+        "return_code": 0,
+        "stdout": "1333\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015952126996126026,
+        "return_code": 0,
+        "stdout": "2691\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.014327634002256673,
+        "return_code": 0,
+        "stdout": "2161\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01568374000635231,
+        "return_code": 0,
+        "stdout": "2591\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014573831998859532,
+        "return_code": 0,
+        "stdout": "2394\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011795106998761185,
+        "return_code": 0,
+        "stdout": "1041\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01483521699992707,
+        "return_code": 0,
+        "stdout": "2440\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01297455100575462,
+        "return_code": 0,
+        "stdout": "1420\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012657063998631202,
+        "return_code": 0,
+        "stdout": "1376\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.014360116998432204,
+        "return_code": 0,
+        "stdout": "1915\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.015096754999831319,
+        "return_code": 0,
+        "stdout": "2313\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2z"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010273211999447085,
+        "return_code": 0,
+        "stdout": "81\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010296508997271303,
+        "return_code": 0,
+        "stdout": "76\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010087574002682231,
+        "return_code": 0,
+        "stdout": "72\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010877214997890405,
+        "return_code": 0,
+        "stdout": "62\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010724432999268174,
+        "return_code": 0,
+        "stdout": "58\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009820965002290905,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010470294000697322,
+        "return_code": 0,
+        "stdout": "74\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010069559000839945,
+        "return_code": 0,
+        "stdout": "68\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010399222002888564,
+        "return_code": 0,
+        "stdout": "75\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009605200997611973,
+        "return_code": 0,
+        "stdout": "80\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010505881000426598,
+        "return_code": 0,
+        "stdout": "86\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010077976003231015,
+        "return_code": 0,
+        "stdout": "60\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010032414997112937,
+        "return_code": 0,
+        "stdout": "63\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00970926700392738,
+        "return_code": 0,
+        "stdout": "69\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010261508003168274,
+        "return_code": 0,
+        "stdout": "70\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010628687996359076,
+        "return_code": 0,
+        "stdout": "71\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00986120799643686,
+        "return_code": 0,
+        "stdout": "68\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010116516998095904,
+        "return_code": 0,
+        "stdout": "51\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010637346997100394,
+        "return_code": 0,
+        "stdout": "52\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009440544999961276,
+        "return_code": 0,
+        "stdout": "65\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009926072001690045,
+        "return_code": 0,
+        "stdout": "67\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010512941000342835,
+        "return_code": 0,
+        "stdout": "54\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00987612299650209,
+        "return_code": 0,
+        "stdout": "55\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009897800999169704,
+        "return_code": 0,
+        "stdout": "54\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010269444006553385,
+        "return_code": 0,
+        "stdout": "61\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009723907001898624,
+        "return_code": 0,
+        "stdout": "50\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010322620000806637,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010467495994817,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012268206999578979,
+        "return_code": 0,
+        "stdout": "507\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011596356001973618,
+        "return_code": 0,
+        "stdout": "444\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01182019199768547,
+        "return_code": 0,
+        "stdout": "395\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012110218005545903,
+        "return_code": 0,
+        "stdout": "360\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011916146002477035,
+        "return_code": 0,
+        "stdout": "522\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011349941996741109,
+        "return_code": 0,
+        "stdout": "488\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011701909003022593,
+        "return_code": 0,
+        "stdout": "500\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01206918300158577,
+        "return_code": 0,
+        "stdout": "558\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010352728997531813,
+        "return_code": 0,
+        "stdout": "633\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010965128996758722,
+        "return_code": 0,
+        "stdout": "446\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011275422002654523,
+        "return_code": 0,
+        "stdout": "425\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012061920999258291,
+        "return_code": 0,
+        "stdout": "485\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011725600001227576,
+        "return_code": 0,
+        "stdout": "461\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01181208200432593,
+        "return_code": 0,
+        "stdout": "494\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010735309995652642,
+        "return_code": 0,
+        "stdout": "474\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010786620005092118,
+        "return_code": 0,
+        "stdout": "359\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011108197999419644,
+        "return_code": 0,
+        "stdout": "379\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011164775001816452,
+        "return_code": 0,
+        "stdout": "446\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011215289996471256,
+        "return_code": 0,
+        "stdout": "470\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010562793002463877,
+        "return_code": 0,
+        "stdout": "391\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010629361000610515,
+        "return_code": 0,
+        "stdout": "381\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011033489005058073,
+        "return_code": 0,
+        "stdout": "382\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010816023997904267,
+        "return_code": 0,
+        "stdout": "458\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010294682004314382,
+        "return_code": 0,
+        "stdout": "373\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010475668997969478,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010574437998002395,
+        "return_code": 0,
+        "stdout": "9\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.028210352000314742,
+        "return_code": 0,
+        "stdout": "2612\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.020957572996849194,
+        "return_code": 0,
+        "stdout": "2371\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017129878004197963,
+        "return_code": 0,
+        "stdout": "2112\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015282943000784144,
+        "return_code": 0,
+        "stdout": "1864\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01867839600163279,
+        "return_code": 0,
+        "stdout": "2703\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013902799000788946,
+        "return_code": 0,
+        "stdout": "2562\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012381587002892047,
+        "return_code": 0,
+        "stdout": "2688\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0111275579984067,
+        "return_code": 0,
+        "stdout": "2955\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010754154005553573,
+        "return_code": 0,
+        "stdout": "3376\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012799331001588143,
+        "return_code": 0,
+        "stdout": "2362\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011630929999228101,
+        "return_code": 0,
+        "stdout": "2239\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01698977200430818,
+        "return_code": 0,
+        "stdout": "2573\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012624959003005642,
+        "return_code": 0,
+        "stdout": "2393\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.020575389004079625,
+        "return_code": 0,
+        "stdout": "2643\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011502613997436129,
+        "return_code": 0,
+        "stdout": "2430\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012811742999474518,
+        "return_code": 0,
+        "stdout": "1918\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011716412998794112,
+        "return_code": 0,
+        "stdout": "2012\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0171679650011356,
+        "return_code": 0,
+        "stdout": "2390\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.013792129000648856,
+        "return_code": 0,
+        "stdout": "2473\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011634296999545768,
+        "return_code": 0,
+        "stdout": "2028\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011292711002170108,
+        "return_code": 0,
+        "stdout": "1997\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011750391997338738,
+        "return_code": 0,
+        "stdout": "2041\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010851241000636946,
+        "return_code": 0,
+        "stdout": "2322\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011251873002038337,
+        "return_code": 0,
+        "stdout": "1912\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5z"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "id": "chatcmpl-Fdbup8YSi9nRWh2NJFTbmmsbSTbD7Zha",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "### 문제 해결 접근법\n\n1. **문제 분석**: \n   - $n \\times n$ 행렬의 각 셀 $(r, c)$의 온도는 행 업데이트와 열 업데이트의 합으로 독립적으로 계산됩니다. 즉, $T(r, c) = R_r + C_c$입니다.\n   - 따라서 전체 행렬의 최대 온도는 $\\max_r R_r + \\max_c C_c$이고, 최소 온도는 $\\min_r R_r + \\min_c C_c$입니다.\n   - 목표는 $R$ 배열과 $C$ 배열의 최대/최소값을 찾는 것입니다.\n\n2. **업데이트 규칙**:\n   - **D (Down) $x$**: 행 $n-x+1$부터 $n$까지, 행 $i$에 $i - n + x$를 더합니다.\n   - **R (Right) $x$**: 열 $n-x+1$부터 $n$까지, 열 $j$에 $j - n + x$를 더합니다.\n   - **L (Left) $x$**: 열 $1$부터 $x$까지, 열 $j$에 $x - j + 1$을 더합니다.\n   - 각 업데이트는 특정 구간에서 인덱스에 대한 선형 함수(등차수열)를 추가합니다.\n\n3. **최적화 전략**:\n   - $n$이 매우 크므로 배열을 직접 유지할 수 없습니다. 하지만 $q$개의 업데이트로 인해 함수의 기울기가 변하는 지점(경계점)은 최대 $2q$개뿐입니다.\n   - 구간에서 정의된 함수는 선형이므로, 최대/최소값은 반드시 경계점 중 하나에서 발생합니다.\n   - 모든 업데이트의 경계점($1, n, n-x+1, x$)을 수집하고 정렬한 후, 각 지점에서 $R$과 $C$의 값을 계산하여 전역 최대/최소를 찾습니다.\n   - 값 계산은 각 업데이트가 현재 인덱스에 기여하는 값을 $O(1)$에 계산하여 누적합니다.\n\n4. **복잡도**:\n   - **시간 복잡도**: $O(q \\log q)$ (경계점 정렬 및 각 지점에서의 $O(q)$ 계산).\n   - **공간 복잡도**: $O(q)$ (업데이트 정보 및 경계점 저장).\n\n### Python 3 코드\n\n```python\nimport sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    \n    n = int(data[0])\n    q = int(data[1])\n    \n    ops = []\n    boundaries = {1, n}\n    \n    idx = 2\n    for _ in range(q):\n        s = data[idx]\n        x = int(data[idx+1])\n        idx += 2\n        ops.append((s, x))\n        \n        if s == 'D':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'R':\n            boundaries.add(n - x + 1)\n            boundaries.add(n - x)\n        elif s == 'L':\n            boundaries.add(x)\n            boundaries.add(x + 1)\n            \n    sorted_pts = sorted(list(boundaries))\n    \n    max_r = -float('inf')\n    min_r = float('inf')\n    max_c = -float('inf')\n    min_c = float('inf')\n    \n    for pt in sorted_pts:\n        if pt < 1 or pt > n:\n            continue\n            \n        val_r = 0\n        val_c = 0\n        \n        for s, x in ops:\n            if s == 'D':\n                if n - x + 1 <= pt <= n:\n                    val_r += pt - n + x\n            elif s == 'R':\n                if n - x + 1 <= pt <= n:\n                    val_c += pt - n + x\n            elif s == 'L':\n                if 1 <= pt <= x:\n                    val_c += x - pt + 1\n                    \n        if val_r > max_r: max_r = val_r\n        if val_r < min_r: min_r = val_r\n        if val_c > max_c: max_c = val_c\n        if val_c < min_c: min_c = val_c\n        \n    print((max_r + max_c) - (min_r + min_c))\n\nif __name__ == '__main__':\n    solve()\n```",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null,
+        "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an $n \\times n$ matrix of temperatures, initially all 0.\n   - $n$ can be up to $10^9$, $q$ up to $10^5$.\n   - We perform $q$ operations. Each operation specifies a side (L, R, D) and a duration $x$.\n   - Each operation increases temperatures in certain rows/columns by a decreasing sequence of values.\n   - Specifically:\n     - **Down (D) side:** Baking on the bottom edge. The $n$-th row gets $+x$, $(n-1)$-th row gets $+(x-1)$, ..., down to row $n-x+1$ getting $+1$. This affects *all columns* in those rows. So it's a row-wise update.\n     - **Right (R) side:** Baking on the right edge. The $n$-th column gets $+x$, $(n-1)$-th column gets $+(x-1)$, ..., down to column $n-x+1$ getting $+1$. This affects *all rows* in those columns. So it's a column-wise update.\n     - **Left (L) side:** Baking on the left edge. The 1st column gets $+x$, 2nd column gets $+(x-1)$, ..., down to $x$-th column getting $+1$. This affects *all rows* in those columns. So it's a column-wise update.\n   - We need to find the difference between the maximum and minimum temperature in the entire $n \\times n$ matrix after all operations.\n\n2.  **Analyze the Updates:**\n   - The matrix is huge ($10^9 \\times 10^9$), so we cannot simulate it.\n   - Each operation adds a value to a set of rows or columns.\n   - The temperature of a cell $(r, c)$ is the sum of contributions from all row updates and all column updates.\n   - Let $R_i$ be the total value added to row $i$ from all \"Down\" operations.\n   - Let $C_j$ be the total value added to column $j$ from all \"Left\" and \"Right\" operations.\n   - Then, the temperature of cell $(r, c)$ is $R_r + C_c$.\n   - We need $\\max_{r,c} (R_r + C_c) - \\min_{r,c} (R_r + C_c)$.\n   - This simplifies to $(\\max_r R_r + \\max_c C_c) - (\\min_r R_r + \\min_c C_c)$.\n   - So we just need to compute the maximum and minimum values in the row array $R$ and column array $C$.\n\n3.  **Model Row and Column Updates:**\n   - Initially, $R_i = 0$ for all $i \\in [1, n]$, and $C_j = 0$ for all $j \\in [1, n]$.\n   - **Down (D, x):** Adds $x, x-1, \\dots, 1$ to rows $n, n-1, \\dots, n-x+1$.\n     - This is a range update on rows: for $i \\in [n-x+1, n]$, $R_i \\leftarrow R_i + (n - i + 1)$.\n     - Wait, let's check the indexing carefully.\n     - Row $n$ gets $+x$. Row $n-1$ gets $+(x-1)$. Row $n-k$ gets $+(x-k)$.\n     - So for row index $i$ (1-based from top), the added value is $x - (n - i) = i - n + x$.\n     - This applies for $i$ from $n-x+1$ to $n$.\n     - This is an arithmetic progression added to a suffix of rows.\n   - **Right (R, x):** Adds $x, x-1, \\dots, 1$ to columns $n, n-1, \\dots, n-x+1$.\n     - Similar to Down, but on columns. For column $j$, added value is $j - n + x$.\n     - Applies for $j \\in [n-x+1, n]$.\n   - **Left (L, x):** Adds $x, x-1, \\dots, 1$ to columns $1, 2, \\dots, x$.\n     - For column $j$, added value is $x - (j - 1) = x - j + 1$.\n     - Applies for $j \\in [1, x]$.\n\n   - So we have three types of updates:\n     1. D x: Add arithmetic progression to $R[n-x+1 \\dots n]$.\n     2. R x: Add arithmetic progression to $C[n-x+1 \\dots n]$.\n     3. L x: Add arithmetic progression to $C[1 \\dots x]$.\n\n   - We need to maintain the max and min of $R$ and $C$ after all updates. Since $n$ is huge, we can't store arrays. But we only have $q$ updates. The functions $R_i$ and $C_j$ are piecewise linear (specifically, sums of arithmetic progressions).\n   - Actually, each update adds a linear function $f(i) = i + b$ over a range. The sum of such functions is also a linear function over each segment defined by the update boundaries.\n   - The boundaries are all of the form $1, n, n-x+1, x$. There are at most $2q+2$ distinct boundaries.\n   - We can use a coordinate compression or sweep-line approach, or simply track the max/min analytically.\n   - Wait, $R_i$ and $C_j$ are sums of terms like $\\max(0, \\min(i, \\text{end}) - \\text{start} + 1 + \\text{offset})$. Actually, each update adds a value that depends linearly on the index within the range.\n   - Let's formalize $R_i$:\n     $R_i = \\sum_{\\text{D ops}} \\max(0, \\min(i, n) - (n - x + 1) + 1) \\times \\text{something?}$ No.\n     For a D op with parameter $x$, the value added to row $i$ is:\n     $v_D(i, x) = \\begin{cases} i - n + x & \\text{if } n-x+1 \\le i \\le n \\\\ 0 & \\text{otherwise} \\end{cases}$\n     This is a linear function of $i$ on the interval $[n-x+1, n]$.\n     Similarly, for R op with parameter $x$:\n     $v_R(j, x) = \\begin{cases} j - n + x & \\text{if } n-x+1 \\le j \\le n \\\\ 0 & \\text{otherwise} \\end{cases}$\n     For L op with parameter $x$:\n     $v_L(j, x) = \\begin{cases} x - j + 1 & \\text{if } 1 \\le j \\le x \\\\ 0 & \\text{otherwise} \\end{cases}$\n\n   - So $R_i$ is a sum of functions of the form $\\max(0, \\min(i, n) - a + 1)$? Actually, it's simpler: each update adds a term that is linear in $i$ on some interval, and 0 elsewhere.\n   - The sum of such functions is a piecewise linear function. The \"breakpoints\" occur at $1, n, n-x+1, x$ for each operation.\n   - Since $q \\le 10^5$, there are at most $2 \\cdot 10^5$ breakpoints. We can collect all interesting indices, sort them, and evaluate the function at these indices (and possibly their neighbors) to find the global max and min.\n   - Wait, a piecewise linear function on an interval achieves its max/min at the endpoints of the linear segments. So evaluating at all breakpoints is sufficient.\n   - Let's verify: $R_i$ is a sum of functions $f_k(i)$. Each $f_k(i)$ is either 0 or $i + c_k$ on some interval $[l_k, r_k]$. So $R_i = A \\cdot i + B$ on each segment between breakpoints. Since it's linear, extrema are at the boundaries.\n   - So we can collect all candidate indices: $1, n$, and for each op: $n-x+1, n-x, x, x+1$ (to be safe, include boundaries and maybe $\\pm 1$). Actually, just $n-x+1$ and $n$ for D/R, and $1$ and $x$ for L. Also include $1$ and $n$ globally.\n   - Wait, for L op, the interval is $[1, x]$. The function is $x - i + 1$, which is decreasing in $i$. So max at $i=1$,"
+      }
+    }
+  ],
+  "created": 1789470698,
+  "model": "qwen36",
+  "object": "chat.completion",
+  "metadata": null,
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": "b10975-4c9233c03",
+  "usage": {
+    "completion_tokens": 3037,
+    "prompt_tokens": 1373,
+    "total_tokens": 4410,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 154,
+      "image_tokens": null,
+      "text_tokens": null
+    }
+  },
+  "timings": {
+    "cache_n": 154,
+    "prompt_n": 1219,
+    "prompt_ms": 5369.646,
+    "prompt_per_token_ms": 4.404959803117309,
+    "prompt_per_second": 227.01682755250533,
+    "predicted_n": 3037,
+    "predicted_ms": 126120.284,
+    "predicted_per_token_ms": 41.54159552042161,
+    "predicted_per_second": 24.072257877249942
+  }
+}
