@@ -105,6 +105,5 @@ def main():
 
         print_result_summary(name, saved_response, output_path)
 
-
         client.generate(model=model, prompt="", keep_alive=0)
         logger.info("[%s] 모델 해제 완료", name)

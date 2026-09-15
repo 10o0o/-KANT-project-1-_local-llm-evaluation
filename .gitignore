@@ -13,3 +13,9 @@ dist/
 *.safetensors
 *.pt
 *.pth
+
+data/coci/**/*.zip
+data/coci/**/*.pdf
+data/coci/**/testdata/
+
+tmp.md
