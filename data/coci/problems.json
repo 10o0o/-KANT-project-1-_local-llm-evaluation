@@ -16,7 +16,7 @@
   "name": "struktura",
   "season": "2025_2026",
   "contest": 5,
-  "difficulty": 1,
+  "difficulty": 5,
   "difficulty_reason": "기본 리스트 조작과 상태 갱신으로 해결할 수 있으며 입력 크기도 작다.",
   "problem_dir": "data/coci/2025_2026/contest5/testdata/struktura",
   "statement_path": "data/coci/2025_2026/contest5/statements/struktura.md",

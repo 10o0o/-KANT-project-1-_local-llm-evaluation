@@ -15,6 +15,10 @@ MODEL_NAME = "qwen36"
 
 PROBLEM_ID = "coci_2025_2026_c5_struktura"
 
+TEMPERATURE = 0
+MAX_TOKENS = 8192
+REASONING_BUDGET_TOKENS = 4096
+
 
 def main():
     project_root = Path(__file__).resolve().parents[1]
@@ -63,9 +67,9 @@ def main():
         client,
         MODEL,
         prompt,
-        temperature=0,
-        max_tokens=4096,
-        reasoning_budget_tokens=2048,
+        temperature=TEMPERATURE,
+        max_tokens=MAX_TOKENS,
+        reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
     )
 
     response_data = response.model_dump()
@@ -147,9 +151,9 @@ def main():
             "time_limit_seconds": time_limit_seconds,
         },
         "generation_config": {
-            "temperature": 0,
-            "max_tokens": 4096,
-            "reasoning_budget_tokens": 2048,
+            "temperature": TEMPERATURE,
+            "max_tokens": MAX_TOKENS,
+            "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
         },
         "generation": {
             "finish_reason": response_data["choices"][0]["finish_reason"],

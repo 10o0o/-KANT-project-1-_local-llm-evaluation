@@ -5,6 +5,8 @@ def create_client(base_url: str = "http://127.0.0.1:8080/v1"):
     return OpenAI(
         base_url=base_url,
         api_key="local",
+        timeout=3600.0,
+        max_retries=0,
     )
 
 
