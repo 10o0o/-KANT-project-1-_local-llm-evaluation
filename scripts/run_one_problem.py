@@ -79,12 +79,6 @@ def main():
     print("\n===== 모델 Thinking =====\n")
     print(reasoning_text)
 
-    print("\n===== 모델 최종 답변 =====\n")
-    print(response_text)
-
-    print("\n===== 모델 원본 답변 =====\n")
-    print(response_text)
-
     code = extract_python_code(response_text)
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
