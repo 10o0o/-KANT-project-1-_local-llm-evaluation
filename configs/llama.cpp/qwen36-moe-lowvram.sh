@@ -10,7 +10,7 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --host 127.0.0.1 \
   --port 8080 \
   --ctx-size 8192 \
-  --n-predict 4096 \
+  --n-predict 6144 \
   --parallel 1 \
   --gpu-layers all \
   --n-cpu-moe 28 \
