@@ -43,7 +43,7 @@ PARAMETER num_ctx 4096
 
 - 전체 digest: `5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251`.
 - 기본 호출에서 Context 4096과 응답 저장·재읽기를 확인했다. 당시 CLI의 CPU/GPU 적재 비율은 73%/27%였다. 자세한 진행 근거는 [STATE](../STATE.md)에 기록했다.
-- 현재 후보는 Qwen과 Gemma다. Ollama에서 Skare 평가를 시도했으나 thinking 중 생성 한도가 소진돼 최종 답변이 비었다. 현재 upstream llama.cpp의 reasoning budget을 활용하는 전환을 준비 중이며 정상 로딩·답변 생성은 아직 미확인이다. 과거 Ollama 식별값은 보존하며 새 GGUF와 같은 파일이라고 간주하지 않는다. HyperCLOVA 제외 이력과 이번 전환은 별개다.
+- 현재 후보는 Qwen과 Gemma다. Gemma standalone GGUF 다운로드와 llama.cpp 서버 실행을 완료하고 Skare AC를 직접 확인했다. 저장 응답의 stop 종료·최종 답변·후보 코드는 AI가 확인했으며 AC 판정은 직접 실행 확인에 근거한다. Qwen standalone GGUF는 다운로드 중이며 실행은 미확인이다. 과거 Ollama 식별값은 보존하며 새 GGUF와 같은 파일이라고 간주하지 않는다. HyperCLOVA 제외 이력과 이번 전환은 별개다.
 
 ## 제외 이력: HyperCLOVA
 

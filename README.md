@@ -2,7 +2,7 @@
 
 사용자가 환경 구성부터 구현·실험·평가·발표까지 직접 진행하고, AI는 설명과 리뷰를 맡는 저장소입니다.
 
-현재 후보는 Qwen과 Gemma다. Ollama에서 Skare 평가를 시도했으나 thinking 중 생성 한도가 소진돼 최종 답변이 비었다. 현재 upstream llama.cpp의 reasoning budget을 활용하는 전환을 준비 중이며 정상 로딩·답변 생성은 아직 미확인이다. [현재 학습 상태](STATE.md)에 근거를 기록했습니다.
+현재 후보는 Qwen과 Gemma다. Gemma standalone GGUF 다운로드와 llama.cpp 서버 실행을 완료하고 Skare AC를 직접 확인했다. 저장 응답의 stop 종료·최종 답변·후보 코드는 AI가 확인했으며 AC 판정은 직접 실행 확인에 근거한다. Qwen standalone GGUF는 다운로드 중이며 실행은 미확인이다. [현재 학습 상태](STATE.md)에 근거를 기록했습니다.
 
 [직접 수정한 코드](src/llm_eval/local_chat.py)와 [실행별 결과](results/)를 보존합니다. HyperCLOVA는 현재 구성의 지시 수행 성능 미달로 제외했습니다. 이번 응답은 연결·측정 연습이며 본 실험이나 품질 평가 완료 근거는 아닙니다.
 
@@ -12,7 +12,7 @@
 2. [현재 학습 상태](STATE.md)에서 지금 단계와 다음 한 작업을 확인합니다.
 3. [단계별 안내](docs/guide.md)를 따라 직접 시도하고, 작성한 코드와 실행 결과를 바탕으로 AI와 대화합니다.
 
-다음 한 작업은 **다운로드 완료·파일 상태 확인 후 Gemma 정상 로딩을 직접 확인하기**입니다. [현재 상태](STATE.md)의 안내를 따릅니다. STEP 2의 필수 통과 조건과 확인 방법은 사용 사례에 맞게 구체화할 부분이 남아 있습니다.
+다음 한 작업은 **강화한 프롬프트·추출 정책으로 Gemma를 직접 재실행해 결과 확인하기**입니다. [현재 상태](STATE.md)의 안내를 따릅니다. STEP 2의 필수 통과 조건과 확인 방법은 사용 사례에 맞게 구체화할 부분이 남아 있습니다.
 
 AI의 역할과 학습 완료 판단 기준은 [튜터 지침](AGENTS.md)에 있습니다. “다음 단계”, “도와줘”는 프로젝트 구현 대행 요청으로 취급하지 않습니다.
 
@@ -51,7 +51,7 @@ AI의 역할과 학습 완료 판단 기준은 [튜터 지침](AGENTS.md)에 있
 
 ## 환경에 관한 구분
 
-발제의 공통 환경은 Windows, VS Code, uv, Python 3.12, Ollama입니다. 사용자가 선택한 실습 기준은 **현재 PC의 WSL2**이며, 환경을 직접 구성하고 차이를 기록합니다. 두 로컬 후보는 동일 PC에서 하나씩 비교합니다. 현재 llama.cpp 전환 준비 중이며 실제 런타임·설정·측정 출처를 기록합니다. 런타임이 다른 과거 결과와 속도를 직접 비교해 모델 자체의 차이로 단정하지 않습니다.
+발제의 공통 환경은 Windows, VS Code, uv, Python 3.12, Ollama입니다. 사용자가 선택한 실습 기준은 **현재 PC의 WSL2**이며, 환경을 직접 구성하고 차이를 기록합니다. 두 로컬 후보는 동일 PC에서 하나씩 비교합니다. Gemma는 llama.cpp로 실행을 확인했고 Qwen은 전환 준비 중이며 실제 런타임·설정·측정 출처를 기록합니다. 런타임이 다른 과거 결과와 속도를 직접 비교해 모델 자체의 차이로 단정하지 않습니다.
 
 이전 AI 작업의 코드·설정·가상환경은 저장소 밖에 백업했습니다. 시스템 도구와 원본 예제는 유지했으며, 백업은 사용자 실습이나 제출 근거가 아닙니다.
 
@@ -66,3 +66,19 @@ uv run python scripts/run_local.py
 `src/llm_eval/local_chat.py`의 `main()`에 호출·측정·저장 실습이 있고, `utils.py`는 로그 설정·지표 계산·VRAM 조회·Rich 결과 출력을 담당합니다. 설치 설정은 [Hatch 공식 문서](https://hatch.pypa.io/latest/config/build/)의 src 패키지 구성을 따릅니다. import만으로는 모델 호출이나 결과 폴더 생성이 일어나지 않습니다.
 
 기존 명령 `uv run python src/scripts/ollama_chat.py`도 같은 `main()`을 호출합니다. 두 진입점 모두 설치된 패키지를 사용하며, 결과는 이 체크아웃의 `results/`에 저장합니다. HyperCLOVA 스크립트는 진단 이력으로 기존 위치에 보존합니다.
+
+## Gemma 단일 문제 실행
+
+서버를 별도 터미널에서 실행한 뒤 저장소 루트에서 문제 실행기를 실행합니다.
+
+```bash
+bash configs/llama.cpp/gemma4.sh
+```
+
+```bash
+uv run python scripts/run_one_problem.py
+```
+
+서버는 Context 8192, 출력 한도 4096, reasoning budget 2048, parallel 1을 사용합니다. `LLAMA_ROOT`와 `GEMMA4_MODEL_PATH`로 로컬 런타임·가중치 경로를 지정할 수 있습니다. 서버는 `127.0.0.1:8080`, Python은 `/v1` API에 연결합니다.
+
+문제문 5개는 `data/coci/2025_2026/contest5/statements/`에 보존합니다. Skare만 모델 입력에서 메타데이터를 제거했고 다른 네 문제는 정리가 남아 있습니다. PDF·채점 데이터는 기존 ignore 정책에 따라 별도로 준비합니다.

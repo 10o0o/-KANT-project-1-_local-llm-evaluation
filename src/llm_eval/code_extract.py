@@ -8,8 +8,11 @@ def extract_python_code(response_text: str) -> str | None:
         flags=re.DOTALL | re.IGNORECASE,
     )
 
-    if python_blocks:
+    if len(python_blocks) == 1:
         return python_blocks[0].strip()
+
+    if len(python_blocks) > 1:
+        return python_blocks[-1].strip()
 
     generic_blocks = re.findall(
         r"```\s*(.*?)```",
@@ -18,7 +21,7 @@ def extract_python_code(response_text: str) -> str | None:
     )
 
     if generic_blocks:
-        return generic_blocks[0].strip()
+        return generic_blocks[-1].strip()
 
     return None
 

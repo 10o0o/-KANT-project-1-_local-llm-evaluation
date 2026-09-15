@@ -2,9 +2,9 @@
 
 ## 현재 단계
 
-**2026-09-15: 단일 문제 평가 연결 구현 후 빈 최종 답변을 확인했고 llama.cpp 전환 준비 중이다.**
+**2026-09-15: Gemma llama.cpp 실행과 Skare AC를 직접 확인했다. 강화한 프롬프트·추출 정책의 재실행 확인은 남아 있다.**
 
-현재 후보는 Qwen과 Gemma다. Ollama에서 Skare 평가를 시도했으나 thinking 중 생성 한도가 소진돼 최종 답변이 비었다. 현재 upstream llama.cpp의 reasoning budget을 활용하는 전환을 준비 중이며 정상 로딩·답변 생성은 아직 미확인이다. HyperCLOVA는 현재 구성에서 지시 수행 성능이 부족하다고 판단해 제외했다. [모델 조사](docs/models.md)와 [요구사항](docs/requirements.md)을 기준으로 이어간다.
+현재 후보는 Qwen과 Gemma다. Gemma standalone GGUF 다운로드와 llama.cpp 서버 실행을 완료하고 Skare AC를 직접 확인했다. 저장 응답의 stop 종료·최종 답변·후보 코드는 AI가 확인했으며 AC 판정은 직접 실행 확인에 근거한다. Qwen standalone GGUF는 다운로드 중이며 실행은 미확인이다. HyperCLOVA는 현재 구성에서 지시 수행 성능이 부족하다고 판단해 제외했다. [모델 조사](docs/models.md)와 [요구사항](docs/requirements.md)을 기준으로 이어간다.
 
 ## 2026-09-14 수행 근거
 
@@ -35,7 +35,7 @@
 
 ## 다음 한 작업
 
-**다운로드 완료·파일 상태 확인 후 Gemma 정상 로딩을 직접 확인한다.**
+**강화한 프롬프트·추출 정책으로 Gemma를 직접 재실행해 결과를 확인한다.**
 
 ## 별도 참고: 이전 AI 작업
 
@@ -80,4 +80,12 @@ AI 조회에서 `/home/jake/workspace/local-llm/runtimes/llama.cpp`의 빌드와
 
 직접 제공한 llama-server 로그는 Gemma 경로에서 `expected 1014, got 658`로 로딩 실패했음을 보여준다. 당시 경로의 파일과 현재 파일의 동일성은 미확인이다. Ollama blob을 삭제했다는 경과도 남겼다. [공식 compat 설명](https://github.com/ollama/ollama/blob/main/llama/compat/README.md)은 호환 계층의 존재를 설명하지만 이번 오류의 직접 원인을 확정하지는 않는다.
 
-런타임 전환은 개인 선택이며 발제 측 승인으로 표현하지 않는다. 본 실험 횟수·공통 질문·품질 평가와 원본 보존 요건은 유지한다. 현재 Python 실행기는 여전히 Ollama용이며 llama.cpp 호출 연결은 별도 실습이다.
+런타임 전환은 개인 선택이며 발제 측 승인으로 표현하지 않는다. 본 실험 횟수·공통 질문·품질 평가와 원본 보존 요건은 유지한다. 이 시점의 Python 실행기는 Ollama용이었다. 이후 연결 결과는 아래 후속 기록에 남긴다.
+
+## 2026-09-15 Gemma 실행 성공과 추출 정책 보완
+
+Gemma 다운로드·서버 실행 후 Skare AC를 직접 확인했다. [저장 결과](results/20260915_160840_518693/gemma4/skare/)에는 stop 종료, 최종 답변 3859자, reasoning 5049자와 candidate.py가 있다. judge.json에는 설정·응답만 있어 통과 수와 코드 실행 시간은 저장 근거 미확보다. AI가 모델·채점을 재실행하지 않았다.
+
+답변에 Python 블록이 2개 있었고 기존 추출기는 첫 블록을 저장했다. 해당 블록에는 잘못된 solve()와 수정 main()이 공존했지만 실제 호출된 main()으로 통과했다. 기존 후보는 수정하지 않았다. 이후 프롬프트에 코드 블록 하나·중간 코드와 자체 수정본 금지를 추가했고 추출기를 마지막 Python 블록, 없으면 마지막 일반 블록 선택으로 바꿨다. 새 정책의 재실행 결과는 아직 확인하지 않았다.
+
+Qwen standalone GGUF는 다운로드 중이라고 경과를 남겼으며 실행 성공은 미확인이다. Gemma 로딩 오류는 이후 정상 실행을 확인했지만 과거 실패의 직접 원인은 미확정이다. 본 실험 전체 완료로 집계하지 않는다.

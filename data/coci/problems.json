@@ -1,27 +1,14 @@
-[
-  {
-    "id": "coci_2025_2026_c5_skare",
-    "name": "skare",
-    "season": "2025_2026",
-    "contest": 5,
-    "difficulty": 1,
-    "difficulty_reason": "기본 리스트 조작과 상태 갱신으로 해결할 수 있으며 입력 크기도 작다.",
-    "problem_dir": "data/coci/2025_2026/contest5/testdata/skare",
-    "statement_file": "statements.md",
-    "time_limit_seconds": 3.0,
-    "memory_limit_mib": 512,
-    "judge_type": "token",
-    "exclude_dummy": true,
-    "title": "Škare",
-    "score": 50,
-    "source": {
-      "file": "data/coci/2025_2026/contest5/contest5_tasks.pdf",
-      "pdf_pages": [
-        2,
-        3
-      ],
-      "original_header": "Croatian Open Competition in Informatics — Round 5, February 21th 2026"
-    },
-    "scoring_markdown": "| Subtask | Points | Constraints |\n| --- | --- | --- |\n| 1 | 9 | $k \\le 3$ |\n| 2 | 6 | $l_i=1$ for all $i=1,...,k$ |\n| 3 | 13 | $x_i=i$ for all $i=1,...,k$ |\n| 4 | 22 | No additional constraints. |"
-  }
-]
+{
+  "id": "coci_2025_2026_c5_skare",
+  "name": "skare",
+  "season": "2025_2026",
+  "contest": 5,
+  "difficulty": 1,
+  "difficulty_reason": "기본 리스트 조작과 상태 갱신으로 해결할 수 있으며 입력 크기도 작다.",
+  "problem_dir": "data/coci/2025_2026/contest5/testdata/skare",
+  "statement_path": "data/coci/2025_2026/contest5/statements/skare.md",
+  "time_limit_seconds": 3.0,
+  "memory_limit_mib": 512,
+  "judge_type": "token",
+  "title": "Škare"
+}
