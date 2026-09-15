@@ -30,18 +30,20 @@ def parse_args():
         help="Problem ID defined in data/coci/problems.json.",
     )
 
+    # Round 2 requires a different self-review prompt and is intentionally
+    # disabled until that runner is implemented.
     parser.add_argument(
         "--round",
         required=True,
         type=int,
-        choices=[1, 2],
-        help="Benchmark round: 1=initial solution, 2=self-review of Round 1.",
+        choices=[1],
+        help="Benchmark round. Currently only Round 1 is implemented.",
     )
 
     return parser.parse_args()
 
 
-def build_round1_prompt(statement: str) -> str:
+def build_prompt(statement: str) -> str:
     return f"""
 다음 알고리즘 문제를 해결하세요.
 
@@ -59,102 +61,6 @@ def build_round1_prompt(statement: str) -> str:
 
 {statement}
 """.strip()
-
-
-def build_round2_prompt(statement: str, previous_answer: str) -> str:
-    return f"""
-다음 알고리즘 문제와 이전 답변을 독립적으로 다시 검토하세요.
-
-중요:
-- 이전 답변이 맞거나 틀렸다고 미리 가정하지 마세요.
-- 외부 채점 결과나 정답 여부에 대한 정보는 제공되지 않습니다.
-- 문제 조건과 이전 답변을 바탕으로 스스로 검증하세요.
-
-검토 요구사항:
-- 문제 조건을 처음부터 다시 확인하세요.
-- 알고리즘의 논리적 오류와 누락된 경계 조건을 확인하세요.
-- 시간 복잡도와 공간 복잡도가 제한 안에서 적절한지 확인하세요.
-- 설명과 실제 구현이 서로 일치하는지 확인하세요.
-- 구현상의 인덱스, 수식, 자료형, 입출력, 예외 조건 오류를 확인하세요.
-- 오류가 있다고 판단하면 수정하세요.
-- 오류가 없다고 판단하면 기존 핵심 접근을 유지해도 됩니다.
-- 최종적으로 문제 해결 접근법을 설명하세요.
-- 시간 복잡도와 공간 복잡도를 설명하세요.
-- 실행 가능한 Python 3 정답 코드를 제공하세요.
-- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.
-- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.
-- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.
-- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.
-- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.
-
-문제:
-
-{statement}
-
-이전 답변:
-
---- BEGIN ROUND 1 ANSWER ---
-{previous_answer}
---- END ROUND 1 ANSWER ---
-""".strip()
-
-
-def load_round1_source(
-    project_root: Path,
-    problem_name: str,
-    model: str,
-    problem_id: str,
-):
-    result_path = (
-        project_root
-        / "results"
-        / "benchmark"
-        / "round_1"
-        / problem_name
-        / model
-        / "result.json"
-    )
-
-    if not result_path.exists():
-        raise SystemExit(
-            "\nABORT: Round 2 requires the matching Round 1 result\n"
-            f"model   : {model}\n"
-            f"problem : {problem_id}\n"
-            f"expected: {result_path}\n"
-        )
-
-    try:
-        record = json.loads(result_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise SystemExit(
-            "\nABORT: failed to read Round 1 result\n"
-            f"path  : {result_path}\n"
-            f"error : {exc}\n"
-        ) from exc
-
-    if (
-        record.get("experiment", {}).get("round") != 1
-        or record.get("model", {}).get("id") != model
-        or record.get("problem", {}).get("id") != problem_id
-    ):
-        raise SystemExit(
-            "\nABORT: Round 1 result metadata does not match the requested run\n"
-            f"path    : {result_path}\n"
-            f"model   : {model}\n"
-            f"problem : {problem_id}\n"
-        )
-
-    previous_answer = record.get("generation", {}).get("content") or ""
-
-    if not previous_answer.strip():
-        raise SystemExit(
-            "\nABORT: Round 1 final answer is empty; cannot run self-review\n"
-            f"path    : {result_path}\n"
-            f"model   : {model}\n"
-            f"problem : {problem_id}\n"
-        )
-
-    return result_path, record, previous_answer
 
 
 def main():
@@ -191,30 +97,12 @@ def main():
     time_limit_seconds = problem["time_limit_seconds"]
 
     statement = statement_path.read_text(encoding="utf-8")
-
-    source_result_path = None
-    source_record = None
-
-    if args.round == 1:
-        prompt = build_round1_prompt(statement)
-        prompt_type = "initial_solution"
-    else:
-        source_result_path, source_record, previous_answer = load_round1_source(
-            project_root=project_root,
-            problem_name=problem_name,
-            model=model,
-            problem_id=problem["id"],
-        )
-        prompt = build_round2_prompt(statement, previous_answer)
-        prompt_type = "self_review"
+    prompt = build_prompt(statement)
 
     print("===== Benchmark Run =====")
     print("round:", args.round)
     print("model:", model)
     print("problem:", problem["id"])
-    print("prompt_type:", prompt_type)
-    if source_result_path is not None:
-        print("round_1_source:", source_result_path)
     print("temperature:", TEMPERATURE)
     print("max_tokens:", MAX_TOKENS)
     print("reasoning_budget_tokens:", REASONING_BUDGET_TOKENS)
@@ -282,19 +170,12 @@ def main():
     usage = response_data.get("usage") or {}
     timings = response_data.get("timings") or {}
 
-    experiment = {
-        "type": "benchmark",
-        "round": args.round,
-        "prompt_type": prompt_type,
-    }
-
-    if source_record is not None:
-        experiment["source_round"] = 1
-        experiment["source_run_id"] = source_record.get("run_id")
-
     record = {
         "run_id": run_id,
-        "experiment": experiment,
+        "experiment": {
+            "type": "benchmark",
+            "round": args.round,
+        },
         "model": {
             "id": model,
             "name": model,
@@ -347,7 +228,6 @@ def main():
     print("round:", args.round)
     print("model:", model)
     print("problem:", problem["id"])
-    print("prompt_type:", prompt_type)
     print("finish_reason:", choice["finish_reason"])
     print("completion_tokens:", usage.get("completion_tokens"))
     print(
