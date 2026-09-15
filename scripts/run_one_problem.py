@@ -132,23 +132,39 @@ def main():
         judge_result["max_case_seconds"],
     )
 
-    judge_path = result_dir / "judge.json"
-
-    with open(judge_path, "w", encoding="utf-8") as f:
-        record = {
-            "model": MODEL,
-            "model_name": MODEL_NAME,
-            "problem_id": problem["id"],
-            "problem_name": problem["name"],
+    record = {
+        "run_id": run_id,
+        "model": {
+            "id": MODEL,
+            "name": MODEL_NAME,
+            "runtime": "llama.cpp",
+        },
+        "problem": {
+            "id": problem["id"],
+            "name": problem["name"],
+            "title": problem["title"],
             "difficulty": problem["difficulty"],
-            "settings": {
-                "temperature": 0,
-                "max_tokens": 4096,
-                "reasoning_budget_tokens": 2048,
-            },
-            "response": response_data,
-        }
+            "time_limit_seconds": time_limit_seconds,
+        },
+        "generation_config": {
+            "temperature": 0,
+            "max_tokens": 4096,
+            "reasoning_budget_tokens": 2048,
+        },
+        "generation": {
+            "finish_reason": response_data["choices"][0]["finish_reason"],
+            "content": response_text,
+            "reasoning_content": reasoning_text,
+            "usage": response_data.get("usage"),
+            "timings": response_data.get("timings"),
+        },
+        "extracted_code": code,
+        "judge": judge_result,
+    }
 
+    result_path = result_dir / "result.json"
+
+    with open(result_path, "w", encoding="utf-8") as f:
         json.dump(
             record,
             f,
@@ -156,12 +172,6 @@ def main():
             indent=2,
             default=str,
         )
-        # json.dump(
-        #     judge_result,
-        #     f,
-        #     ensure_ascii=False,
-        #     indent=2,
-        # )
 
     # client.generate(
     #     model=MODEL,
