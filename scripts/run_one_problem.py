@@ -103,8 +103,24 @@ def main():
         )
 
     if code is None:
-        print("\nPython 코드를 찾지 못했습니다: NO_CODE")
-        return
+        judge_result = {
+            "status": "NO_CODE",
+            "passed_cases": 0,
+            "total_cases": None,
+            "max_case_seconds": None,
+            "time_limit_seconds": time_limit_seconds,
+            "test_results": [],
+        }
+    else:
+        candidate_path = result_dir / "candidate.py"
+        candidate_path.write_text(code, encoding="utf-8")
+
+        judge_result = judge_problem(
+            code_path=candidate_path,
+            problem_dir=problem_dir,
+            problem_name=problem_name,
+            time_limit_seconds=time_limit_seconds,
+        )
 
     candidate_path = result_dir / "candidate.py"
     candidate_path.write_text(code, encoding="utf-8")
