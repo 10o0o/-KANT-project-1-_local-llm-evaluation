@@ -15,7 +15,7 @@ REASONING_BUDGET_TOKENS = 2048
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run one local-LLM benchmark problem.")
+    parser = argparse.ArgumentParser(description="Run selected local-LLM benchmark problems.")
 
     parser.add_argument(
         "--model",
@@ -25,9 +25,9 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--problem",
+        "--problems",
         required=True,
-        help="Problem ID defined in data/coci/problems.json.",
+        help="Comma-separated problem IDs, or 'all'.",
     )
 
     # Round 2 reviews the same model's Round 1 answer without judge feedback.
@@ -40,6 +40,17 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def select_problems(problems: list[dict], selection: str) -> list[dict]:
+    selection = selection.strip()
+
+    if selection == "all":
+        return problems
+
+    problem_ids = [problem_id.strip() for problem_id in selection.split(",")]
+
+    return [get_problem(problems, problem_id) for problem_id in problem_ids]
 
 
 def build_round2_prompt(statement: str, previous_answer: str) -> str:
@@ -125,34 +136,14 @@ def build_round1_prompt(statement: str) -> str:
 """.strip()
 
 
-def main():
-    args = parse_args()
-
-    project_root = Path(__file__).resolve().parents[1]
-
-    problems = load_problems(project_root)
-    problem = get_problem(problems, args.problem)
-
-    model = args.model
+def run_problem(
+    project_root: Path,
+    problem: dict,
+    model: str,
+    round_number: int,
+    client,
+):
     problem_name = problem["name"]
-
-    result_dir = (
-        project_root
-        / "results"
-        / "benchmark"
-        / f"round_{args.round}"
-        / problem_name
-        / model
-    )
-
-    if result_dir.exists():
-        raise SystemExit(
-            "\nABORT: benchmark result already exists\n"
-            f"round   : {args.round}\n"
-            f"model   : {model}\n"
-            f"problem : {problem['id']}\n"
-            f"path    : {result_dir}\n"
-        )
 
     problem_dir = project_root / problem["problem_dir"]
     statement_path = project_root / problem["statement_path"]
@@ -162,23 +153,35 @@ def main():
         project_root
         / "results"
         / "benchmark"
-        / f"round_{args.round}"
+        / f"round_{round_number}"
         / problem_name
         / model
     )
 
     if result_dir.exists():
+        result_path = result_dir / "result.json"
+        try:
+            saved = json.loads(result_path.read_text(encoding="utf-8"))
+            status = saved["judge"]["status"]
+            completed = status in {"AC", "WA", "TLE", "RE", "NO_CODE"}
+        except (OSError, ValueError, KeyError, TypeError):
+            completed = False
+
+        if completed:
+            print(
+                f"SKIP: round={round_number} problem={problem['id']} "
+                f"model={model} status={status} (이미 완료)"
+            )
+            return
+
         raise SystemExit(
-            "\nABORT: benchmark result already exists\n"
-            f"round   : {args.round}\n"
-            f"model   : {model}\n"
-            f"problem : {problem['id']}\n"
-            f"path    : {result_dir}\n"
+            "\nABORT: incomplete benchmark result exists; check before retrying\n"
+            f"path: {result_dir}\n"
         )
 
     statement = statement_path.read_text(encoding="utf-8")
 
-    if args.round == 1:
+    if round_number == 1:
         prompt = build_round1_prompt(statement)
     else:
         previous_answer = load_round1_answer(
@@ -190,15 +193,13 @@ def main():
         )
 
     print("===== Benchmark Run =====")
-    print("round:", args.round)
+    print("round:", round_number)
     print("model:", model)
     print("problem:", problem["id"])
     print("temperature:", TEMPERATURE)
     print("max_tokens:", MAX_TOKENS)
     print("reasoning_budget_tokens:", REASONING_BUDGET_TOKENS)
     print()
-
-    client = create_client()
 
     print("문제 요청...")
 
@@ -264,7 +265,7 @@ def main():
         "run_id": run_id,
         "experiment": {
             "type": "benchmark",
-            "round": args.round,
+            "round": round_number,
         },
         "model": {
             "id": model,
@@ -315,7 +316,7 @@ def main():
     print()
     print("===== Result =====")
     print("run_id:", run_id)
-    print("round:", args.round)
+    print("round:", round_number)
     print("model:", model)
     print("problem:", problem["id"])
     print("finish_reason:", choice["finish_reason"])
@@ -334,6 +335,27 @@ def main():
     )
     print("max_case_seconds:", judge_result["max_case_seconds"])
     print("saved:", result_dir)
+
+
+def main():
+    args = parse_args()
+    project_root = Path(__file__).resolve().parents[1]
+    problems = load_problems(project_root)
+    selected_problems = select_problems(problems, args.problems)
+
+    print("선택한 문제:")
+    for problem in selected_problems:
+        print("-", problem["id"])
+
+    with create_client() as client:
+        for problem in selected_problems:
+            run_problem(
+                project_root=project_root,
+                problem=problem,
+                model=args.model,
+                round_number=args.round,
+                client=client,
+            )
 
 
 if __name__ == "__main__":
