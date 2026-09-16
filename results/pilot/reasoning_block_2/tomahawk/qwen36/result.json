@@ -1,0 +1,1155 @@
+{
+  "run_id": "20260916_125840_681444",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c4_tomahawk",
+    "name": "tomahawk",
+    "title": "Tomahawk",
+    "difficulty": 4,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nThe chef at the most famous restaurant in Poland is preparing tomahawk steaks for a group of young and cheerful (and very hungry) programmers!\n\nThe steak can be represented as an $n \\times n$ matrix. Initially, the temperature of the whole steak is 0 degrees. During the cooking process, the temperature in different parts of the steak (i.e., different cells in the matrix) will increase.\n\nIn order to prepare the perfect tomahawk steak, the chef lifts the steak and puts it back on the grill $q$ times. Each time, the chef can place the steak on one of three sides: left, right, or down. He will then let the steak cook on that side for $x$ seconds.\n\nWhen the steak is being baked on its down side, it can be baked for at most $n$ seconds. After this, the temperature of all the cells in the $n$-th row in the matrix will increase by $x$, the temperature of the cells in the $n-1$-st row will increase by $x-1$, the temperature of the $n-2$-nd row will increase by $x-2$, ..., the temperature of the cells in row number $n-x+1$ will increase by 1.\n\nWhen the tomahawk steak is being baked on its right side, it can be baked for at most $\\lfloor \\frac{n+1}{2} \\rfloor$ seconds. After this, the temperature of all the cells in the $n$-th column in the matrix will increase by $x$, the temperature of the cells in the $n-1$-st column will increase by $x-1$, the temperature of the $n-2$-nd column will increase by $x-2$, ..., the temperature of the cells in column number $n-x+1$ will increase by 1.\n\nSimilarly, when the tomahawk steak is being baked on its left side, it can be baked for at most $\\lfloor \\frac{n+1}{2} \\rfloor$ seconds. After this, the temperature of all the cells in the first column in the matrix will increase by $x$, the temperature of the cells in the second column will increase by $x-1$, the temperature of the third column will increase by $x-2$, ..., the temperature of the cells in column number $x$ will increase by 1.\n\nWe know that the tastiness of the tomahawk is closely related to the contrast of temperatures, that’s why the chef wants to find out the difference between the coldest and the hottest part of the steak!\n\n## Input\n\nIn the first line, there are two natural numbers $n$ and $q$ ($1 \\le n \\le 10^9$, $1 \\le q \\le 10^5$), the size of the steak and the number of times the chef lifts the steak.\n\nIn each of the following $q$ lines, there is a single letter $s$ and a natural number $x$. The letter $s$ indicates the side of the tomahawk steak: \"L\" – left, \"R\" – right, or \"D\" – down. If $s = \\text{”D”}$, then $1 \\le x \\le n$. Otherwise, $1 \\le x \\le \\lfloor \\frac{n+1}{2} \\rfloor$.\n\n## Output\n\nIn the first and only line, print a single number - the difference in degrees between the coldest and hottest cell on the steak.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 2\nL 2\nR 1\n```\n\nOutput\n\n```text\n2\n```\n\n### Example 2\n\nInput\n\n```text\n3 3\nR 2\nD 3\nR 2\n```\n\nOutput\n\n```text\n6\n```\n\n### Clarification of the first example:\n\n$$\n\\begin{bmatrix}\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1\n\\end{bmatrix}\n$$\n\n### Clarification of the second example:\n\n$$\n\\begin{bmatrix}\n0 & 0 & 0 \\\\\n0 & 0 & 0 \\\\\n0 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n0 & 1 & 2 \\\\\n0 & 1 & 2 \\\\\n0 & 1 & 2\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n1 & 2 & 3 \\\\\n2 & 3 & 4 \\\\\n3 & 4 & 5\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n1 & 3 & 5 \\\\\n2 & 4 & 6 \\\\\n3 & 5 & 7\n\\end{bmatrix}\n$$"
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 12288,
+    "reasoning_budget_tokens": 6144,
+    "cache_prompt": false
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "```python\nimport sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    \n    n = int(data[0])\n    q = int(data[1])\n    \n    row_events = {}\n    col_events = {}\n    \n    idx = 2\n    for _ in range(q):\n        side = data[idx]\n        x = int(data[idx+1])\n        idx += 2\n        \n        if side == 'D':\n            # Range [n-x+1, n], adds (i - (n-x))\n            # slope += 1, const += -(n-x)\n            L = n - x + 1\n            R = n\n            delta_s = 1\n            delta_c = -(n - x)\n            \n            row_events[L] = row_events.get(L, [0, 0])\n            row_events[L][0] += delta_s\n            row_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                row_events[R + 1] = row_events.get(R + 1, [0, 0])\n                row_events[R + 1][0] -= delta_s\n                row_events[R + 1][1] -= delta_c\n                \n        elif side == 'L':\n            # Range [1, x], adds (x+1 - c)\n            # slope += -1, const += (x+1)\n            L = 1\n            R = x\n            delta_s = -1\n            delta_c = x + 1\n            \n            col_events[L] = col_events.get(L, [0, 0])\n            col_events[L][0] += delta_s\n            col_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                col_events[R + 1] = col_events.get(R + 1, [0, 0])\n                col_events[R + 1][0] -= delta_s\n                col_events[R + 1][1] -= delta_c\n                \n        elif side == 'R':\n            # Range [n-x+1, n], adds (c - (n-x))\n            # slope += 1, const += -(n-x)\n            L = n - x + 1\n            R = n\n            delta_s = 1\n            delta_c = -(n - x)\n            \n            col_events[L] = col_events.get(L, [0, 0])\n            col_events[L][0] += delta_s\n            col_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                col_events[R + 1] = col_events.get(R + 1, [0, 0])\n                col_events[R + 1][0] -= delta_s\n                col_events[R + 1][1] -= delta_c\n\n    def get_min_max_diff(events, n):\n        if not events:\n            return 0\n        \n        points = sorted(set(list(events.keys()) + [1, n]))\n        \n        cur_s = 0\n        cur_c = 0\n        min_val = 0\n        max_val = 0\n        \n        for p in points:\n            if p in events:\n                cur_s += events[p][0]\n                cur_c += events[p][1]\n            \n            val = cur_s * p + cur_c\n            if val < min_val:\n                min_val = val\n            if val > max_val:\n                max_val = val\n                \n        return max_val - min_val\n\n    row_diff = get_min_max_diff(row_events, n)\n    col_diff = get_min_max_diff(col_events, n)\n    \n    print(row_diff + col_diff)\n\nsolve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an $n \\times n$ matrix of temperatures, initially all 0.\n   - $n$ can be up to $10^9$, $q$ up to $10^5$.\n   - We perform $q$ operations. Each operation specifies a side (L, R, D) and a duration $x$.\n   - **Down (D) side:** Baking on the bottom edge. Increases temperatures in rows. Specifically, row $n$ gets $+x$, row $n-1$ gets $+(x-1)$, ..., row $n-x+1$ gets $+1$. Rows above $n-x+1$ are unaffected. This applies to *all* columns in those rows.\n   - **Right (R) side:** Baking on the right edge. Increases temperatures in columns. Column $n$ gets $+x$, column $n-1$ gets $+(x-1)$, ..., column $n-x+1$ gets $+1$. Columns to the left of $n-x+1$ are unaffected. This applies to *all* rows in those columns.\n   - **Left (L) side:** Baking on the left edge. Increases temperatures in columns. Column $1$ gets $+x$, column $2$ gets $+(x-1)$, ..., column $x$ gets $+1$. Columns to the right of $x$ are unaffected. This applies to *all* rows in those columns.\n   - We need to find the difference between the maximum and minimum temperature in the entire $n \\times n$ matrix after all operations.\n\n2.  **Analyze the Operations:**\n   - Each operation adds a value to a set of rows or columns.\n   - The temperature of a cell $(r, c)$ is the sum of contributions from all operations.\n   - Since operations on rows (D) affect all columns in a row, and operations on columns (L, R) affect all rows in a column, the total temperature at $(r, c)$ is:\n     $T(r, c) = \\text{RowContribution}(r) + \\text{ColContribution}(c)$\n     where $\\text{RowContribution}(r)$ is the sum of $x$ values from D operations that cover row $r$, and $\\text{ColContribution}(c)$ is the sum of $x$ values from L and R operations that cover column $c$.\n   - Wait, is this additive? Yes, because each operation adds a constant to a set of cells. The D operation adds a value to all cells in certain rows. The L/R operations add a value to all cells in certain columns. Since they are independent additions, the total temperature at $(r, c)$ is indeed the sum of the row contribution and column contribution.\n   - Let $R[r]$ be the total added to row $r$ from all D operations.\n   - Let $C[c]$ be the total added to column $c$ from all L and R operations.\n   - Then $T(r, c) = R[r] + C[c]$.\n   - We need $\\max_{r,c} T(r, c) - \\min_{r,c} T(r, c)$.\n   - $\\max_{r,c} (R[r] + C[c]) = \\max_r R[r] + \\max_c C[c]$.\n   - $\\min_{r,c} (R[r] + C[c]) = \\min_r R[r] + \\min_c C[c]$.\n   - So the answer is $(\\max_r R[r] - \\min_r R[r]) + (\\max_c C[c] - \\min_c C[c])$.\n   - This simplifies the problem significantly! We just need to compute the max and min of the row contributions and column contributions separately.\n\n3.  **Compute Row Contributions ($R[r]$):**\n   - Initially, all $R[r] = 0$.\n   - A D operation with duration $x$ adds $x$ to row $n$, $x-1$ to row $n-1$, ..., $1$ to row $n-x+1$.\n   - This is a range update on the array $R[1 \\dots n]$, but the values added are not constant; they form an arithmetic progression.\n   - Specifically, for rows $i$ from $n-x+1$ to $n$, $R[i] \\leftarrow R[i] + (x - (n - i)) = R[i] + (i - (n - x))$.\n   - Let $k = n - x$. Then for $i \\in [k+1, n]$, we add $i - k$.\n   - This is equivalent to adding $i$ and subtracting $k$ for each $i$ in the range.\n   - So, $R[i] \\leftarrow R[i] + i - k$ for $i \\in [k+1, n]$.\n   - We can maintain two difference arrays (or Fenwick trees / segment trees, but since we only need final max/min, difference arrays are perfect) for $R$:\n     - One for the coefficient of $i$ (let's call it $A_R$).\n     - One for the constant term (let's call it $B_R$).\n     - Initially $A_R$ and $B_R$ are all 0.\n     - For a D operation with $x$: range $[n-x+1, n]$. Add $+1$ to $A_R$ in this range. Add $-(n-x)$ to $B_R$ in this range.\n     - After all operations, compute prefix sums of $A_R$ and $B_R$ to get the actual coefficient and constant for each row. Then $R[i] = A_R[i] \\cdot i + B_R[i]$.\n     - Since $n$ is up to $10^9$, we can't allocate an array of size $n$. But $q$ is only $10^5$. We can use coordinate compression or just store the difference array updates and process them. Actually, since we only need max and min, we can collect all update intervals, sort them, and sweep. Or simpler: use a list of events.\n     - Wait, the updates are always on suffixes of the row array: $[n-x+1, n]$. This is a suffix update.\n     - Suffix updates on an array of size $n$ can be handled efficiently. But since we only need the final values at specific points? Actually, we need the max and min over all $i \\in [1, n]$.\n     - The function $R[i]$ will be piecewise linear. Since updates are suffixes, the slope changes at certain points.\n     - Let's formalize: $R[i] = \\sum_{\\text{ops}} \\max(0, i - (n - x_{\\text{op}}))$.\n     - This is a sum of ReLU-like functions shifted. It's convex? Actually, each term is $\\max(0, i - c)$, which is convex. Sum of convex functions is convex. So $R[i]$ is convex.\n     - For a convex function on $[1, n]$, the maximum is at one of the endpoints ($1$ or $n$), and the minimum is somewhere in between (possibly at the \"kink\" points).\n     - Wait, is it strictly convex? Each term is $\\max(0, i - c)$. The slope increases by 1 at each $c+1$. So yes, it's convex.\n     - Therefore, $\\max R[i] = \\max(R[1], R[n])$.\n     - $\\min R[i]$ occurs at the point where the slope changes from negative to positive, or at the boundaries. Since it's convex, we can find the minimum by checking the \"kink\" points or using ternary search, but given the structure, we can just track the slope.\n     - Actually, we can compute $R[i]$ efficiently for all $i$ if we use a difference array approach on the slope.\n     - Let $S_R[i]$ be the slope of $R[i]$. Initially $S_R[i] = 0$.\n     - A D operation with $x$ adds $+1$ to the slope for $i \\in [n-x+1, n]$.\n     - So we can maintain a difference array for the slope: `diff_slope`. For range $[L, R]$, `diff_slope[L] += 1`, `diff_slope[R+1] -= 1`.\n     - After processing all D ops, compute prefix sums of `diff_slope` to get actual slope at each $i$.\n     - Then compute prefix sums of slope to get $R[i]$.\n     - But $n$ is large. However, the slope only changes at $O(q)$ points. We can collect all change points, sort them, and sweep.\n     - Alternatively, since we only need max and min, and the function is convex, we can just evaluate at endpoints and at the \"kink\" points where slope changes.\n     - Actually, the minimum of a convex function on an interval is at the point where the cumulative slope crosses zero. We can find this by sweeping through the sorted change points.\n     - Let's stick to the difference array idea but compress coordinates. The relevant points are $1$, $n$, and all $n-x+1$ for each D op. Also $n+1$ for boundary.\n     - Wait, $R[i]$ is defined for $i \\in [1, n]$. The updates are on $[n-x+1, n]$. So the change points are $n-x+1$.\n     - Let's collect all $n-x+1$ values from D operations. Add $1$ and $n+1$. Sort them. These define intervals where the slope is constant.\n     - For each interval $[p_j, p_{j+1}-1]$, the slope is constant $s$. The value $R[i]$ increases linearly: $R[i] = R[p_j] + s \\cdot (i - p_j)$.\n     - The min/max on this interval will be at the endpoints.\n     - So we just need to evaluate $R[i]$ at all $p_j$.\n     - This gives $O(q \\log q)$ time.\n\n   - Let's verify the convexity claim. $R[i] = \\sum \\max(0, i - c_k)$. Each term is convex. Sum is convex. Correct.\n   - So $\\max R = \\max(R[1], R[n])$.\n   - $\\min R$ can be found by sweeping. We can compute $R[1] = 0$ initially. Then as we move from $1$ to $n$, the slope increases. We track current slope and current value. When slope becomes $\\ge 0$, the minimum is reached (or was reached). Actually, since it's convex, the minimum is at the point where slope changes from negative to non-negative. We can just compute values at all critical points and take the min.\n   - Critical points for rows: $1$, $n$, and all $n-x+1$ from D ops.\n   - Wait, is it possible that the minimum is at $1$ or $n$? Yes.\n   - So we just evaluate $R[i]$ at all critical points and take min/max.\n   - How to compute $R[i]$ efficiently at a point $i$?\n     $R[i] = \\sum_{\\text{D ops}} \\max(0, i - (n - x))$.\n     We can compute this in $O(q)$ per point, but with $O(q)$ points, that's $O(q^2)$, too slow.\n     We need a faster way. The sweep line approach is better.\n     Sort critical points: $p_1 < p_2 < \\dots < p_m$.\n     Initialize `current_val = 0`, `current_slope = 0`.\n     We also need to know how the slope changes at each point.\n     For each D op with duration $x$, the slope increases by $1$ starting at $n-x+1$.\n     So we can create events: at $pos = n-x+1$, `slope_change += 1`.\n     Sort events by position.\n     Iterate through sorted critical points. Between $p_j$ and $p_{j+1}$, the slope is constant.\n     `current_val += current_slope * (p_{j+1} - p_j)`\n     `current_slope += slope_change_at_p_{j+1}`\n     Wait, careful with indices.\n     Let's formalize the sweep:\n     - Collect all D operations. For each, record an event at $L = n-x+1$ with `delta_slope = +1`.\n     - Critical points: $1$, $n$, and all $L$'s. Also maybe $n+1$ to handle boundaries, but we only care up to $n$.\n     - Sort unique critical points: $pts$.\n     - `cur_val = 0`, `cur_slope = 0`.\n     - `min_R = 0`, `max_R = 0`.\n     - For $j$ from $0$ to $len(pts)-2$:\n       - $p = pts[j]$\n       - $next_p = pts[j+1]$\n       - `cur_val += cur_slope * (next_p - p)`\n       - `cur_slope += slope_events[next_p]` (if any)\n       - `min_R = min(min_R, cur_val)`\n       - `max_R = max(max_R, cur_val)`\n     - Wait, `cur_val` at $p$ is updated before moving to $next_p$. So we should record `min_R` and `max_R` at each $p$.\n     - Actually, since it's linear between points, extrema are at endpoints. So checking at each $p$ is sufficient.\n     - Let's trace carefully:\n       Initialize `cur_val = 0` at $p=1$.\n       `min_R = 0`, `max_R = 0`.\n       Sort events by position.\n       Iterate through sorted unique points $p$ in $pts$:\n         If $p > 1$:\n           `prev_p = previous point`\n           `dist = p - prev_p`\n           `cur_val += cur_slope * dist`\n         `min_R = min(min_R, cur_val)`\n         `max_R = max(max_R, cur_val)`\n         `cur_slope += slope_events[p]`\n     - This works. $O(q \\log q)$.\n\n4.  **Compute Column Contributions ($C[c]$):**\n   - L operation with $x$: adds $x$ to col $1$, $x-1$ to col $2$, ..., $1$ to col $x$.\n     Range $[1, x]$. Value added to col $c$ is $x - (c - 1) = (x+1) - c$.\n     So for $c \\in [1, x]$, $C[c] \\leftarrow C[c] + (x+1) - c$.\n     This is adding $-c$ and $+(x+1)$.\n   - R operation with $x$: adds $x$ to col $n$, $x-1$ to col $n-1$, ..., $1$ to col $n-x+1$.\n     Range $[n-x+1, n]$. Value added to col $c$ is $x - (n - c) = c - (n-x)$.\n     So for $c \\in [n-x+1, n]$, $C[c] \\leftarrow C[c] + c - (n-x)$.\n     This is adding $+c$ and $-(n-x)$.\n   - So $C[c]$ is composed of:\n     - From L ops: range $[1, x]$, add $-c + (x+1)$.\n     - From R ops: range $[n-x+1, n]$, add $+c - (n-x)$.\n   - Let's analyze the shape of $C[c]$.\n     - L ops add a decreasing linear function on $[1, x]$. Slope $-1$.\n     - R ops add an increasing linear function on $[n-x+1, n]$. Slope $+1$.\n     - The sum of these functions is not necessarily convex or concave everywhere. It's piecewise linear.\n     - However, we can still use the same sweep line / difference array approach for $C[c]$.\n     - We need to track two things for $C[c]$: coefficient of $c$ (slope) and constant term.\n     - Let $C[c] = S_C[c] \\cdot c + K_C[c]$.\n     - Initially $S_C = 0$, $K_C = 0$.\n     - L op with $x$: range $[1, x]$. Add $-1$ to $S_C$, add $+(x+1)$ to $K_C$.\n     - R op with $x$: range $[n-x+1, n]$. Add $+1$ to $S_C$, add $-(n-x)$ to $K_C$.\n     - We can maintain difference arrays for $S_C$ and $K_C$.\n     - Since $n$ is large, we use the same sweep line approach.\n     - Critical points for columns: $1$, $n$, all $x$ from L ops, all $n-x+1$ from R ops.\n     - Sort unique critical points.\n     - Sweep through them, updating `cur_slope` and `cur_const` (which correspond to $S_C$ and $K_C$).\n     - At each point $c$, `cur_val = cur_slope * c + cur_const`.\n     - Track min and max of `cur_val`.\n     - This is also $O(q \\log q)$.\n\n5.  **Combine Results:**\n   - Answer = $(\\max_R - \\min_R) + (\\max_C - \\min_C)$.\n   - All steps are $O(q \\log q)$ due to sorting. $q \\le 10^5$, so this is very efficient.\n   - Space complexity: $O(q)$ to store events and points.\n\n6.  **Edge Cases & Details:**\n   - $n=1$: Both L and R ranges might overlap or be the same. The logic should still hold.\n   - $x$ ranges: D: $1 \\le x \\le n$. L/R: $1 \\le x \\le \\lfloor (n+1)/2 \\rfloor$.\n   - The problem says L and R can be baked for at most $\\lfloor (n+1)/2 \\rfloor$. This ensures ranges $[1, x]$ and $[n-x+1, n]$ don't overlap? Actually, if $x \\le (n+1)/2$, then $x < n-x+1$ for $n > 1$. For $n=1$, $x=1$, ranges are $[1,1]$ and $[1,1]$, they overlap. The problem statement says \"at most\", so overlap is possible only if $n=1$ or if constraints were different. But our logic handles overlap naturally since additions are independent.\n   - Wait, the problem says L and R are baked on sides. It doesn't say they can't overlap. The math handles it.\n   - Let's double check the R operation range: \"column number $n-x+1$ will increase by 1\". So range is $[n-x+1, n]$. Correct.\n   - L operation range: \"column number $x$ will increase by 1\". So range is $[1, x]$. Correct.\n   - D operation range: \"row number $n-x+1$ will increase by 1\". So range is $[n-x+1, n]$. Correct.\n   - All ranges are suffixes or prefixes.\n   - Implementation details:\n     - Use a dictionary or list for events. Since we sort points, a list of `(position, type, value)` is fine.\n     - Actually, we can just collect all critical points, sort them, and for each point, compute the total slope/const change.\n     - Better: Create a list of events: `(pos, delta_slope, delta_const)`.\n     - For D op $x$: `pos = n - x + 1`, `delta_slope = 1`, `delta_const = -(n - x)`.\n     - For L op $x$: `pos = 1`, `delta_slope = -1`, `delta_const = x + 1`. Wait, L op starts at 1, so it affects all points $\\ge 1$. But we sweep from 1 to $n$. So at $pos=1$, we add to slope/const. But it ends at $x$. So we need an event at $x+1$ to remove it.\n     - Ah, difference array approach: range $[L, R]$ add $\\Delta$ to slope, $\\Delta'$ to const.\n       Events: `(L, +1, +val1)`, `(R+1, -1, -val1)`.\n     - So for D op $x$: range $[n-x+1, n]$. Events: `(n-x+1, +1, -(n-x))`, `(n+1, -1, +(n-x))`.\n     - For L op $x$: range $[1, x]$. Events: `(1, -1, x+1)`, `(x+1, +1, -(x+1))`.\n     - For R op $x$: range $[n-x+1, n]$. Events: `(n-x+1, +1, -(n-x))`, `(n+1, -1, +(n-x))`.\n     - Collect all events. Sort by position.\n     - Sweep from $1$ to $n$. But we only need to check at critical points.\n     - Critical points are all event positions within $[1, n]$, plus $1$ and $n$.\n     - Actually, we can just collect all event positions, add $1$ and $n$, sort unique.\n     - Iterate through sorted points. Maintain `cur_slope` and `cur_const`.\n     - At each point $p$, apply all events at $p$ to `cur_slope` and `cur_const`.\n     - Then compute `val = cur_slope * p + cur_const`.\n     - Update min/max.\n     - Wait, the value is constant between events? No, `val` changes linearly. So min/max occur at endpoints of intervals. Checking at each event position is sufficient.\n     - One detail: `cur_slope` and `cur_const` should be updated *before* evaluating at $p$? Or after?\n     - Events at $p$ affect the range starting at $p$. So for point $p$, we should apply events at $p$ first, then evaluate.\n     - Let's verify with D op: range $[n-x+1, n]$. At $n-x+1$, slope increases. So for $p = n-x+1$, the new slope applies. Correct.\n     - So algorithm:\n       1. Collect events for rows (D ops) and columns (L, R ops).\n       2. For rows: events at $n-x+1$ and $n+1$.\n       3. For cols: events at $1$, $x+1$, $n-x+1$, $n+1$.\n       4. Collect all unique positions in $[1, n]$. Add $1$ and $n$ if not present.\n       5. Sort positions.\n       6. Sweep: `cur_slope = 0`, `cur_const = 0`. `min_val = 0`, `max_val = 0`.\n       7. For each $p$ in sorted positions:\n            - Apply all events at $p$: `cur_slope += delta_s`, `cur_const += delta_c`.\n            - `val = cur_slope * p + cur_const`\n            - `min_val = min(min_val, val)`\n            - `max_val = max(max_val, val)`\n       8. Return `max_val - min_val`.\n     - Wait, is it possible that the min/max occurs at a point where no event happens? Since the function is linear between events, extrema are at endpoints. So checking at event positions is sufficient.\n     - One catch: `cur_slope` and `cur_const` are updated at $p$. But what about the interval before $p$? The value at $p$ is correctly computed after applying events at $p$. The value at $p-1$ (or previous event) was computed in the previous iteration. So we cover all endpoints.\n     - Let's test with Example 1: $n=4, q=2$. L 2, R 1.\n       - L 2: range $[1, 2]$. Events: `(1, -1, 3)`, `(3, +1, -3)`.\n       - R 1: range $[4, 4]$. Events: `(4, +1, -3)`, `(5, -1, +3)`. (Note: $n-x = 3$, so const is $-3$)\n       - Positions: $1, 3, 4$. (5 is $>n$, ignore or handle)\n       - Sorted: $1, 3, 4$.\n       - $p=1$: apply `(1, -1, 3)`. `cur_slope=-1`, `cur_const=3`. `val = -1*1 + 3 = 2`. `min=2, max=2`.\n       - $p=3$: apply `(3, +1, -3)`. `cur_slope=0`, `cur_const=0`. `val = 0`. `min=0, max=2`.\n       - $p=4$: apply `(4, +1, -3)`. `cur_slope=1`, `cur_const=-3`. `val = 1*4 - 3 = 1`. `min=0, max=2`.\n       - Result for cols: $\\max=2, \\min=0$. Diff = 2.\n       - Rows: no D ops. `cur_slope=0, cur_const=0`. `val=0` everywhere. Diff = 0.\n       - Total diff = 2 + 0 = 2. Matches example output!\n     - Example 2: $n=3, q=3$. R 2, D 3, R 2.\n       - R 2: range $[2, 3]$. $n-x=1$. Events: `(2, +1, -1)`, `(4, -1, +1)`.\n       - D 3: range $[1, 3]$. $n-x=0$. Events: `(1, +1, 0)`, `(4, -1, 0)`.\n       - R 2: range $[2, 3]$. Events: `(2, +1, -1)`, `(4, -1, +1)`.\n       - Positions: $1, 2, 3$.\n       - $p=1$: apply D3 `(1, +1, 0)`. `slope=1, const=0`. `val=1`. `min=1, max=1`.\n       - $p=2$: apply R2 `(2, +1, -1)` twice. `slope=1+2=3, const=0-2=-2`. `val=3*Considering the limited time by the user, I have to give the solution based on the thinking directly now.",
+    "usage": {
+      "completion_tokens": 6976,
+      "prompt_tokens": 1373,
+      "total_tokens": 8349,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 1373,
+      "prompt_ms": 3103.066,
+      "prompt_per_token_ms": 2.2600626365622722,
+      "prompt_per_second": 442.4656130420687,
+      "predicted_n": 6976,
+      "predicted_ms": 181796.949,
+      "predicted_per_token_ms": 26.064078709677418,
+      "predicted_per_second": 38.36698051516805
+    }
+  },
+  "metrics": {
+    "response_elapsed_seconds": 185.57854393399975,
+    "prompt_tokens": 1373,
+    "completion_tokens": 6976,
+    "generation_tokens_per_second": 38.36698051516805,
+    "generation_tokens_per_second_reason": null,
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": null,
+    "completion_tokens_reason": null,
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T04:01:46.279610+00:00",
+      "phase": "response_received",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "No matching server PID in nvidia-smi; WSL may not expose process memory or matching PIDs",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": 222986
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 6553.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    \n    n = int(data[0])\n    q = int(data[1])\n    \n    row_events = {}\n    col_events = {}\n    \n    idx = 2\n    for _ in range(q):\n        side = data[idx]\n        x = int(data[idx+1])\n        idx += 2\n        \n        if side == 'D':\n            # Range [n-x+1, n], adds (i - (n-x))\n            # slope += 1, const += -(n-x)\n            L = n - x + 1\n            R = n\n            delta_s = 1\n            delta_c = -(n - x)\n            \n            row_events[L] = row_events.get(L, [0, 0])\n            row_events[L][0] += delta_s\n            row_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                row_events[R + 1] = row_events.get(R + 1, [0, 0])\n                row_events[R + 1][0] -= delta_s\n                row_events[R + 1][1] -= delta_c\n                \n        elif side == 'L':\n            # Range [1, x], adds (x+1 - c)\n            # slope += -1, const += (x+1)\n            L = 1\n            R = x\n            delta_s = -1\n            delta_c = x + 1\n            \n            col_events[L] = col_events.get(L, [0, 0])\n            col_events[L][0] += delta_s\n            col_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                col_events[R + 1] = col_events.get(R + 1, [0, 0])\n                col_events[R + 1][0] -= delta_s\n                col_events[R + 1][1] -= delta_c\n                \n        elif side == 'R':\n            # Range [n-x+1, n], adds (c - (n-x))\n            # slope += 1, const += -(n-x)\n            L = n - x + 1\n            R = n\n            delta_s = 1\n            delta_c = -(n - x)\n            \n            col_events[L] = col_events.get(L, [0, 0])\n            col_events[L][0] += delta_s\n            col_events[L][1] += delta_c\n            \n            if R + 1 <= n:\n                col_events[R + 1] = col_events.get(R + 1, [0, 0])\n                col_events[R + 1][0] -= delta_s\n                col_events[R + 1][1] -= delta_c\n\n    def get_min_max_diff(events, n):\n        if not events:\n            return 0\n        \n        points = sorted(set(list(events.keys()) + [1, n]))\n        \n        cur_s = 0\n        cur_c = 0\n        min_val = 0\n        max_val = 0\n        \n        for p in points:\n            if p in events:\n                cur_s += events[p][0]\n                cur_c += events[p][1]\n            \n            val = cur_s * p + cur_c\n            if val < min_val:\n                min_val = val\n            if val > max_val:\n                max_val = val\n                \n        return max_val - min_val\n\n    row_diff = get_min_max_diff(row_events, n)\n    col_diff = get_min_max_diff(col_events, n)\n    \n    print(row_diff + col_diff)\n\nsolve()",
+  "judge": {
+    "status": "WA",
+    "passed_cases": 5,
+    "total_cases": 130,
+    "max_case_seconds": 0.22506401700047718,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011122396001155721,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011044312001104117,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.05335870799899567,
+        "return_code": 0,
+        "stdout": "160\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.017369652001434588,
+        "return_code": 0,
+        "stdout": "214\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010105981999004143,
+        "return_code": 0,
+        "stdout": "180\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010546581999733462,
+        "return_code": 0,
+        "stdout": "200\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012853536998591153,
+        "return_code": 0,
+        "stdout": "185\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01087557599930733,
+        "return_code": 0,
+        "stdout": "119\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012211109000418219,
+        "return_code": 0,
+        "stdout": "186\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.08397306199913146,
+        "return_code": 0,
+        "stdout": "151\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009660448000431643,
+        "return_code": 0,
+        "stdout": "186\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00998721799987834,
+        "return_code": 0,
+        "stdout": "147\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009960081999452086,
+        "return_code": 0,
+        "stdout": "145\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.09130692799953977,
+        "return_code": 0,
+        "stdout": "213\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009672382000644575,
+        "return_code": 0,
+        "stdout": "174\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009543554000629229,
+        "return_code": 0,
+        "stdout": "218\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009807585000089603,
+        "return_code": 0,
+        "stdout": "232\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010799329000292346,
+        "return_code": 0,
+        "stdout": "168\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010632704999807174,
+        "return_code": 0,
+        "stdout": "148\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010482923999006744,
+        "return_code": 0,
+        "stdout": "174\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010271752000335255,
+        "return_code": 0,
+        "stdout": "149\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009589547998984926,
+        "return_code": 0,
+        "stdout": "117\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01003427300020121,
+        "return_code": 0,
+        "stdout": "179\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00977106400023331,
+        "return_code": 0,
+        "stdout": "170\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010382021000623354,
+        "return_code": 0,
+        "stdout": "148\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010459335999257746,
+        "return_code": 0,
+        "stdout": "194\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0466706349998276,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00937341999997443,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010858741001356975,
+        "return_code": 0,
+        "stdout": "356355\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012249950999830617,
+        "return_code": 0,
+        "stdout": "383333\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009796878000997822,
+        "return_code": 0,
+        "stdout": "394893\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010161977999814553,
+        "return_code": 0,
+        "stdout": "379838\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.012079228999937186,
+        "return_code": 0,
+        "stdout": "380799\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010330482000426855,
+        "return_code": 0,
+        "stdout": "384525\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010527673999604303,
+        "return_code": 0,
+        "stdout": "381541\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010806812000737409,
+        "return_code": 0,
+        "stdout": "389998\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.01004336200094258,
+        "return_code": 0,
+        "stdout": "385383\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011763114998757374,
+        "return_code": 0,
+        "stdout": "373237\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010841219000212732,
+        "return_code": 0,
+        "stdout": "383523\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011497290999614052,
+        "return_code": 0,
+        "stdout": "371652\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.011530525000125635,
+        "return_code": 0,
+        "stdout": "381294\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010666173000572599,
+        "return_code": 0,
+        "stdout": "376480\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010149531999559258,
+        "return_code": 0,
+        "stdout": "392273\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010119738999492256,
+        "return_code": 0,
+        "stdout": "383224\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010554450000199722,
+        "return_code": 0,
+        "stdout": "372341\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010777833000247483,
+        "return_code": 0,
+        "stdout": "370617\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.09423004600103013,
+        "return_code": 0,
+        "stdout": "389606\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00946923700030311,
+        "return_code": 0,
+        "stdout": "383613\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010028226000940776,
+        "return_code": 0,
+        "stdout": "391750\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0106245389997639,
+        "return_code": 0,
+        "stdout": "380755\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010208280000369996,
+        "return_code": 0,
+        "stdout": "383160\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.010702538998884847,
+        "return_code": 0,
+        "stdout": "371888\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010276217999489745,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.00996823300010874,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.17556621199946676,
+        "return_code": 0,
+        "stdout": "37691900\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.16809206800098764,
+        "return_code": 0,
+        "stdout": "37370099\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.043198556999413995,
+        "return_code": 0,
+        "stdout": "37350154\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.08199012699878949,
+        "return_code": 0,
+        "stdout": "37530594\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0417642779993912,
+        "return_code": 0,
+        "stdout": "37636241\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.03915857099855202,
+        "return_code": 0,
+        "stdout": "37692089\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06761463099974208,
+        "return_code": 0,
+        "stdout": "37525761\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04293883299942536,
+        "return_code": 0,
+        "stdout": "37576173\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04446525200000906,
+        "return_code": 0,
+        "stdout": "37385741\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04489419800120231,
+        "return_code": 0,
+        "stdout": "37479212\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.042436781999640516,
+        "return_code": 0,
+        "stdout": "37557906\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04421550699953514,
+        "return_code": 0,
+        "stdout": "37583942\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.14858791600090626,
+        "return_code": 0,
+        "stdout": "37600039\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04485046700028761,
+        "return_code": 0,
+        "stdout": "37466271\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04321967100077018,
+        "return_code": 0,
+        "stdout": "37450870\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.040453888999763876,
+        "return_code": 0,
+        "stdout": "37523525\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04317951700068079,
+        "return_code": 0,
+        "stdout": "37557906\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.05449371499889821,
+        "return_code": 0,
+        "stdout": "37583942\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04233723399920564,
+        "return_code": 0,
+        "stdout": "37600039\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04226513600042381,
+        "return_code": 0,
+        "stdout": "37294012\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.03975193699989177,
+        "return_code": 0,
+        "stdout": "37750573\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04157422500065877,
+        "return_code": 0,
+        "stdout": "37456083\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.039621406998776365,
+        "return_code": 0,
+        "stdout": "37418559\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.04261882699938724,
+        "return_code": 0,
+        "stdout": "37569312\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009614667000278132,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.22506401700047718,
+        "return_code": 0,
+        "stdout": "7999307026663\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06764839000061329,
+        "return_code": 0,
+        "stdout": "24198437715779\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06433396600004926,
+        "return_code": 0,
+        "stdout": "8509424123857\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0639141279989417,
+        "return_code": 0,
+        "stdout": "1499335773138\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06602770000063174,
+        "return_code": 0,
+        "stdout": "32923410880970\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.14726607800002967,
+        "return_code": 0,
+        "stdout": "9048356018230\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07517404400095984,
+        "return_code": 0,
+        "stdout": "27938616710748\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06337402600001951,
+        "return_code": 0,
+        "stdout": "19204872427264\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06744119500035595,
+        "return_code": 0,
+        "stdout": "25602977072418\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06357546300023387,
+        "return_code": 0,
+        "stdout": "27374673199817\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07552832799956377,
+        "return_code": 0,
+        "stdout": "13448216414432\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06298359500033257,
+        "return_code": 0,
+        "stdout": "9992078329347\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06328241599840112,
+        "return_code": 0,
+        "stdout": "32655370991591\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.08858121199955349,
+        "return_code": 0,
+        "stdout": "10424900775888\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06182043300032092,
+        "return_code": 0,
+        "stdout": "1294262182394\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06391627800076094,
+        "return_code": 0,
+        "stdout": "19204872427264\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07719688699944527,
+        "return_code": 0,
+        "stdout": "14221142533986\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06575749299918243,
+        "return_code": 0,
+        "stdout": "3823058601672\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06286584400004358,
+        "return_code": 0,
+        "stdout": "23655810282454\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06368469600056414,
+        "return_code": 0,
+        "stdout": "6851013972724\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06406642299953091,
+        "return_code": 0,
+        "stdout": "32376485083834\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06397017000017513,
+        "return_code": 0,
+        "stdout": "623137521445\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06615109899939853,
+        "return_code": 0,
+        "stdout": "32755318694313\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06596969099882699,
+        "return_code": 0,
+        "stdout": "8122846300451\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06538566299968807,
+        "return_code": 0,
+        "stdout": "31514211918093\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009133513000051607,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5a"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.009267896999517689,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5b"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.09630169599950023,
+        "return_code": 0,
+        "stdout": "37055435753840\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5c"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06476380899948708,
+        "return_code": 0,
+        "stdout": "37106249467075\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5d"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0627531669997552,
+        "return_code": 0,
+        "stdout": "37031443628655\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5e"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06575487299960514,
+        "return_code": 0,
+        "stdout": "37125057181593\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5f"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.09088931699989189,
+        "return_code": 0,
+        "stdout": "37138545023877\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5g"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07890572299947962,
+        "return_code": 0,
+        "stdout": "37110337892915\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5h"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06626876900008938,
+        "return_code": 0,
+        "stdout": "36948820978302\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5i"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06482589900042512,
+        "return_code": 0,
+        "stdout": "36960904904536\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5j"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06412103599905095,
+        "return_code": 0,
+        "stdout": "36914089485358\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5k"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.11047593399962352,
+        "return_code": 0,
+        "stdout": "37126616302083\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5l"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06386179999935848,
+        "return_code": 0,
+        "stdout": "37109515597663\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5m"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.136715317999915,
+        "return_code": 0,
+        "stdout": "36992388046199\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5n"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.0644459929990262,
+        "return_code": 0,
+        "stdout": "36812239085992\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5o"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06772889999956533,
+        "return_code": 0,
+        "stdout": "37048525056180\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5p"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06616828799997165,
+        "return_code": 0,
+        "stdout": "37216936463687\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5q"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06543369500104745,
+        "return_code": 0,
+        "stdout": "37190725369589\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5r"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06372383499910939,
+        "return_code": 0,
+        "stdout": "37049094256077\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5s"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.062293476999911945,
+        "return_code": 0,
+        "stdout": "37018120575615\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5t"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06564848400012124,
+        "return_code": 0,
+        "stdout": "36838310611131\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5u"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07171506899976521,
+        "return_code": 0,
+        "stdout": "37079167005150\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5v"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07560167399969941,
+        "return_code": 0,
+        "stdout": "37012294727665\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5w"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06806302000040887,
+        "return_code": 0,
+        "stdout": "37078558019270\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5x"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.06757037799980026,
+        "return_code": 0,
+        "stdout": "37186102861240\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5y"
+      },
+      {
+        "status": "WA",
+        "elapsed_seconds": 0.07066197499989357,
+        "return_code": 0,
+        "stdout": "36918436168751\n",
+        "stderr": "",
+        "test_case": "tomahawk.in.5z"
+      }
+    ]
+  }
+}
