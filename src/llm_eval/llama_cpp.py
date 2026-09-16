@@ -16,8 +16,8 @@ def chat(
     prompt: str,
     *,
     temperature: float = 0,
-    max_tokens: int = 12288,
-    reasoning_budget_tokens: int = 6144,
+    max_tokens: int = 30720,
+    reasoning_budget_tokens: int = 26624,
 ):
     return client.chat.completions.create(
         model=model,

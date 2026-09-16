@@ -17,7 +17,7 @@
 
 ## 기록과 집계 원칙
 
-본 평가 결과는 `benchmark/round_<라운드>/<문제>/<모델>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 본 실험 요청 설정은 출력 12288·reasoning 6144·temperature 0이며 서버 셸 Context는 16384이다. 기존 종료 메시지는 유지하고 이전 조건의 결과와 구분한다. 현재 작업 트리의 공통 요청에는 [종료 메시지](../docs/reasoning-budget-diagnostic.md)도 있지만 benchmark JSON에 해당 설정은 아직 기록되지 않는다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
+본 평가 결과는 `benchmark/round_<라운드>/<문제>/<모델>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 본 실험 요청 설정은 출력 30720·reasoning 26624·temperature 0이며 서버 셸 Context는 32768이다. 기존 종료 메시지는 유지하고 이전 조건의 결과와 구분한다. 현재 작업 트리의 공통 요청에는 [종료 메시지](../docs/reasoning-budget-diagnostic.md)도 있지만 benchmark JSON에 해당 설정은 아직 기록되지 않는다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
 
 `response.json`은 원본 응답, `candidate.py`는 추출 코드, `result.json`은 설정·응답·판정 기록이다. 코드가 없으면 `candidate.py`가 없을 수 있다. 초기 보관 기록은 파일명과 스키마가 다를 수 있다.
 

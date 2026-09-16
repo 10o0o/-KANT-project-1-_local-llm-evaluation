@@ -5,7 +5,7 @@
 | 항목 | 현재 동작 |
 | --- | --- |
 | 본 실험 응답·실패 | 원본 응답, 실제 messages, 요청 설정, 성공·오류와 전체 응답 시간을 저장한다. 실패를 성공 결과로 대체하지 않는다. |
-| 현재 생성 설정 | 서버 Context 16384·기본 출력 12288·reasoning 6144, benchmark 요청 max_tokens 12288·reasoning_budget_tokens 6144. 실제 서버 적용·VRAM 적합성은 재시작 후 확인한다. |
+| 현재 생성 설정 | 서버 Context 32768·기본 출력 30720·reasoning 26624, benchmark 요청 max_tokens 30720·reasoning_budget_tokens 26624. 실제 서버 적용·VRAM 적합성은 재시작 후 확인한다. |
 | Reasoning 종료 정책 | 현재 작업 트리의 공통 요청에 [종료 메시지](reasoning-budget-diagnostic.md)를 추가했다. benchmark 성공·실패 기록에는 해당 필드가 아직 저장되지 않아 후속 코드 보완이 필요하다. |
 | 생성 속도 | raw timings를 보존하고 서버의 predicted_per_second를 사용한다. 필드 누락·비정상 값·생성 시간 0 이하는 null과 사유를 기록한다. |
 | VRAM | 응답 원본 저장 후 또는 호출 실패 직후 nvidia-smi로 조회한다. 포트·실행 파일·모델 별칭으로 PID를 탐색한다. 프로세스와 전체 장치 메모리를 구분하고 미지원·식별 불가는 null과 사유로 남긴다. 최대값이 아니다. |
@@ -17,4 +17,4 @@
 
 실행 순서는 [README](../README.md)의 서버 셸 → 워밍업 → 두 회차 평가를 따른다. 원본 발제의 요구사항과 실제 수행 증거는 별도로 확인한다.
 
-Tomahawk run `20260916_124351_312419`는 메시지 추가 후 진단이다. `stop`·코드 생성·`RE`를 확인했으며 본 실험 40회에서 제외한다. 검증 중 `results/pilot/reasoning_block/`로 결과가 분리된 것을 확인했다. 요청 설정 기록 보완과 조건 최종 동결은 미완료다.
+Tomahawk run `20260916_124351_312419`는 메시지 추가 후 진단이다. `stop`·코드 생성·`RE`를 확인했으며 본 실험 40회에서 제외한다. 검증 중 `results/pilot/reasoning_block/`로 결과가 분리된 것을 확인했다. 생성 한도는 32k·30k·26k로 확정했으며 요청 설정 기록 보완과 실제 적용 검증은 미완료다.

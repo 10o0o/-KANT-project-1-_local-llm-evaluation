@@ -33,11 +33,13 @@
 
 파일명·크기만으로 파일 내용의 동일성을 확정하지 않는다. 과거 Ollama digest를 현재 GGUF 식별값으로 재사용하지 않는다.
 
-## 현재 설정 변경: Context 16384·출력 12288·reasoning 6144
+## 현재 확정 설정: Context 32768·출력 30720·reasoning 26624
 
-두 모델의 서버 셸을 `--ctx-size 16384`, `--n-predict 12288`, `--reasoning-budget 6144`로 맞췄다. benchmark와 공통 `chat()` 기본값은 `max_tokens=12288`, `reasoning_budget_tokens=6144`이며 [기존 종료 메시지](reasoning-budget-diagnostic.md)는 그대로 유지한다. temperature 0·cache_prompt false와 각 모델의 GPU·MoE·스레드 설정도 유지한다.
+두 모델의 서버 셸을 `--ctx-size 32768`, `--n-predict 30720`, `--reasoning-budget 26624`로 맞췄다. benchmark와 공통 `chat()` 기본값은 `max_tokens=30720`, `reasoning_budget_tokens=26624`이며 [기존 종료 메시지](reasoning-budget-diagnostic.md)는 그대로 유지한다. temperature 0·cache_prompt false와 각 모델의 GPU·MoE·스레드 설정도 유지한다.
 
 이는 파일 설정 변경이다. 서버 재시작·모델 호출은 하지 않았으므로 새 Context의 실제 적용·적재 상태·VRAM 적합성은 미확인이다. 아래 Context 12288·reasoning 2048의 프로세스·로그·결과는 변경 전 관측으로 보존한다. 워밍업은 짧은 호출용 출력 128·reasoning 64, 과거 calibration은 당시 명시값을 유지한다.
+
+토큰 표기의 k는 1024 기준으로 확정했다: Context 32k = 32768, 출력 30k = 30720, reasoning 26k = 26624. 설정 확정과 실제 실행 검증은 구분한다.
 
 ## 변경 전 설정값과 실제 적용 근거
 

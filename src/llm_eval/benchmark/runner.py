@@ -18,11 +18,9 @@ from llm_eval.runtime import measured_metrics, safe_memory
 
 # Final frozen benchmark generation config.
 TEMPERATURE = 0
-# MAX_TOKENS = 12288
-# REASONING_BUDGET_TOKENS = 8192
 
-MAX_TOKENS = 90000
-REASONING_BUDGET_TOKENS = 70000
+MAX_TOKENS = 30720
+REASONING_BUDGET_TOKENS = 26624
 
 
 def run_problem(
