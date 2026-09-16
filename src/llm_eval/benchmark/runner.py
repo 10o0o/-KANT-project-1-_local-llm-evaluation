@@ -160,6 +160,14 @@ def run_problem(
             "memory_limit_mib": problem["memory_limit_mib"],
             "judge_type": problem["judge_type"],
         },
+        "request": {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ]
+        },
         "generation_config": {
             "temperature": TEMPERATURE,
             "max_tokens": MAX_TOKENS,
