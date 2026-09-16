@@ -7,6 +7,7 @@ from llm_eval.benchmark.prompts import build_round1_prompt
 from llm_eval.benchmark.utils import (
     build_failure_record,
     build_success_record,
+    prepare_problem_context,
     print_benchmark_result,
     print_benchmark_run,
 )
@@ -27,20 +28,13 @@ def run_problem(
     round_number: int,
     client,
 ):
-    problem_name = problem["name"]
-
-    problem_dir = project_root / problem["problem_dir"]
-    statement_path = project_root / problem["statement_path"]
-    time_limit_seconds = problem["time_limit_seconds"]
-
-    result_dir = (
-        project_root
-        / "results"
-        / "benchmark"
-        / f"round_{round_number}"
-        / problem_name
-        / model
-    )
+    (
+        problem_name,
+        problem_dir,
+        statement_path,
+        time_limit_seconds,
+        result_dir,
+    ) = prepare_problem_context(project_root, problem, model, round_number)
 
     if result_dir.exists():
         result_path = result_dir / "result.json"

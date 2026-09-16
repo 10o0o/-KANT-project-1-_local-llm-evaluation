@@ -1,3 +1,33 @@
+from pathlib import Path
+
+
+def prepare_problem_context(
+    project_root: Path, problem: dict, model: str, round_number: int
+):
+    problem_name = problem["name"]
+
+    problem_dir = project_root / problem["problem_dir"]
+    statement_path = project_root / problem["statement_path"]
+    time_limit_seconds = problem["time_limit_seconds"]
+
+    result_dir = (
+        project_root
+        / "results"
+        / "benchmark"
+        / f"round_{round_number}"
+        / problem_name
+        / model
+    )
+
+    return (
+        problem_name,
+        problem_dir,
+        statement_path,
+        time_limit_seconds,
+        result_dir,
+    )
+
+
 def print_benchmark_run(
     round_number, model, problem, temperature, max_tokens, reasoning_budget_tokens
 ):
