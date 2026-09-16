@@ -16,4 +16,5 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --flash-attn on \
   --temp 0 \
   --reasoning on \
-  --reasoning-budget 2048
+  --reasoning-budget 2048 \
+  --cache-ram 0

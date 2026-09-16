@@ -19,4 +19,5 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --reasoning on \
   --reasoning-budget -1 \
   --threads 16 \
-  --threads-batch 24
+  --threads-batch 24 \
+  --cache-ram 0
