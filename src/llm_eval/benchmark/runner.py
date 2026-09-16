@@ -14,7 +14,7 @@ from llm_eval.benchmark.utils import (
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat
-from llm_eval.runtime import measured_metrics, safe_memory, validate_environment
+from llm_eval.runtime import measured_metrics, safe_memory
 
 # Final frozen benchmark generation config.
 TEMPERATURE = 0
@@ -28,7 +28,6 @@ def run_problem(
     model: str,
     round_number: int,
     client,
-    environment,
 ):
     (
         problem_name,
@@ -66,8 +65,6 @@ def run_problem(
             f"path: {result_dir}\n"
         )
 
-    validate_environment(environment, model)
-
     statement = statement_path.read_text(encoding="utf-8")
 
     prompt = build_round1_prompt(statement)
@@ -92,7 +89,7 @@ def run_problem(
         )
     except Exception as exc:
         response_elapsed = perf_counter() - response_start
-        memory = safe_memory(environment["data"]["process"]["pid"], "call_error")
+        memory = safe_memory(None, "call_error", model=model)
         print("호출 실패:", type(exc).__name__)
         print("실패까지 걸린 시간:", response_elapsed)
 
@@ -110,7 +107,6 @@ def run_problem(
             exc,
         )
 
-        failure_record["environment"] = environment["reference"]
         failure_record["metrics"] = measured_metrics(response_elapsed, {}, {}, memory)
 
         result_path.write_text(
@@ -136,7 +132,7 @@ def run_problem(
             default=str,
         )
 
-    memory = safe_memory(environment["data"]["process"]["pid"], "response_received")
+    memory = safe_memory(None, "response_received", model=model)
 
     choice = response_data["choices"][0]
     message_data = choice["message"]
@@ -190,7 +186,6 @@ def run_problem(
         judge_result=judge_result,
     )
 
-    record["environment"] = environment["reference"]
     record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
 
     with open(result_path, "w", encoding="utf-8") as f:
