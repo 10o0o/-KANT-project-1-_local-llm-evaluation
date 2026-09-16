@@ -2,59 +2,15 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from llm_eval.benchmark.prompts import build_round1_prompt, build_round2_prompt
+from llm_eval.benchmark.prompts import build_round1_prompt
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat
 
 # Final frozen benchmark generation config.
-
-
 TEMPERATURE = 0
 MAX_TOKENS = 8192
 REASONING_BUDGET_TOKENS = 2048
-
-
-def load_round1_answer(
-    project_root: Path, problem_name: str, model: str, problem_id: str
-) -> str:
-    result_path = (
-        project_root
-        / "results"
-        / "benchmark"
-        / "round_1"
-        / problem_name
-        / model
-        / "result.json"
-    )
-
-    if not result_path.exists():
-        raise SystemExit(
-            f"\nABORT: Round 2 requires a Round 1 result\npath: {result_path}\n"
-        )
-
-    result = json.loads(result_path.read_text(encoding="utf-8"))
-    expected_metadata = {
-        "experiment": ("round", 1),
-        "model": ("id", model),
-        "problem": ("id", problem_id),
-    }
-    for section, (field, expected) in expected_metadata.items():
-        metadata = result.get(section)
-        actual = metadata.get(field) if isinstance(metadata, dict) else None
-        if actual != expected:
-            raise SystemExit(
-                f"\nABORT: Round 1 {section}.{field} mismatch\n"
-                f"expected: {expected!r}, actual: {actual!r}\n"
-                f"path: {result_path}\n"
-            )
-
-    previous_answer = result.get("generation", {}).get("content") or ""
-
-    if not previous_answer.strip():
-        raise SystemExit(f"\nABORT: Round 1 answer is empty\npath: {result_path}\n")
-
-    return previous_answer
 
 
 def run_problem(
@@ -102,19 +58,7 @@ def run_problem(
 
     statement = statement_path.read_text(encoding="utf-8")
 
-    if round_number == 1:
-        prompt = build_round1_prompt(statement)
-    else:
-        previous_answer = load_round1_answer(
-            project_root=project_root,
-            problem_name=problem_name,
-            model=model,
-            problem_id=problem["id"],
-        )
-
-        prompt = build_round2_prompt(
-            statement=statement, previous_answer=previous_answer
-        )
+    prompt = build_round1_prompt(statement)
 
     print("===== Benchmark Run =====")
     print("round:", round_number)
