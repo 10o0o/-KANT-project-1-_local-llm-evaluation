@@ -40,8 +40,15 @@ def run_problem(
         result_path = result_dir / "result.json"
         try:
             saved = json.loads(result_path.read_text(encoding="utf-8"))
-            status = saved["judge"]["status"]
-            completed = status in {"AC", "WA", "TLE", "RE", "NO_CODE"}
+
+            call_status = saved.get("call", {}).get("status")
+
+            if call_status == "error":
+                status = "CALL_ERROR"
+                completed = True
+            else:
+                status = saved["judge"]["status"]
+                completed = status in {"AC", "WA", "TLE", "RE", "NO_CODE"}
         except (OSError, ValueError, KeyError, TypeError):
             completed = False
 
@@ -73,6 +80,10 @@ def run_problem(
     print("문제 요청...")
 
     response_start = perf_counter()
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    result_dir.mkdir(parents=True, exist_ok=False)
+    response_path = result_dir / "response.json"
+    result_path = result_dir / "result.json"
 
     try:
         response = chat(
@@ -87,6 +98,67 @@ def run_problem(
         response_elapsed = perf_counter() - response_start
         print("호출 실패:", type(exc).__name__)
         print("실패까지 걸린 시간:", response_elapsed)
+
+        failure_record = {
+            "run_id": run_id,
+            "experiment": {
+                "type": "benchmark",
+                "round": round_number,
+            },
+            "model": {
+                "id": model,
+                "name": model,
+                "runtime": "llama.cpp",
+            },
+            "problem": {
+                "id": problem["id"],
+                "name": problem["name"],
+                "title": problem["title"],
+                "difficulty": problem["difficulty"],
+                "time_limit_seconds": time_limit_seconds,
+                "memory_limit_mib": problem["memory_limit_mib"],
+                "judge_type": problem["judge_type"],
+            },
+            "request": {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+            },
+            "generation_config": {
+                "temperature": TEMPERATURE,
+                "max_tokens": MAX_TOKENS,
+                "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
+            },
+            "call": {
+                "status": "error",
+                "error": {
+                    "type": type(exc).__name__,
+                    "message": str(exc),
+                },
+            },
+            "generation": None,
+            "metrics": {
+                "response_elapsed_seconds": response_elapsed,
+                "prompt_tokens": None,
+                "completion_tokens": None,
+                "generation_tokens_per_second": None,
+            },
+            "extracted_code": None,
+            "judge": None,
+        }
+
+        result_path.write_text(
+            json.dumps(
+                failure_record,
+                ensure_ascii=False,
+                indent=2,
+                default=str,
+            ),
+            encoding="utf-8",
+        )
         raise
 
     response_elapsed = perf_counter() - response_start
@@ -100,12 +172,6 @@ def run_problem(
     reasoning_text = message_data.get("reasoning_content") or ""
 
     code = extract_python_code(response_text)
-
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-
-    result_dir.mkdir(parents=True, exist_ok=False)
-
-    response_path = result_dir / "response.json"
 
     with open(response_path, "w", encoding="utf-8") as f:
         json.dump(
@@ -173,6 +239,10 @@ def run_problem(
             "max_tokens": MAX_TOKENS,
             "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
         },
+        "call": {
+            "status": "success",
+            "error": None,
+        },
         "generation": {
             "finish_reason": choice["finish_reason"],
             "content": response_text,
@@ -189,8 +259,6 @@ def run_problem(
         "extracted_code": code,
         "judge": judge_result,
     }
-
-    result_path = result_dir / "result.json"
 
     with open(result_path, "w", encoding="utf-8") as f:
         json.dump(
