@@ -76,7 +76,7 @@ bash configs/llama.cpp/qwen36.sh
 | Temperature | 0 | 0 |
 | Parallel | 1 | 1 |
 | Flash Attention | on | on |
-| GPU layers | all | all |
+| GPU layers | all | auto |
 | CPU MoE layers | 32 | 해당 없음/설정값 |
 | Generation threads | 16 | auto |
 | Batch threads | 24 | auto |
