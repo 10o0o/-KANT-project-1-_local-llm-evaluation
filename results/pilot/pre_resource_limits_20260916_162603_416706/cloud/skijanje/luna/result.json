@@ -1,0 +1,986 @@
+{
+  "run_id": "20260916_065323_948499Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_skijanje",
+    "name": "skijanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 9,
+    "difficulty_reason": "트리 경로의 목적식을 일차함수 질의 형태로 변환하고 subtree·깊이 제한까지 함께 처리해야 한다. 효율적인 전체 해결에는 Li Chao tree 또는 이에 준하는 CHT 계열 자료구조와 트리 순서 처리가 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/skijanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/skijanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Skijanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nSkier Mia spent a day at an unusual ski resort. The resort consists of $n$ apres-ski locations (hereafter: apres) connected by slopes such that they form a connected tree rooted at the apres labeled 1. Each slope is directed from the apres with a smaller number to the apres with a larger number.\n\nThe tree is defined as follows: for each apres $i>1$, it is known from which apres $p_i$ ($p_i<i$) one arrives at it, i.e., its parent in the tree is known. This uniquely determines all slopes (slope $i$ leads to the apres labeled $i$).\n\nDuring the day, Mia skied each slope exactly once and for each slope remembered its fun factor $z_i$ and speed $b_i$.\n\nAt the end of the day, Mia wants to ski down once more. Since Mia is very tired from skiing all day, she will choose a run consisting of at most $k$ consecutive slopes. The run must follow the direction of the slopes (from apres with smaller numbers to those with larger numbers). After finishing the run, a helicopter will pick her up and take her home.\n\nFor any chosen run, we define its hecticness as follows. Let:\n\n- $z_{\\mathrm{first}}$ be the fun factor of the first slope in the run\n- $z_{\\mathrm{last}}$ be the fun factor of the last slope in the run\n- $b_i$ be the speeds of all slopes in that run\n\nThen the hecticness of the run is: $z_{\\mathrm{last}} \\cdot (z_{\\mathrm{last}} + \\sum b_i) + z_{\\mathrm{first}}^2$. In the case $k=1$, the formula remains unchanged, and $first=last$ holds.\n\nYour task is to determine the maximum hecticness of a run that Mia can ski.\n\n## Input\n\nThe first line contains natural numbers $n,k$ ($1 \\le k \\le n \\le 3 \\cdot 10^5$), as described in the problem statement.\n\nThe second line contains $n-1$ integers, where the $i$-th number represents from which apres one can reach the apres labeled $i+1$ ($1 \\le p_i \\le i$).\n\nThe third line contains $n-1$ integers, where the $i$-th number represents the fun factor of the $(i+1)$-th slope ($1 \\le z_i \\le 10^5$).\n\nThe fourth line contains $n-1$ integers, where the $i$-th number represents the speed of the $(i+1)$-th slope ($-10^5 \\le b_i \\le 10^5$).\n\n## Output\n\nIn the first and only line, output a single number - the maximum hecticness of a run that Mia can ski.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n5 1\n1 2 2 1\n5 4 8 7\n6 3 9 3\n```\n\nOutput\n\n```text\n200\n```\n\n### Example 2\n\nInput\n\n```text\n9 2\n1 2 1 1 4 3 6 5\n1 3 7 8 4 1 8 2\n1 -7 -1 -6 3 8 -1 6\n```\n\nOutput\n\n```text\n120\n```\n\n### Clarification of the first example:\n\nSince $k=1$, it follows that the maximum hecticness of a run is equal to the maximum hecticness among the individual slopes. The slopes have hecticness values of 80, 44, 200, and119. The maximum hecticness is 200."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_03b0cd82a5efdc4b016aaa3ce5e9d887d0a351f0ecbbfca385",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "## 풀이 방법\n\n각 슬로프를 그 슬로프가 도착하는 정점으로 표현하겠습니다.  \n즉, 정점 \\(u\\)에 대응하는 슬로프는 \\(parent[u]\\to u\\)입니다.\n\n첫 슬로프가 \\(u\\), 마지막 슬로프가 \\(v\\)인 주행은 \\(u\\)가 \\(v\\)의 조상일 때 가능합니다. 주행에 포함되는 슬로프 수는\n\n\\[\ndepth[v]-depth[u]+1\n\\]\n\n입니다.\n\n### 1. 식 변형\n\n루트에서 정점 \\(x\\)까지의 속도 합을 다음과 같이 정의합니다.\n\n\\[\nP[x]=\\text{루트에서 }x\\text{까지의 속도 합}\n\\]\n\n그러면 \\(u\\)부터 \\(v\\)까지의 속도 합은\n\n\\[\nP[v]-P[parent[u]]\n\\]\n\n입니다.\n\n따라서 hecticness는\n\n\\[\nz_v\\left(z_v+P[v]-P[parent[u]]\\right)+z_u^2\n\\]\n\n이고, 다음과 같이 정리할 수 있습니다.\n\n\\[\n\\underbrace{z_v^2+z_vP[v]}_{\\text{끝점 }v\\text{만으로 결정}}\n+\n\\underbrace{\\left(z_u^2-P[parent[u]]\\cdot z_v\\right)}_{\\text{시작점 }u\\text{가 만드는 직선}}\n\\]\n\n각 시작점 \\(u\\)를 직선으로 보면\n\n\\[\nL_u(x)=z_u^2-P[parent[u]]x\n\\]\n\n가 됩니다. 끝점 \\(v\\)에 대해서는 \\(x=z_v\\)에서 조상 직선들의 최댓값을 구하면 됩니다.\n\n---\n\n### 2. Centroid Decomposition\n\n조상 쿼리를 직접 처리하기 위해 트리에 centroid decomposition을 적용합니다.\n\n현재 centroid를 \\(c\\)라고 할 때 다음 두 집합을 고려합니다.\n\n- \\(U\\): 현재 컴포넌트 안에서 \\(c\\)의 조상들. \\(c\\)도 포함합니다.\n- \\(V\\): 현재 컴포넌트 안에서 \\(c\\)의 자손들. \\(c\\)도 포함합니다.\n\n\\(u\\in U\\), \\(v\\in V\\)이면 항상 \\(u\\)에서 \\(v\\)로 내려가는 경로가 \\(c\\)를 통과합니다.\n\n다음 값을 정의합니다.\n\n\\[\na=depth[c]-depth[u]\n\\]\n\n\\[\nd=depth[v]-depth[c]\n\\]\n\n주행 길이는 \\(a+d+1\\)이므로 조건은\n\n\\[\na+d+1\\le k\n\\]\n\n즉,\n\n\\[\na\\le k-1-d\n\\]\n\n입니다.\n\n\\(U\\)를 \\(c\\)에서 가까운 순서로 저장하면, 특정 \\(v\\)에 대해 사용할 수 있는 시작점들은 \\(U\\)의 prefix가 됩니다.\n\n\\(V\\)를 깊이가 깊은 순서부터 처리하면 \\(d\\)가 점점 작아지므로 허용되는 \\(U\\)의 prefix가 점점 커집니다. 따라서 새롭게 허용되는 직선들을 Li Chao Tree에 삽입하면서 \\(x=z_v\\)에서 최댓값을 질의할 수 있습니다.\n\n---\n\n### 3. 모든 쌍을 처리할 수 있는 이유\n\n어떤 유효한 시작점 \\(u\\), 끝점 \\(v\\)를 잡습니다.\n\nCentroid decomposition 과정에서 \\(u,v\\)가 처음으로 서로 다른 컴포넌트에 속하게 만드는 centroid를 \\(c\\)라고 하면, 트리의 유일한 경로가 \\(c\\)를 지나갑니다.\n\n방향이 부모에서 자식으로만 진행되므로\n\n\\[\nu \\text{는 } c\\text{의 조상},\\qquad\nv \\text{는 } c\\text{의 자손}\n\\]\n\n입니다. 따라서 해당 쌍은 centroid \\(c\\)에서 반드시 처리됩니다.\n\n---\n\n### 시간 및 공간 복잡도\n\n- Centroid decomposition의 각 레벨에서 전체 컴포넌트 크기의 합은 \\(O(n)\\)\n- 각 정점은 \\(O(\\log n)\\)개의 컴포넌트에서 처리됨\n- Li Chao Tree의 삽입 및 질의는 \\(O(\\log n)\\)\n\n따라서 전체 시간 복잡도는\n\n\\[\nO(n\\log^2 n)\n\\]\n\n입니다.\n\n공간 복잡도는 인접 리스트, centroid decomposition용 배열, Li Chao Tree 등을 포함하여\n\n\\[\nO(n)\n\\]\n\n입니다.\n\n```python\nimport sys\nfrom array import array\n\n\ndef solve():\n    rd = sys.stdin.buffer.readline\n\n    first = rd().split()\n    if not first:\n        return\n\n    n, k = map(int, first)\n\n    parent = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        parent[v] = next(values)\n    del values\n\n    z = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        z[v] = next(values)\n    del values\n\n    speed = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        speed[v] = next(values)\n    del values\n\n    # 정점이 하나면 슬로프가 없다.\n    if n == 1:\n        sys.stdout.write(\"0\\n\")\n        return\n\n    adjacency = [[] for _ in range(n + 1)]\n    for v in range(2, n + 1):\n        p = parent[v]\n        adjacency[p].append(v)\n        adjacency[v].append(p)\n\n    depth = array('i', [0]) * (n + 1)\n    prefix = array('q', [0]) * (n + 1)\n    intercept = array('q', [0]) * (n + 1)\n    line_slope = array('q', [0]) * (n + 1)\n    base = array('q', [0]) * (n + 1)\n\n    # parent[i] < i 이므로 입력 순서대로 계산 가능하다.\n    for v in range(2, n + 1):\n        p = parent[v]\n        depth[v] = depth[p] + 1\n        prefix[v] = prefix[p] + speed[v]\n\n        intercept[v] = z[v] * z[v]\n        line_slope[v] = -prefix[p]\n        base[v] = intercept[v] + z[v] * prefix[v]\n\n    del speed\n    del prefix\n\n    # Euler Tour: 조상 여부 판정용\n    tin = array('i', [0]) * (n + 1)\n    tout = array('i', [0]) * (n + 1)\n\n    timer = 0\n    stack = [1]\n\n    while stack:\n        x = stack.pop()\n\n        if x > 0:\n            tin[x] = timer\n            timer += 1\n\n            stack.append(-x)\n            px = parent[x]\n\n            for to in reversed(adjacency[x]):\n                if to != px:\n                    stack.append(to)\n        else:\n            tout[-x] = timer\n\n    # 모든 가능한 질의 x=z[v]를 좌표 압축\n    x_values = sorted(set(z[2:]))\n    x_count = len(x_values)\n\n    x_index = {value: idx for idx, value in enumerate(x_values)}\n    compressed_x = array('i', [0]) * (n + 1)\n\n    for v in range(2, n + 1):\n        compressed_x[v] = x_index[z[v]]\n\n    del x_index\n\n    NEG_INF = -10 ** 30\n\n    # Li Chao Tree\n    tree_size = 4 * x_count + 5\n    owner = [0] * tree_size\n    line_at = [-1] * tree_size\n\n    def add_line(line_id, version,\n                 owner=owner, line_at=line_at,\n                 xs=x_values, ic=intercept, sl=line_slope,\n                 count=x_count):\n        pos = 1\n        left = 0\n        right = count - 1\n        new_line = line_id\n\n        while True:\n            if owner[pos] != version:\n                owner[pos] = version\n                line_at[pos] = new_line\n                return\n\n            current_line = line_at[pos]\n            mid = (left + right) >> 1\n            mid_x = xs[mid]\n\n            if (ic[new_line] + sl[new_line] * mid_x >\n                    ic[current_line] + sl[current_line] * mid_x):\n                line_at[pos] = new_line\n                new_line = current_line\n\n            if left == right:\n                return\n\n            stored = line_at[pos]\n\n            if (ic[new_line] + sl[new_line] * xs[left] >\n                    ic[stored] + sl[stored] * xs[left]):\n                pos <<= 1\n                right = mid\n            elif (ic[new_line] + sl[new_line] * xs[right] >\n                  ic[stored] + sl[stored] * xs[right]):\n                pos = (pos << 1) | 1\n                left = mid + 1\n            else:\n                return\n\n    def query_line(x_pos, version,\n                   owner=owner, line_at=line_at,\n                   xs=x_values, ic=intercept, sl=line_slope,\n                   count=x_count, neg=NEG_INF):\n        pos = 1\n        left = 0\n        right = count - 1\n        result = neg\n\n        while owner[pos] == version:\n            line_id = line_at[pos]\n            value = ic[line_id] + sl[line_id] * xs[x_pos]\n\n            if value > result:\n                result = value\n\n            if left == right:\n                break\n\n            mid = (left + right) >> 1\n\n            if x_pos <= mid:\n                pos <<= 1\n                right = mid\n            else:\n                pos = (pos << 1) | 1\n                left = mid + 1\n\n        return result\n\n    # 정적 직선 집합의 upper hull 구성\n    def build_hull(ids, ic=intercept, sl=line_slope):\n        ids.sort(key=sl.__getitem__)\n\n        unique = []\n        for line_id in ids:\n            if unique and sl[line_id] == sl[unique[-1]]:\n                if ic[line_id] > ic[unique[-1]]:\n                    unique[-1] = line_id\n            else:\n                unique.append(line_id)\n\n        hull = []\n\n        for line_id in unique:\n            while len(hull) >= 2:\n                a = hull[-2]\n                b = hull[-1]\n\n                # intersection(a,b) >= intersection(b,line_id)\n                # 이면 b는 upper hull에서 불필요하다.\n                if ((ic[a] - ic[b]) * (sl[line_id] - sl[b]) >=\n                        (ic[b] - ic[line_id]) * (sl[b] - sl[a])):\n                    hull.pop()\n                else:\n                    break\n\n            hull.append(line_id)\n\n        return hull\n\n    removed = bytearray(n + 1)\n    work_parent = array('i', [0]) * (n + 1)\n    subtree_size = array('i', [0]) * (n + 1)\n\n    tasks = [1]\n    version = 0\n    answer = NEG_INF\n\n    while tasks:\n        start = tasks.pop()\n\n        if removed[start]:\n            continue\n\n        # 현재 centroid component 수집\n        order = [start]\n        work_parent[start] = 0\n\n        scan = 0\n        while scan < len(order):\n            v = order[scan]\n            scan += 1\n\n            pv = work_parent[v]\n\n            for to in adjacency[v]:\n                if not removed[to] and to != pv:\n                    work_parent[to] = v\n                    order.append(to)\n\n        total = len(order)\n\n        for v in order:\n            subtree_size[v] = 1\n\n        for idx in range(total - 1, 0, -1):\n            v = order[idx]\n            subtree_size[work_parent[v]] += subtree_size[v]\n\n        # centroid 찾기\n        half = total // 2\n        centroid = start\n\n        while True:\n            current_size = subtree_size[centroid]\n            move = 0\n\n            for to in adjacency[centroid]:\n                if removed[to]:\n                    continue\n\n                if work_parent[to] == centroid:\n                    part = subtree_size[to]\n                elif work_parent[centroid] == to:\n                    part = total - current_size\n                else:\n                    continue\n\n                if part > half:\n                    move = to\n                    break\n\n            if move == 0:\n                break\n\n            centroid = move\n\n        c = centroid\n\n        # c의 조상들을 c에서 가까운 순서로 수집\n        up_nodes = []\n        u = c\n\n        while u != 1 and not removed[u]:\n            up_nodes.append(u)\n            u = parent[u]\n\n        max_up = min(len(up_nodes), k)\n\n        if max_up:\n            left_tin = tin[c]\n            right_tin = tout[c]\n            depth_c = depth[c]\n\n            down_nodes = []\n            max_down = -1\n\n            # 현재 component 안에서 c의 자손들만 선택\n            for v in order:\n                if v != 1 and left_tin <= tin[v] < right_tin:\n                    down = depth[v] - depth_c\n\n                    if down < k:\n                        down_nodes.append(v)\n                        if down > max_down:\n                            max_down = down\n\n            if down_nodes:\n                q_count = len(down_nodes)\n\n                # 작은 경우 직접 확인\n                if max_up * q_count <= 16 * (max_up + q_count):\n                    for v in down_nodes:\n                        limit = k - 1 - (depth[v] - depth_c)\n\n                        if limit >= max_up:\n                            limit = max_up - 1\n\n                        if limit < 0:\n                            continue\n\n                        x = z[v]\n                        best_line = NEG_INF\n\n                        for idx in range(limit + 1):\n                            u = up_nodes[idx]\n                            value = intercept[u] + line_slope[u] * x\n\n                            if value > best_line:\n                                best_line = value\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n                # 모든 up 후보가 모든 v에 대해 허용되는 경우\n                elif max_down + max_up <= k:\n                    hull = build_hull(up_nodes[:max_up])\n                    hull_len = len(hull)\n\n                    # x가 증가하는 순서로 처리하면 hull pointer를 이동시킬 수 있다.\n                    down_nodes.sort(key=z.__getitem__)\n\n                    hull_pos = 0\n\n                    for v in down_nodes:\n                        x = z[v]\n\n                        while hull_pos + 1 < hull_len:\n                            current_line = hull[hull_pos]\n                            next_line = hull[hull_pos + 1]\n\n                            current_value = (\n                                intercept[current_line] +\n                                line_slope[current_line] * x\n                            )\n                            next_value = (\n                                intercept[next_line] +\n                                line_slope[next_line] * x\n                            )\n\n                            if next_value >= current_value:\n                                hull_pos += 1\n                            else:\n                                break\n\n                        line_id = hull[hull_pos]\n                        best_line = (\n                            intercept[line_id] +\n                            line_slope[line_id] * x\n                        )\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n                else:\n                    # 깊은 v부터 처리하면 허용되는 up prefix가 점점 커진다.\n                    down_nodes.sort(\n                        key=depth.__getitem__,\n                        reverse=True\n                    )\n\n                    version += 1\n                    current_version = version\n                    next_up = 0\n\n                    for v in down_nodes:\n                        limit = k - 1 - (depth[v] - depth_c)\n\n                        while next_up < max_up and next_up <= limit:\n                            add_line(\n                                up_nodes[next_up],\n                                current_version\n                            )\n                            next_up += 1\n\n                        best_line = query_line(\n                            compressed_x[v],\n                            current_version\n                        )\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n        # centroid 제거 후 남은 컴포넌트들을 작업 목록에 추가\n        removed[c] = 1\n\n        for to in adjacency[c]:\n            if not removed[to]:\n                tasks.append(to)\n\n    if answer == NEG_INF:\n        answer = 0\n\n    sys.stdout.write(str(answer) + \"\\n\")\n\n\nif __name__ == \"__main__\":\n    solve()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 955,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 87026,
+      "output_tokens_details": {
+        "reasoning_tokens": 83396
+      },
+      "total_tokens": 87981
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 1070.279417632999,
+    "prompt_tokens": 955,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 87026,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 83396,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.1046222,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 955,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 87026
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom array import array\n\n\ndef solve():\n    rd = sys.stdin.buffer.readline\n\n    first = rd().split()\n    if not first:\n        return\n\n    n, k = map(int, first)\n\n    parent = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        parent[v] = next(values)\n    del values\n\n    z = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        z[v] = next(values)\n    del values\n\n    speed = array('i', [0]) * (n + 1)\n    values = iter(map(int, rd().split()))\n    for v in range(2, n + 1):\n        speed[v] = next(values)\n    del values\n\n    # 정점이 하나면 슬로프가 없다.\n    if n == 1:\n        sys.stdout.write(\"0\\n\")\n        return\n\n    adjacency = [[] for _ in range(n + 1)]\n    for v in range(2, n + 1):\n        p = parent[v]\n        adjacency[p].append(v)\n        adjacency[v].append(p)\n\n    depth = array('i', [0]) * (n + 1)\n    prefix = array('q', [0]) * (n + 1)\n    intercept = array('q', [0]) * (n + 1)\n    line_slope = array('q', [0]) * (n + 1)\n    base = array('q', [0]) * (n + 1)\n\n    # parent[i] < i 이므로 입력 순서대로 계산 가능하다.\n    for v in range(2, n + 1):\n        p = parent[v]\n        depth[v] = depth[p] + 1\n        prefix[v] = prefix[p] + speed[v]\n\n        intercept[v] = z[v] * z[v]\n        line_slope[v] = -prefix[p]\n        base[v] = intercept[v] + z[v] * prefix[v]\n\n    del speed\n    del prefix\n\n    # Euler Tour: 조상 여부 판정용\n    tin = array('i', [0]) * (n + 1)\n    tout = array('i', [0]) * (n + 1)\n\n    timer = 0\n    stack = [1]\n\n    while stack:\n        x = stack.pop()\n\n        if x > 0:\n            tin[x] = timer\n            timer += 1\n\n            stack.append(-x)\n            px = parent[x]\n\n            for to in reversed(adjacency[x]):\n                if to != px:\n                    stack.append(to)\n        else:\n            tout[-x] = timer\n\n    # 모든 가능한 질의 x=z[v]를 좌표 압축\n    x_values = sorted(set(z[2:]))\n    x_count = len(x_values)\n\n    x_index = {value: idx for idx, value in enumerate(x_values)}\n    compressed_x = array('i', [0]) * (n + 1)\n\n    for v in range(2, n + 1):\n        compressed_x[v] = x_index[z[v]]\n\n    del x_index\n\n    NEG_INF = -10 ** 30\n\n    # Li Chao Tree\n    tree_size = 4 * x_count + 5\n    owner = [0] * tree_size\n    line_at = [-1] * tree_size\n\n    def add_line(line_id, version,\n                 owner=owner, line_at=line_at,\n                 xs=x_values, ic=intercept, sl=line_slope,\n                 count=x_count):\n        pos = 1\n        left = 0\n        right = count - 1\n        new_line = line_id\n\n        while True:\n            if owner[pos] != version:\n                owner[pos] = version\n                line_at[pos] = new_line\n                return\n\n            current_line = line_at[pos]\n            mid = (left + right) >> 1\n            mid_x = xs[mid]\n\n            if (ic[new_line] + sl[new_line] * mid_x >\n                    ic[current_line] + sl[current_line] * mid_x):\n                line_at[pos] = new_line\n                new_line = current_line\n\n            if left == right:\n                return\n\n            stored = line_at[pos]\n\n            if (ic[new_line] + sl[new_line] * xs[left] >\n                    ic[stored] + sl[stored] * xs[left]):\n                pos <<= 1\n                right = mid\n            elif (ic[new_line] + sl[new_line] * xs[right] >\n                  ic[stored] + sl[stored] * xs[right]):\n                pos = (pos << 1) | 1\n                left = mid + 1\n            else:\n                return\n\n    def query_line(x_pos, version,\n                   owner=owner, line_at=line_at,\n                   xs=x_values, ic=intercept, sl=line_slope,\n                   count=x_count, neg=NEG_INF):\n        pos = 1\n        left = 0\n        right = count - 1\n        result = neg\n\n        while owner[pos] == version:\n            line_id = line_at[pos]\n            value = ic[line_id] + sl[line_id] * xs[x_pos]\n\n            if value > result:\n                result = value\n\n            if left == right:\n                break\n\n            mid = (left + right) >> 1\n\n            if x_pos <= mid:\n                pos <<= 1\n                right = mid\n            else:\n                pos = (pos << 1) | 1\n                left = mid + 1\n\n        return result\n\n    # 정적 직선 집합의 upper hull 구성\n    def build_hull(ids, ic=intercept, sl=line_slope):\n        ids.sort(key=sl.__getitem__)\n\n        unique = []\n        for line_id in ids:\n            if unique and sl[line_id] == sl[unique[-1]]:\n                if ic[line_id] > ic[unique[-1]]:\n                    unique[-1] = line_id\n            else:\n                unique.append(line_id)\n\n        hull = []\n\n        for line_id in unique:\n            while len(hull) >= 2:\n                a = hull[-2]\n                b = hull[-1]\n\n                # intersection(a,b) >= intersection(b,line_id)\n                # 이면 b는 upper hull에서 불필요하다.\n                if ((ic[a] - ic[b]) * (sl[line_id] - sl[b]) >=\n                        (ic[b] - ic[line_id]) * (sl[b] - sl[a])):\n                    hull.pop()\n                else:\n                    break\n\n            hull.append(line_id)\n\n        return hull\n\n    removed = bytearray(n + 1)\n    work_parent = array('i', [0]) * (n + 1)\n    subtree_size = array('i', [0]) * (n + 1)\n\n    tasks = [1]\n    version = 0\n    answer = NEG_INF\n\n    while tasks:\n        start = tasks.pop()\n\n        if removed[start]:\n            continue\n\n        # 현재 centroid component 수집\n        order = [start]\n        work_parent[start] = 0\n\n        scan = 0\n        while scan < len(order):\n            v = order[scan]\n            scan += 1\n\n            pv = work_parent[v]\n\n            for to in adjacency[v]:\n                if not removed[to] and to != pv:\n                    work_parent[to] = v\n                    order.append(to)\n\n        total = len(order)\n\n        for v in order:\n            subtree_size[v] = 1\n\n        for idx in range(total - 1, 0, -1):\n            v = order[idx]\n            subtree_size[work_parent[v]] += subtree_size[v]\n\n        # centroid 찾기\n        half = total // 2\n        centroid = start\n\n        while True:\n            current_size = subtree_size[centroid]\n            move = 0\n\n            for to in adjacency[centroid]:\n                if removed[to]:\n                    continue\n\n                if work_parent[to] == centroid:\n                    part = subtree_size[to]\n                elif work_parent[centroid] == to:\n                    part = total - current_size\n                else:\n                    continue\n\n                if part > half:\n                    move = to\n                    break\n\n            if move == 0:\n                break\n\n            centroid = move\n\n        c = centroid\n\n        # c의 조상들을 c에서 가까운 순서로 수집\n        up_nodes = []\n        u = c\n\n        while u != 1 and not removed[u]:\n            up_nodes.append(u)\n            u = parent[u]\n\n        max_up = min(len(up_nodes), k)\n\n        if max_up:\n            left_tin = tin[c]\n            right_tin = tout[c]\n            depth_c = depth[c]\n\n            down_nodes = []\n            max_down = -1\n\n            # 현재 component 안에서 c의 자손들만 선택\n            for v in order:\n                if v != 1 and left_tin <= tin[v] < right_tin:\n                    down = depth[v] - depth_c\n\n                    if down < k:\n                        down_nodes.append(v)\n                        if down > max_down:\n                            max_down = down\n\n            if down_nodes:\n                q_count = len(down_nodes)\n\n                # 작은 경우 직접 확인\n                if max_up * q_count <= 16 * (max_up + q_count):\n                    for v in down_nodes:\n                        limit = k - 1 - (depth[v] - depth_c)\n\n                        if limit >= max_up:\n                            limit = max_up - 1\n\n                        if limit < 0:\n                            continue\n\n                        x = z[v]\n                        best_line = NEG_INF\n\n                        for idx in range(limit + 1):\n                            u = up_nodes[idx]\n                            value = intercept[u] + line_slope[u] * x\n\n                            if value > best_line:\n                                best_line = value\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n                # 모든 up 후보가 모든 v에 대해 허용되는 경우\n                elif max_down + max_up <= k:\n                    hull = build_hull(up_nodes[:max_up])\n                    hull_len = len(hull)\n\n                    # x가 증가하는 순서로 처리하면 hull pointer를 이동시킬 수 있다.\n                    down_nodes.sort(key=z.__getitem__)\n\n                    hull_pos = 0\n\n                    for v in down_nodes:\n                        x = z[v]\n\n                        while hull_pos + 1 < hull_len:\n                            current_line = hull[hull_pos]\n                            next_line = hull[hull_pos + 1]\n\n                            current_value = (\n                                intercept[current_line] +\n                                line_slope[current_line] * x\n                            )\n                            next_value = (\n                                intercept[next_line] +\n                                line_slope[next_line] * x\n                            )\n\n                            if next_value >= current_value:\n                                hull_pos += 1\n                            else:\n                                break\n\n                        line_id = hull[hull_pos]\n                        best_line = (\n                            intercept[line_id] +\n                            line_slope[line_id] * x\n                        )\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n                else:\n                    # 깊은 v부터 처리하면 허용되는 up prefix가 점점 커진다.\n                    down_nodes.sort(\n                        key=depth.__getitem__,\n                        reverse=True\n                    )\n\n                    version += 1\n                    current_version = version\n                    next_up = 0\n\n                    for v in down_nodes:\n                        limit = k - 1 - (depth[v] - depth_c)\n\n                        while next_up < max_up and next_up <= limit:\n                            add_line(\n                                up_nodes[next_up],\n                                current_version\n                            )\n                            next_up += 1\n\n                        best_line = query_line(\n                            compressed_x[v],\n                            current_version\n                        )\n\n                        candidate = base[v] + best_line\n                        if candidate > answer:\n                            answer = candidate\n\n        # centroid 제거 후 남은 컴포넌트들을 작업 목록에 추가\n        removed[c] = 1\n\n        for to in adjacency[c]:\n            if not removed[to]:\n                tasks.append(to)\n\n    if answer == NEG_INF:\n        answer = 0\n\n    sys.stdout.write(str(answer) + \"\\n\")\n\n\nif __name__ == \"__main__\":\n    solve()",
+  "judge": {
+    "status": "TLE",
+    "passed_cases": 54,
+    "total_cases": 104,
+    "max_case_seconds": 1.0099746930027322,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016634536998026306,
+        "return_code": 0,
+        "stdout": "200\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011945702997763874,
+        "return_code": 0,
+        "stdout": "120\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02495639900007518,
+        "return_code": 0,
+        "stdout": "289055989861\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018228912002086872,
+        "return_code": 0,
+        "stdout": "48081058971\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024986456999613438,
+        "return_code": 0,
+        "stdout": "210902955999\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02234332300213282,
+        "return_code": 0,
+        "stdout": "194630777209\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01883375300167245,
+        "return_code": 0,
+        "stdout": "48733818013\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02517810200151871,
+        "return_code": 0,
+        "stdout": "265190185192\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02369518799969228,
+        "return_code": 0,
+        "stdout": "209641821491\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017913314997713314,
+        "return_code": 0,
+        "stdout": "54778650680\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024589373999333475,
+        "return_code": 0,
+        "stdout": "148845040563\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02373199799694703,
+        "return_code": 0,
+        "stdout": "178783135041\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02093185500052641,
+        "return_code": 0,
+        "stdout": "53965050136\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.026620823999110144,
+        "return_code": 0,
+        "stdout": "272219351841\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0220051100004639,
+        "return_code": 0,
+        "stdout": "130681887074\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02011678299822961,
+        "return_code": 0,
+        "stdout": "44171612484\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024064971999905538,
+        "return_code": 0,
+        "stdout": "116424633769\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024890911001421046,
+        "return_code": 0,
+        "stdout": "229462131300\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027948109000135446,
+        "return_code": 0,
+        "stdout": "52141880739\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023839614001190057,
+        "return_code": 0,
+        "stdout": "79151469706\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02621707099751802,
+        "return_code": 0,
+        "stdout": "121945563667\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.020513111998297973,
+        "return_code": 0,
+        "stdout": "46399560798\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.026964591001160443,
+        "return_code": 0,
+        "stdout": "175610332201\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.022876805000123568,
+        "return_code": 0,
+        "stdout": "491053612482\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024578123997343937,
+        "return_code": 0,
+        "stdout": "48263445528\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028078382998501183,
+        "return_code": 0,
+        "stdout": "144079563001\n",
+        "stderr": "",
+        "test_case": "skijanje.in.1z"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0099746930027322,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2a"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.004849266999372,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2b"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0032360880031774,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2c"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.007237443998747,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2d"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0053783339972142,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2e"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0054339730013453,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2f"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0056863329991756,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2g"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0054792750015622,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0053596469988406,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2i"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0045597909993376,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2j"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0045990930011612,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2k"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.006944608001504,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2l"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0058276089985156,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2m"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0050663270012592,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2n"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0058382710012665,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2o"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0051325329986867,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2p"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0066472609978518,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2q"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0049171169994224,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2r"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0052272550019552,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2s"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.005215307999606,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2t"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0068517669969879,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2u"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0048422580002807,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2v"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0057452530018054,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2w"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0052404449997994,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2x"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0055344160027744,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2y"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0050026969984174,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013086965998809319,
+        "return_code": 0,
+        "stdout": "200\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016395555998315103,
+        "return_code": 0,
+        "stdout": "120\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3794035030005034,
+        "return_code": 0,
+        "stdout": "77944697641\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6445043589992565,
+        "return_code": 0,
+        "stdout": "1195175650196\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6287259620003169,
+        "return_code": 0,
+        "stdout": "2171987701808\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3502558610016422,
+        "return_code": 0,
+        "stdout": "97082107681\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6535934230014391,
+        "return_code": 0,
+        "stdout": "1564502652157\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6503484479981125,
+        "return_code": 0,
+        "stdout": "2721797176706\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4013897610020649,
+        "return_code": 0,
+        "stdout": "80002419616\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6891584229997534,
+        "return_code": 0,
+        "stdout": "1861070826226\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6645635179993405,
+        "return_code": 0,
+        "stdout": "2204102580549\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.41097471700049937,
+        "return_code": 0,
+        "stdout": "71371685151\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7083810180010914,
+        "return_code": 0,
+        "stdout": "2159499271769\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6439876910008024,
+        "return_code": 0,
+        "stdout": "834157161597\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3848844599997392,
+        "return_code": 0,
+        "stdout": "75529137955\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6685311889996228,
+        "return_code": 0,
+        "stdout": "993173818521\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.612142591002339,
+        "return_code": 0,
+        "stdout": "997921772175\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3280710030012415,
+        "return_code": 0,
+        "stdout": "60484091667\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6756924760011316,
+        "return_code": 0,
+        "stdout": "2159499271769\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6200999280008546,
+        "return_code": 0,
+        "stdout": "834157161597\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3679853049980011,
+        "return_code": 0,
+        "stdout": "75529137955\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6602136569999857,
+        "return_code": 0,
+        "stdout": "1575774576124\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6396637270008796,
+        "return_code": 0,
+        "stdout": "769098281004\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3015967380015354,
+        "return_code": 0,
+        "stdout": "29710677736\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6884239249993698,
+        "return_code": 0,
+        "stdout": "1638962836312\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6458066980012518,
+        "return_code": 0,
+        "stdout": "791714709585\n",
+        "stderr": "",
+        "test_case": "skijanje.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01599245599936694,
+        "return_code": 0,
+        "stdout": "200\n",
+        "stderr": "",
+        "test_case": "skijanje.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016899620000913274,
+        "return_code": 0,
+        "stdout": "120\n",
+        "stderr": "",
+        "test_case": "skijanje.in.4b"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0047377759983647,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4c"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0060840559999633,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4d"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0057469419989502,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4e"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0057186800004274,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4f"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0069793880029465,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4g"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0076991269997961,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.005121763999341,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4i"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0061267880009837,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4j"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0097965050008497,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4k"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0067756659991574,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4l"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.005646876998071,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4m"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0055042959975253,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4n"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0052462829989963,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4o"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.007010139997874,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4p"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.005349318998924,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4q"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0049047770007746,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4r"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0070876290010347,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4s"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0061849849989812,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4t"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0061313469996094,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4u"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0050980799969693,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4v"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0041356930014445,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4w"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.004238178000378,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4x"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0046899679982744,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4y"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.0062668959981238,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "skijanje.in.4z"
+      }
+    ]
+  },
+  "record_complete": true
+}

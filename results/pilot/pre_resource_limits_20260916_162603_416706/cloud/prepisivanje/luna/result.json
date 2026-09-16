@@ -1,0 +1,1194 @@
+{
+  "run_id": "20260916_063052_411708Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_prepisivanje",
+    "name": "prepisivanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 7,
+    "difficulty_reason": "좌석을 체커보드 색으로 나눠 충돌 관계를 이분 그래프로 모델링하고, 최대 독립 집합을 최소 정점 커버와 최대 이분 매칭으로 환원해야 한다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/prepisivanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/prepisivanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Prepisivanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nOn the eve of an important Croatian language exam, the classroom is already prepared. We can view it as a matrix of dimension $n \\times m$, where each cell represents one seat. Each cell of the matrix can have one of three values:\n\n- 2 denotes a seat already occupied by well-behaved students. They are responsible and the teacher is not concerned about them.\n- 1 denotes a seat that the teacher has marked as forbidden. No one will sit in those seats.\n- 0 denotes an empty seat where mischievous students can sit.\n\nThe mischievous students have not arrived yet, but they will come soon. The teacher can decide which empty seats the mischievous students will occupy.\n\nWell-behaved students never cheat, but they can cause mischievous students to cheat if they are adjacent to them. A mischievous student will cheat if they have at least one neighboring student (in one of the four directions: up, down, left, right), whether well-behaved or mischievous.\n\nDetermine the maximum total number of students that can be seated in the classroom (including both well-behaved and mischievous students) such that no cheating occurs during the exam.\n\n## Input\n\nThe first line contains natural numbers $n,m$ ($1 \\le n,m \\le 80$), as described in the problem statement.\n\nEach of the next $n$ lines contains $m$ characters, each being 0, 1, or 2, representing the matrix described in the problem.\n\n## Output\n\nIn the first and only line, output a single number - the maximum total number of students that can be seated in the classroom such that no cheating occurs during the exam.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 4\n0100\n0202\n1000\n2120\n```\n\nOutput\n\n```text\n6\n```\n\n### Example 2\n\nInput\n\n```text\n4 4\n0000\n0000\n0000\n0000\n```\n\nOutput\n\n```text\n8\n```\n\n### Clarification of the second example:\n\nThe teacher will seat students in the first and third rows in odd-numbered columns, and in the second and fourth rows in even-numbered columns. This way, she will ensure that no student can cheat."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_0cd2483b9f6cfe77016aaa379e033487d0af305c504ca01b5c",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "## 풀이 방법\n\n고정된 `2`번 좌석의 학생은 반드시 앉아 있으며, 이 학생들은 부정행위를 하지 않습니다.\n\n### 1. 선택할 수 없는 빈 좌석 제거\n\n`0`번 좌석 중 상하좌우로 `2`번 좌석과 인접한 좌석에는 장난꾸러기 학생을 앉힐 수 없습니다. 앉히는 순간 `2`번 학생 때문에 부정행위를 하기 때문입니다.\n\n따라서 다음 조건을 만족하는 `0`번 좌석만 후보로 남깁니다.\n\n- 상하좌우에 `2`가 없음\n\n### 2. 독립 집합 문제로 변환\n\n남은 후보 좌석을 정점으로 하고, 상하좌우로 인접한 후보 좌석 사이에 간선을 연결합니다.\n\n후보 좌석 두 곳이 인접하면 두 학생 모두 이웃 학생을 가지게 되므로, 두 좌석에 동시에 장난꾸러기 학생을 앉힐 수 없습니다. 따라서 선택된 좌석들은 그래프에서 서로 인접하지 않아야 하며, 이는 최대 독립 집합 문제입니다.\n\n격자 그래프는 `(행 + 열)`의 홀짝으로 나누면 이분 그래프가 됩니다.\n\n- `(행 + 열) % 2 == 0`인 좌석을 왼쪽 그룹\n- 나머지를 오른쪽 그룹\n\n이분 그래프에서는 쾨니그 정리에 의해 다음이 성립합니다.\n\n- 최대 독립 집합 크기 = 전체 정점 수 - 최대 매칭 크기\n\n따라서 Hopcroft-Karp 알고리즘으로 최대 매칭을 구한 뒤,\n\n`고정된 2의 개수 + 후보 좌석 수 - 최대 매칭 크기`\n\n를 출력하면 됩니다.\n\n### 정당성\n\n- `2`와 인접한 `0`은 선택할 수 없으므로 후보에서 제거하는 것이 정확합니다.\n- 후보 좌석 중 인접한 두 좌석을 함께 선택하면 장난꾸러기 학생이 이웃 학생 때문에 부정행위를 하므로 불가능합니다.\n- 반대로 서로 인접하지 않은 후보 좌석만 선택하면 선택된 장난꾸러기 학생은 `2`나 다른 장난꾸러기 학생과 인접하지 않으므로 부정행위가 발생하지 않습니다.\n- 따라서 문제는 후보 그래프의 최대 독립 집합 문제입니다.\n- 이 그래프는 이분 그래프이므로 쾨니그 정리에 따라 최대 독립 집합의 크기는 `정점 수 - 최대 매칭 수`입니다.\n\n### 복잡도\n\n정점 수를 `V`, 간선 수를 `E`라 하면:\n\n- 시간 복잡도: `O(E√V)`\n- 공간 복잡도: `O(V + E)`\n\n격자에서는 `V, E = O(nm)`이므로 시간 복잡도는 `O(nm√(nm))`입니다.\n\n```python\nimport sys\nfrom collections import deque\n\n\ndef main():\n    input = sys.stdin.readline\n\n    n, m = map(int, input().split())\n    grid = [input().strip() for _ in range(n)]\n\n    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n\n    fixed_students = 0\n    eligible = [[False] * m for _ in range(n)]\n    eligible_count = 0\n\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] == '2':\n                fixed_students += 1\n            elif grid[r][c] == '0':\n                can_use = True\n\n                for dr, dc in directions:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < m:\n                        if grid[nr][nc] == '2':\n                            can_use = False\n                            break\n\n                if can_use:\n                    eligible[r][c] = True\n                    eligible_count += 1\n\n    total_cells = n * m\n    adjacency = [[] for _ in range(total_cells)]\n    left_vertices = []\n\n    for r in range(n):\n        for c in range(m):\n            if not eligible[r][c]:\n                continue\n            if (r + c) % 2 != 0:\n                continue\n\n            u = r * m + c\n            left_vertices.append(u)\n\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if eligible[nr][nc]:\n                        v = nr * m + nc\n                        adjacency[u].append(v)\n\n    pair_left = [-1] * total_cells\n    pair_right = [-1] * total_cells\n    distance = [0] * total_cells\n    infinity = 10**9\n\n    sys.setrecursionlimit(max(10000, total_cells * 2 + 100))\n\n    def bfs():\n        queue = deque()\n\n        for u in left_vertices:\n            if pair_left[u] == -1:\n                distance[u] = 0\n                queue.append(u)\n            else:\n                distance[u] = infinity\n\n        shortest = infinity\n\n        while queue:\n            u = queue.popleft()\n\n            if distance[u] >= shortest:\n                continue\n\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    shortest = distance[u] + 1\n                elif distance[matched_left] == infinity:\n                    distance[matched_left] = distance[u] + 1\n                    queue.append(matched_left)\n\n        return shortest\n\n    def dfs(u, shortest):\n        for v in adjacency[u]:\n            matched_left = pair_right[v]\n\n            if matched_left == -1:\n                if distance[u] + 1 == shortest:\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n            elif (\n                distance[matched_left] == distance[u] + 1\n                and dfs(matched_left, shortest)\n            ):\n                pair_left[u] = v\n                pair_right[v] = u\n                return True\n\n        distance[u] = infinity\n        return False\n\n    matching = 0\n\n    while True:\n        shortest = bfs()\n        if shortest == infinity:\n            break\n\n        for u in left_vertices:\n            if pair_left[u] == -1 and dfs(u, shortest):\n                matching += 1\n\n    answer = fixed_students + eligible_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 643,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 11577,
+      "output_tokens_details": {
+        "reasoning_tokens": 10160
+      },
+      "total_tokens": 12220
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 127.89904427100191,
+    "prompt_tokens": 643,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 11577,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 10160,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.014021,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 643,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 11577
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom collections import deque\n\n\ndef main():\n    input = sys.stdin.readline\n\n    n, m = map(int, input().split())\n    grid = [input().strip() for _ in range(n)]\n\n    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n\n    fixed_students = 0\n    eligible = [[False] * m for _ in range(n)]\n    eligible_count = 0\n\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] == '2':\n                fixed_students += 1\n            elif grid[r][c] == '0':\n                can_use = True\n\n                for dr, dc in directions:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < m:\n                        if grid[nr][nc] == '2':\n                            can_use = False\n                            break\n\n                if can_use:\n                    eligible[r][c] = True\n                    eligible_count += 1\n\n    total_cells = n * m\n    adjacency = [[] for _ in range(total_cells)]\n    left_vertices = []\n\n    for r in range(n):\n        for c in range(m):\n            if not eligible[r][c]:\n                continue\n            if (r + c) % 2 != 0:\n                continue\n\n            u = r * m + c\n            left_vertices.append(u)\n\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if eligible[nr][nc]:\n                        v = nr * m + nc\n                        adjacency[u].append(v)\n\n    pair_left = [-1] * total_cells\n    pair_right = [-1] * total_cells\n    distance = [0] * total_cells\n    infinity = 10**9\n\n    sys.setrecursionlimit(max(10000, total_cells * 2 + 100))\n\n    def bfs():\n        queue = deque()\n\n        for u in left_vertices:\n            if pair_left[u] == -1:\n                distance[u] = 0\n                queue.append(u)\n            else:\n                distance[u] = infinity\n\n        shortest = infinity\n\n        while queue:\n            u = queue.popleft()\n\n            if distance[u] >= shortest:\n                continue\n\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    shortest = distance[u] + 1\n                elif distance[matched_left] == infinity:\n                    distance[matched_left] = distance[u] + 1\n                    queue.append(matched_left)\n\n        return shortest\n\n    def dfs(u, shortest):\n        for v in adjacency[u]:\n            matched_left = pair_right[v]\n\n            if matched_left == -1:\n                if distance[u] + 1 == shortest:\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n            elif (\n                distance[matched_left] == distance[u] + 1\n                and dfs(matched_left, shortest)\n            ):\n                pair_left[u] = v\n                pair_right[v] = u\n                return True\n\n        distance[u] = infinity\n        return False\n\n    matching = 0\n\n    while True:\n        shortest = bfs()\n        if shortest == infinity:\n            break\n\n        for u in left_vertices:\n            if pair_left[u] == -1 and dfs(u, shortest):\n                matching += 1\n\n    answer = fixed_students + eligible_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 130,
+    "total_cases": 130,
+    "max_case_seconds": 0.0225650680004037,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009321800000179792,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00890901100137853,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009999609999795211,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011048144002415938,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010225328998785699,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010153720999369398,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010001209997426486,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009422904000530252,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009663821001595352,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010831358002178604,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009494300000369549,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010074064000946237,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009995548000006238,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009543554002448218,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012465849998989142,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010287622000760166,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00967518499965081,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010792205001052935,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009772703000635374,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010116023000591667,
+        "return_code": 0,
+        "stdout": "7\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010793790002935566,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009580542999174213,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010079378997033928,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010499183998035733,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010160745998291532,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01084202399943024,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00955774399699294,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013209542001277441,
+        "return_code": 0,
+        "stdout": "2117\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012348305997875286,
+        "return_code": 0,
+        "stdout": "2016\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012466853000660194,
+        "return_code": 0,
+        "stdout": "1288\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01123681999888504,
+        "return_code": 0,
+        "stdout": "1395\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012029878002067562,
+        "return_code": 0,
+        "stdout": "989\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013747005999903195,
+        "return_code": 0,
+        "stdout": "1462\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012059430999215692,
+        "return_code": 0,
+        "stdout": "1708\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012581040999066317,
+        "return_code": 0,
+        "stdout": "1742\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013816350998240523,
+        "return_code": 0,
+        "stdout": "1798\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014814197002124274,
+        "return_code": 0,
+        "stdout": "2070\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01216736599963042,
+        "return_code": 0,
+        "stdout": "1553\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011572551000426756,
+        "return_code": 0,
+        "stdout": "1272\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012818603998312028,
+        "return_code": 0,
+        "stdout": "1512\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012517013998149196,
+        "return_code": 0,
+        "stdout": "1924\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011830953000753652,
+        "return_code": 0,
+        "stdout": "1333\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013539173996832687,
+        "return_code": 0,
+        "stdout": "2691\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013211990000854712,
+        "return_code": 0,
+        "stdout": "2160\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014728649002790917,
+        "return_code": 0,
+        "stdout": "2590\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01308601300115697,
+        "return_code": 0,
+        "stdout": "2394\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012241951997566503,
+        "return_code": 0,
+        "stdout": "1040\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014692717999423621,
+        "return_code": 0,
+        "stdout": "2440\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01191223099885974,
+        "return_code": 0,
+        "stdout": "1420\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012061260000336915,
+        "return_code": 0,
+        "stdout": "1376\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013053383001533803,
+        "return_code": 0,
+        "stdout": "1914\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014504605998808984,
+        "return_code": 0,
+        "stdout": "2312\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011367717997927684,
+        "return_code": 0,
+        "stdout": "80\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012531896001746645,
+        "return_code": 0,
+        "stdout": "76\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010037127998657525,
+        "return_code": 0,
+        "stdout": "71\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01090758200007258,
+        "return_code": 0,
+        "stdout": "62\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010895431998505956,
+        "return_code": 0,
+        "stdout": "57\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010446755000884878,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010446846001286758,
+        "return_code": 0,
+        "stdout": "74\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010226279999187682,
+        "return_code": 0,
+        "stdout": "68\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01132565700027044,
+        "return_code": 0,
+        "stdout": "75\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010376932001236128,
+        "return_code": 0,
+        "stdout": "80\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01003215500168153,
+        "return_code": 0,
+        "stdout": "86\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010786802999064093,
+        "return_code": 0,
+        "stdout": "60\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010767555999336764,
+        "return_code": 0,
+        "stdout": "63\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010635037000611192,
+        "return_code": 0,
+        "stdout": "69\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009711926999443676,
+        "return_code": 0,
+        "stdout": "69\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010210328000539448,
+        "return_code": 0,
+        "stdout": "71\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010023761002230458,
+        "return_code": 0,
+        "stdout": "68\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010743307000666391,
+        "return_code": 0,
+        "stdout": "51\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010272161998727825,
+        "return_code": 0,
+        "stdout": "51\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010217491999355843,
+        "return_code": 0,
+        "stdout": "64\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010869311001442838,
+        "return_code": 0,
+        "stdout": "67\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010587759003101382,
+        "return_code": 0,
+        "stdout": "54\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011423004998505348,
+        "return_code": 0,
+        "stdout": "55\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009964520002540667,
+        "return_code": 0,
+        "stdout": "53\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010090692001540447,
+        "return_code": 0,
+        "stdout": "61\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010224255001958227,
+        "return_code": 0,
+        "stdout": "50\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010751950998383109,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010650200998497894,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011435246000473853,
+        "return_code": 0,
+        "stdout": "507\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011035366002033697,
+        "return_code": 0,
+        "stdout": "444\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011123650001536589,
+        "return_code": 0,
+        "stdout": "395\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010292892999132164,
+        "return_code": 0,
+        "stdout": "360\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013058698001259472,
+        "return_code": 0,
+        "stdout": "522\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01083013899915386,
+        "return_code": 0,
+        "stdout": "488\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010712066999985836,
+        "return_code": 0,
+        "stdout": "500\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01073087199984002,
+        "return_code": 0,
+        "stdout": "557\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009893362999719102,
+        "return_code": 0,
+        "stdout": "633\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010721792998083401,
+        "return_code": 0,
+        "stdout": "446\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010837357000127668,
+        "return_code": 0,
+        "stdout": "425\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011124631000711815,
+        "return_code": 0,
+        "stdout": "485\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01081794799756608,
+        "return_code": 0,
+        "stdout": "461\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011023546998330858,
+        "return_code": 0,
+        "stdout": "494\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01037275300041074,
+        "return_code": 0,
+        "stdout": "474\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010710424998251256,
+        "return_code": 0,
+        "stdout": "359\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011121129999082768,
+        "return_code": 0,
+        "stdout": "379\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010849447000509826,
+        "return_code": 0,
+        "stdout": "446\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010561641000094824,
+        "return_code": 0,
+        "stdout": "470\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009717198001453653,
+        "return_code": 0,
+        "stdout": "391\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009585086998413317,
+        "return_code": 0,
+        "stdout": "381\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010085931000503479,
+        "return_code": 0,
+        "stdout": "382\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009901993002131348,
+        "return_code": 0,
+        "stdout": "458\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010405703997093951,
+        "return_code": 0,
+        "stdout": "372\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009760460998222698,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010255029999825638,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0225650680004037,
+        "return_code": 0,
+        "stdout": "2611\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016766864002420334,
+        "return_code": 0,
+        "stdout": "2370\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014551388001564192,
+        "return_code": 0,
+        "stdout": "2112\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01360071100134519,
+        "return_code": 0,
+        "stdout": "1864\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01680348599984427,
+        "return_code": 0,
+        "stdout": "2703\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013034689000051003,
+        "return_code": 0,
+        "stdout": "2562\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012098438000975875,
+        "return_code": 0,
+        "stdout": "2688\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01209952799763414,
+        "return_code": 0,
+        "stdout": "2955\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010864861997106345,
+        "return_code": 0,
+        "stdout": "3376\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012464600000384962,
+        "return_code": 0,
+        "stdout": "2361\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0113026360013464,
+        "return_code": 0,
+        "stdout": "2239\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01491956900281366,
+        "return_code": 0,
+        "stdout": "2572\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01234162800028571,
+        "return_code": 0,
+        "stdout": "2392\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017022987998643657,
+        "return_code": 0,
+        "stdout": "2642\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013074903999950038,
+        "return_code": 0,
+        "stdout": "2430\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012482456000725506,
+        "return_code": 0,
+        "stdout": "1918\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011640287997579435,
+        "return_code": 0,
+        "stdout": "2012\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015105795999261318,
+        "return_code": 0,
+        "stdout": "2390\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013453392999508651,
+        "return_code": 0,
+        "stdout": "2472\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011640755001280922,
+        "return_code": 0,
+        "stdout": "2028\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010942181001155404,
+        "return_code": 0,
+        "stdout": "1997\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011991377999947872,
+        "return_code": 0,
+        "stdout": "2040\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010873691000597319,
+        "return_code": 0,
+        "stdout": "2322\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01089846900140401,
+        "return_code": 0,
+        "stdout": "1912\n",
+        "stderr": "",
+        "test_case": "prepisivanje.in.5z"
+      }
+    ]
+  },
+  "record_complete": true
+}

@@ -1,0 +1,986 @@
+{
+  "run_id": "20260916_063554_822333Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_pet",
+    "name": "pet",
+    "season": "2025_2026",
+    "contest": 5,
+    "difficulty": 7,
+    "difficulty_reason": "행·열을 번갈아 이동하는 길이 5 경로를 DP로 세고, 동일 수련잎 재방문으로 생기는 직사각형 경로를 별도로 제거해야 한다. 큰 격자에서 직사각형 수를 세기 위해 bitset 최적화도 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest5/testdata/pet",
+    "statement_path": "data/coci/2025_2026/contest5/statements/pet.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Pet"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nFrog Maša is in a lake represented by a matrix with $n$ rows and $m$ columns. The cells of the matrix are marked with $0$ (water) or $1$ (water lily). From one water lily, Maša can jump to any other water lily in the same row or column. If in the previous jump Maša changed the column she was in, then in the next jump she must change the row she is in. If in the previous jump Maša changed the row she was in, then in the next jump she must change the column she is in. After Maša jumps from the water lily she is currently on, it sinks and can no longer be jumped on.\n\nMaša likes to have fun and wants to visit a total of 5 water lilies along her path (including the starting water lily).\n\nHelp her and calculate in how many ways she can do this if she can choose any water lily as her starting point. Two paths are considered different if the positions of their first, second, third, fourth, or fifth water lilies differ.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $m$ ($1 \\le n,m \\le 2000$), as described in the problem statement.\n\nIn each of the following $n$ lines there are $m$ characters, which are either $0$ or $1$ and represent the cells of the lake.\n\n## Output\n\nPrint a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n2 3\n111\n110\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 2\n\nInput\n\n```text\n4 4\n1111\n1111\n1111\n1111\n```\n\nOutput\n\n```text\n2304\n```\n\n### Example 3\n\nInput\n\n```text\n2 5\n11110\n01111\n```\n\nOutput\n\n```text\n48\n```\n\n### Clarification of the first example:\n\nThe 4 possible jump paths on water lilies are:\n\n$[1,1] \\to [2,1] \\to [2,2] \\to [1,2] \\to [1,3]$\n\n$[1,2] \\to [2,2] \\to [2,1] \\to [1,1] \\to [1,3]$\n\n$[1,3] \\to [1,2] \\to [2,2] \\to [2,1] \\to [1,1]$\n\n$[1,3] \\to [1,1] \\to [2,1] \\to [2,2] \\to [1,2]$"
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_07f1504f9ffb3a11016aaa38ccb4e887d0b4c80021837a7546",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "## 풀이\n\n가로 점프를 `H`, 세로 점프를 `V`라고 하겠습니다.\n\n첫 점프에는 제한이 없으므로 가능한 방향 패턴은 다음 두 가지뿐입니다.\n\n- `H → V → H → V`\n- `V → H → V → H`\n\n### 1. 교대 점프 경로 수 세기\n\n행 \\(r\\)의 백합 개수를 \\(d_r\\), 열 \\(c\\)의 백합 개수를 \\(e_c\\)라 하겠습니다.\n\n또한 다음을 정의합니다.\n\n- \\(a_r=d_r-1\\): 행 \\(r\\)에서 현재 백합을 제외하고 이동할 수 있는 백합 수\n- \\(b_c=e_c-1\\): 열 \\(c\\)에서 현재 백합을 제외하고 이동할 수 있는 백합 수\n\n각 행과 열에 대해 다음 합을 계산합니다.\n\n\\[\nx_r=\\sum_{(r,c)=1} b_c\n\\]\n\n\\[\nz_c=\\sum_{(r,c)=1} a_r\n\\]\n\n\\[\ny_c=\\sum_{(r,c)=1} x_r\n\\]\n\n\\[\nw_r=\\sum_{(r,c)=1} z_c\n\\]\n\n#### `H → V → H → V`\n\n두 번째 백합을 \\((r,c)\\)라고 합시다.\n\n- 첫 번째 백합은 같은 행에서 \\(a_r\\)가지\n- 세 번째 백합은 열 \\(c\\)에서 행 \\(r\\)이 아닌 곳에 있어야 함\n- 세 번째 백합이 행 \\(s\\)에 있다면, 네 번째와 다섯 번째 백합을 고르는 방법은 \\(x_s-b_c\\)가지\n\n따라서 \\((r,c)\\)를 두 번째 백합으로 하는 경로 수는\n\n\\[\na_r(y_c-x_r-b_c^2)\n\\]\n\n입니다.\n\n전체 합은 다음과 같이 정리할 수 있습니다.\n\n\\[\nH=\n\\sum_c y_cz_c\n-\\sum_r d_ra_rx_r\n-\\sum_c b_c^2z_c\n\\]\n\n#### `V → H → V → H`\n\n대칭적으로 전체 경로 수는\n\n\\[\nV=\n\\sum_r w_rx_r\n-\\sum_c e_cb_cz_c\n-\\sum_r a_r^2x_r\n\\]\n\n입니다.\n\n### 2. 가라앉은 백합 처리\n\n위에서 센 경로들은 이미 방문한 백합으로 다시 이동하는 경우를 한 가지 포함할 수 있습니다.\n\n교대 이동에서는 다섯 위치 중 첫 번째와 다섯 번째 위치가 같은 경우를 제외하면, 다른 위치가 서로 같아지는 것은 불가능합니다.\n\n첫 번째와 다섯 번째 백합이 같으려면 네 백합이 직사각형의 네 꼭짓점을 이루어야 합니다. 즉, 모든 칸이 백합인 \\(2 \\times 2\\) 직사각형입니다.\n\n직사각형 하나마다:\n\n- 첫 점프가 가로인 닫힌 경로 4개\n- 첫 점프가 세로인 닫힌 경로 4개\n\n총 8개가 잘못 센 경로입니다.\n\n따라서 정답은\n\n\\[\nH+V-8R\n\\]\n\n이며, \\(R\\)은 모든 칸이 백합인 \\(2 \\times 2\\) 직사각형의 개수입니다.\n\n### 3. 직사각형 개수\n\n각 행을 비트 집합으로 표현합니다. 두 행의 비트 AND 결과에서 1의 개수가 \\(k\\)라면, 두 행이 공통으로 가진 열 중 2개를 고르는\n\n\\[\n\\binom{k}{2}\n\\]\n\n개의 직사각형이 생깁니다.\n\nPython의 큰 정수와 `bit_count()`를 사용하면 이 연산을 비트 단위로 빠르게 처리할 수 있습니다.\n\n### 복잡도\n\n비트셋의 한 워드를 \\(W\\)비트라고 하면:\n\n- 행과 열 관련 합 계산: \\(O(nm)\\)\n- 직사각형 계산: \\(O\\left(n^2\\left\\lceil\\frac{m}{W}\\right\\rceil\\right)\\)\n- 공간 복잡도: 입력을 포함해 \\(O(nm)\\)\n\n```python\nimport sys\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n\n    n = int(data[0])\n    m = int(data[1])\n    grid = data[2:2 + n]\n\n    one = 49\n\n    row_degree = [0] * n\n    col_degree = [0] * m\n    row_bits = [0] * n\n\n    # 행별 백합 수, 열별 백합 수, 행 비트셋 계산\n    for r, row in enumerate(grid):\n        bits = int(row, 2)\n        row_bits[r] = bits\n        row_degree[r] = bits.bit_count()\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                col_degree[c] += 1\n\n    a = [d - 1 for d in row_degree]\n    b = [e - 1 for e in col_degree]\n\n    # x[r] = sum of b[c] over lilies in row r\n    # z[c] = sum of a[r] over lilies in column c\n    x = [0] * n\n    z = [0] * m\n\n    for r, row in enumerate(grid):\n        ar = a[r]\n        xr = 0\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                xr += b[c]\n                z[c] += ar\n\n        x[r] = xr\n\n    # y[c] = sum of x[r] over lilies in column c\n    # w[r] = sum of z[c] over lilies in row r\n    y = [0] * m\n    w = [0] * n\n\n    for r, row in enumerate(grid):\n        xr = x[r]\n        wr = 0\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                y[c] += xr\n                wr += z[c]\n\n        w[r] = wr\n\n    # H -> V -> H -> V\n    h_first = (\n        sum(y[c] * z[c] for c in range(m))\n        - sum(row_degree[r] * a[r] * x[r] for r in range(n))\n        - sum(b[c] * b[c] * z[c] for c in range(m))\n    )\n\n    # V -> H -> V -> H\n    v_first = (\n        sum(w[r] * x[r] for r in range(n))\n        - sum(col_degree[c] * b[c] * z[c] for c in range(m))\n        - sum(a[r] * a[r] * x[r] for r in range(n))\n    )\n\n    # 모든 칸이 백합인 2 x 2 직사각형 개수\n    # 백합이 2개 미만인 행은 직사각형에 참여할 수 없다.\n    rect_rows = [\n        bits\n        for bits, degree in zip(row_bits, row_degree)\n        if degree >= 2\n    ]\n\n    rectangles = 0\n\n    for i, current in enumerate(rect_rows):\n        for previous in rect_rows[:i]:\n            common = (current & previous).bit_count()\n            rectangles += common * (common - 1) // 2\n\n    answer = h_first + v_first - 8 * rectangles\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 735,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 46089,
+      "output_tokens_details": {
+        "reasoning_tokens": 44440
+      },
+      "total_tokens": 46824
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 466.89738131899867,
+    "prompt_tokens": 735,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 46089,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 44440,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0554538,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 735,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 46089
+      }
+    }
+  },
+  "extracted_code": "import sys\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n\n    n = int(data[0])\n    m = int(data[1])\n    grid = data[2:2 + n]\n\n    one = 49\n\n    row_degree = [0] * n\n    col_degree = [0] * m\n    row_bits = [0] * n\n\n    # 행별 백합 수, 열별 백합 수, 행 비트셋 계산\n    for r, row in enumerate(grid):\n        bits = int(row, 2)\n        row_bits[r] = bits\n        row_degree[r] = bits.bit_count()\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                col_degree[c] += 1\n\n    a = [d - 1 for d in row_degree]\n    b = [e - 1 for e in col_degree]\n\n    # x[r] = sum of b[c] over lilies in row r\n    # z[c] = sum of a[r] over lilies in column c\n    x = [0] * n\n    z = [0] * m\n\n    for r, row in enumerate(grid):\n        ar = a[r]\n        xr = 0\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                xr += b[c]\n                z[c] += ar\n\n        x[r] = xr\n\n    # y[c] = sum of x[r] over lilies in column c\n    # w[r] = sum of z[c] over lilies in row r\n    y = [0] * m\n    w = [0] * n\n\n    for r, row in enumerate(grid):\n        xr = x[r]\n        wr = 0\n\n        for c, ch in enumerate(row):\n            if ch == one:\n                y[c] += xr\n                wr += z[c]\n\n        w[r] = wr\n\n    # H -> V -> H -> V\n    h_first = (\n        sum(y[c] * z[c] for c in range(m))\n        - sum(row_degree[r] * a[r] * x[r] for r in range(n))\n        - sum(b[c] * b[c] * z[c] for c in range(m))\n    )\n\n    # V -> H -> V -> H\n    v_first = (\n        sum(w[r] * x[r] for r in range(n))\n        - sum(col_degree[c] * b[c] * z[c] for c in range(m))\n        - sum(a[r] * a[r] * x[r] for r in range(n))\n    )\n\n    # 모든 칸이 백합인 2 x 2 직사각형 개수\n    # 백합이 2개 미만인 행은 직사각형에 참여할 수 없다.\n    rect_rows = [\n        bits\n        for bits, degree in zip(row_bits, row_degree)\n        if degree >= 2\n    ]\n\n    rectangles = 0\n\n    for i, current in enumerate(rect_rows):\n        for previous in rect_rows[:i]:\n            common = (current & previous).bit_count()\n            rectangles += common * (common - 1) // 2\n\n    answer = h_first + v_first - 8 * rectangles\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 104,
+    "total_cases": 104,
+    "max_case_seconds": 0.843192635999003,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012379174997477094,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01357097200161661,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013637760999699822,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012970339001185494,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011914860999240773,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011723293999239104,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "pet.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012812532997486414,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01359157900151331,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "pet.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011474377999547869,
+        "return_code": 0,
+        "stdout": "208\n",
+        "stderr": "",
+        "test_case": "pet.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013634437997097848,
+        "return_code": 0,
+        "stdout": "1104\n",
+        "stderr": "",
+        "test_case": "pet.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011703319996740902,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015206176998617593,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01364257000022917,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01367651800319436,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.019149397001456236,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.019761288996960502,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015065472001879243,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017261250999581534,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012560958002723055,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013705945999390678,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012465327999962028,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "pet.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011809817999164807,
+        "return_code": 0,
+        "stdout": "44\n",
+        "stderr": "",
+        "test_case": "pet.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014830701999017037,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016354973002307815,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014962076998926932,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01439752700025565,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014733490002981853,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01378825700157904,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012102297001547413,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015084474001923809,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0133929600015108,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016223639002419077,
+        "return_code": 0,
+        "stdout": "648\n",
+        "stderr": "",
+        "test_case": "pet.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015190808000625111,
+        "return_code": 0,
+        "stdout": "5134\n",
+        "stderr": "",
+        "test_case": "pet.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014328288998513017,
+        "return_code": 0,
+        "stdout": "5432\n",
+        "stderr": "",
+        "test_case": "pet.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013180363999708788,
+        "return_code": 0,
+        "stdout": "27986\n",
+        "stderr": "",
+        "test_case": "pet.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013822831999277696,
+        "return_code": 0,
+        "stdout": "75852\n",
+        "stderr": "",
+        "test_case": "pet.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01304298000104609,
+        "return_code": 0,
+        "stdout": "253672\n",
+        "stderr": "",
+        "test_case": "pet.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013310551999893505,
+        "return_code": 0,
+        "stdout": "499002\n",
+        "stderr": "",
+        "test_case": "pet.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013934593000158202,
+        "return_code": 0,
+        "stdout": "719940\n",
+        "stderr": "",
+        "test_case": "pet.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016557300001295516,
+        "return_code": 0,
+        "stdout": "1296000\n",
+        "stderr": "",
+        "test_case": "pet.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01285849299893016,
+        "return_code": 0,
+        "stdout": "829132\n",
+        "stderr": "",
+        "test_case": "pet.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014660657001513755,
+        "return_code": 0,
+        "stdout": "719012\n",
+        "stderr": "",
+        "test_case": "pet.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015313413001422305,
+        "return_code": 0,
+        "stdout": "938000\n",
+        "stderr": "",
+        "test_case": "pet.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013117488000716548,
+        "return_code": 0,
+        "stdout": "933840\n",
+        "stderr": "",
+        "test_case": "pet.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012510333999671275,
+        "return_code": 0,
+        "stdout": "1296000\n",
+        "stderr": "",
+        "test_case": "pet.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017132830998889403,
+        "return_code": 0,
+        "stdout": "1106964\n",
+        "stderr": "",
+        "test_case": "pet.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015546114998869598,
+        "return_code": 0,
+        "stdout": "1051856\n",
+        "stderr": "",
+        "test_case": "pet.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014073800997721264,
+        "return_code": 0,
+        "stdout": "147780\n",
+        "stderr": "",
+        "test_case": "pet.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017593905999092385,
+        "return_code": 0,
+        "stdout": "7114\n",
+        "stderr": "",
+        "test_case": "pet.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018016730002273107,
+        "return_code": 0,
+        "stdout": "555628\n",
+        "stderr": "",
+        "test_case": "pet.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017505875002825633,
+        "return_code": 0,
+        "stdout": "1231200\n",
+        "stderr": "",
+        "test_case": "pet.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012956026999745518,
+        "return_code": 0,
+        "stdout": "547752\n",
+        "stderr": "",
+        "test_case": "pet.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01894849900054396,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01737065999986953,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014805163998971693,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.024103088002448203,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027708446999895386,
+        "return_code": 0,
+        "stdout": "77337685958\n",
+        "stderr": "",
+        "test_case": "pet.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029680293999263085,
+        "return_code": 0,
+        "stdout": "2551076616424\n",
+        "stderr": "",
+        "test_case": "pet.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030308310000691563,
+        "return_code": 0,
+        "stdout": "19842446095270\n",
+        "stderr": "",
+        "test_case": "pet.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03653491500153905,
+        "return_code": 0,
+        "stdout": "81707444460494\n",
+        "stderr": "",
+        "test_case": "pet.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03414201999839861,
+        "return_code": 0,
+        "stdout": "245571417088108\n",
+        "stderr": "",
+        "test_case": "pet.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03732839100121055,
+        "return_code": 0,
+        "stdout": "630366572241420\n",
+        "stderr": "",
+        "test_case": "pet.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0354681270000583,
+        "return_code": 0,
+        "stdout": "1363424411467686\n",
+        "stderr": "",
+        "test_case": "pet.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03974228399965796,
+        "return_code": 0,
+        "stdout": "2665881222905520\n",
+        "stderr": "",
+        "test_case": "pet.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03555361899998388,
+        "return_code": 0,
+        "stdout": "4766852885198650\n",
+        "stderr": "",
+        "test_case": "pet.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03540649999922607,
+        "return_code": 0,
+        "stdout": "8110335744000000\n",
+        "stderr": "",
+        "test_case": "pet.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03589651500078617,
+        "return_code": 0,
+        "stdout": "5053914348484026\n",
+        "stderr": "",
+        "test_case": "pet.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03734127500138129,
+        "return_code": 0,
+        "stdout": "5347267857791490\n",
+        "stderr": "",
+        "test_case": "pet.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03705170299872407,
+        "return_code": 0,
+        "stdout": "5595592364080718\n",
+        "stderr": "",
+        "test_case": "pet.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03665001899935305,
+        "return_code": 0,
+        "stdout": "5975199226190092\n",
+        "stderr": "",
+        "test_case": "pet.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.039863789002993144,
+        "return_code": 0,
+        "stdout": "6264137439141672\n",
+        "stderr": "",
+        "test_case": "pet.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03491962299813167,
+        "return_code": 0,
+        "stdout": "2194679716801508\n",
+        "stderr": "",
+        "test_case": "pet.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.034750210001220694,
+        "return_code": 0,
+        "stdout": "1008556671367794\n",
+        "stderr": "",
+        "test_case": "pet.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027928880001127254,
+        "return_code": 0,
+        "stdout": "4311070118514\n",
+        "stderr": "",
+        "test_case": "pet.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03529438999976264,
+        "return_code": 0,
+        "stdout": "2830062485141234\n",
+        "stderr": "",
+        "test_case": "pet.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030618183001934085,
+        "return_code": 0,
+        "stdout": "6492866026248\n",
+        "stderr": "",
+        "test_case": "pet.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03721782200227608,
+        "return_code": 0,
+        "stdout": "7711894319560858\n",
+        "stderr": "",
+        "test_case": "pet.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03551031800088822,
+        "return_code": 0,
+        "stdout": "7318861318711898\n",
+        "stderr": "",
+        "test_case": "pet.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011284446001809556,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014443918997130822,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01481092099857051,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1898139020013332,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.45204098599788267,
+        "return_code": 0,
+        "stdout": "1256197903989410\n",
+        "stderr": "",
+        "test_case": "pet.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5115394630010996,
+        "return_code": 0,
+        "stdout": "41138207321759970\n",
+        "stderr": "",
+        "test_case": "pet.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5446328969992464,
+        "return_code": 0,
+        "stdout": "310176416526461972\n",
+        "stderr": "",
+        "test_case": "pet.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6113599630007229,
+        "return_code": 0,
+        "stdout": "1310151413600151092\n",
+        "stderr": "",
+        "test_case": "pet.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6453050569980405,
+        "return_code": 0,
+        "stdout": "3983946295348778214\n",
+        "stderr": "",
+        "test_case": "pet.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6973558729987417,
+        "return_code": 0,
+        "stdout": "9934371923929720502\n",
+        "stderr": "",
+        "test_case": "pet.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7136286019995168,
+        "return_code": 0,
+        "stdout": "21485518480340274116\n",
+        "stderr": "",
+        "test_case": "pet.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7598189299969818,
+        "return_code": 0,
+        "stdout": "41797016603246621026\n",
+        "stderr": "",
+        "test_case": "pet.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7967545740029891,
+        "return_code": 0,
+        "stdout": "75501642976058457556\n",
+        "stderr": "",
+        "test_case": "pet.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.803015740999399,
+        "return_code": 0,
+        "stdout": "127744159968000000000\n",
+        "stderr": "",
+        "test_case": "pet.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7971917180002492,
+        "return_code": 0,
+        "stdout": "79744984633826261782\n",
+        "stderr": "",
+        "test_case": "pet.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.784710643998551,
+        "return_code": 0,
+        "stdout": "84261844888826081908\n",
+        "stderr": "",
+        "test_case": "pet.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7703174880007282,
+        "return_code": 0,
+        "stdout": "88808387695313236988\n",
+        "stderr": "",
+        "test_case": "pet.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7743002400020487,
+        "return_code": 0,
+        "stdout": "93708864255557809892\n",
+        "stderr": "",
+        "test_case": "pet.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.784768506000546,
+        "return_code": 0,
+        "stdout": "98810935820521868462\n",
+        "stderr": "",
+        "test_case": "pet.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7954085910023423,
+        "return_code": 0,
+        "stdout": "67348440396837376800\n",
+        "stderr": "",
+        "test_case": "pet.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.843192635999003,
+        "return_code": 0,
+        "stdout": "121462503616111957086\n",
+        "stderr": "",
+        "test_case": "pet.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.6806348700010858,
+        "return_code": 0,
+        "stdout": "23902353107793798\n",
+        "stderr": "",
+        "test_case": "pet.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.53958456500186,
+        "return_code": 0,
+        "stdout": "65901743573479412\n",
+        "stderr": "",
+        "test_case": "pet.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7649863119986549,
+        "return_code": 0,
+        "stdout": "53332226327876143346\n",
+        "stderr": "",
+        "test_case": "pet.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7941751519974787,
+        "return_code": 0,
+        "stdout": "41899021028456253616\n",
+        "stderr": "",
+        "test_case": "pet.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7586006079982326,
+        "return_code": 0,
+        "stdout": "30271027690636305868\n",
+        "stderr": "",
+        "test_case": "pet.in.4z"
+      }
+    ]
+  },
+  "record_complete": true
+}

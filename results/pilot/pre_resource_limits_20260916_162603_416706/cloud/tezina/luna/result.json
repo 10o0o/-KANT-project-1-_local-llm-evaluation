@@ -1,0 +1,778 @@
+{
+  "run_id": "20260916_063301_820961Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_tezina",
+    "name": "tezina",
+    "season": "2025_2026",
+    "contest": 5,
+    "difficulty": 5,
+    "difficulty_reason": "모든 원소와 모든 weight type을 직접 순회하면 너무 느리므로, 같은 정수 나눗셈 몫이 유지되는 구간을 묶거나 값의 빈도를 이용해 합을 빠르게 계산하는 최적화가 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest5/testdata/tezina",
+    "statement_path": "data/coci/2025_2026/contest5/statements/tezina.md",
+    "time_limit_seconds": 2.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Težina"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nStrong Karlo is in the gym. An array $a$ of $n$ numbers is given, where each number represents the weight of one item in front of Karlo. An integer $k$ is also given, representing the number of different weights Karlo can use.\n\nFor each weight type from $1$ to $k$ and for each item in the array, Karlo does the following:\n\n1. Divide the item’s weight by the weight type and record the **integer part of the division** (discard the fractional part).\n2. Multiply the obtained integer by the item’s weight increased by $2$. If the resulting number is greater than $10^8$, Karlo replaces it with $10^8$.\n3. Sum all obtained numbers for that weight type. The obtained sum is called the **strength** of that weight type.\n\nKarlo is interested in the sum of strengths of all weight types in the gym. Since Karlo does not have time to calculate it, help him solve his problem.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $k$ ($1 \\le n,k \\le 10^5$), the number of items in front of Karlo and the number of weight types Karlo can use.\n\nThe second line contains an array of $n$ numbers ($1 \\le a_i \\le 10^5$), the weights of the items in front of Karlo.\n\n## Output\n\nPrint a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n1 2\n2\n```\n\nOutput\n\n```text\n12\n```\n\n### Example 2\n\nInput\n\n```text\n2 1\n3 4\n```\n\nOutput\n\n```text\n39\n```\n\n### Example 3\n\nInput\n\n```text\n7 19\n1 2 3 4 5 6 7\n```\n\nOutput\n\n```text\n414\n```\n\n### Clarification of the second example:\n\nKarlo will transform the number 3 into $3 \\cdot 5=15$, and the number 4 into $4 \\cdot 6=24$. Their sum equals 39."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_04b7298e119d5b32016aaa381f6f4c87d0ab0904aed2252b36",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "## 풀이 방법\n\n같은 값 \\(a\\)를 가진 항목들은 모든 weight type에 대해 동일한 결과를 만들므로, 각 값의 빈도만 세어 처리합니다.\n\n\\(C=10^8\\), \\(A=\\max(a_i)\\)라 하겠습니다.\n\n### 1. 상한을 적용하지 않은 합 계산\n\n값이 \\(a\\)인 항목 하나에 대해 상한을 적용하기 전의 합은\n\n\\[\n(a+2)\\sum_{j=1}^{k}\\left\\lfloor\\frac{a}{j}\\right\\rfloor\n\\]\n\n입니다.\n\n각 \\(a\\)에 대해 \\(\\sum_{j=1}^k \\lfloor a/j\\rfloor\\)를 매번 직접 계산하면 느립니다.\n\n\\(D=\\min(k,A)\\)라 하고, \\(x\\)의 약수 중 \\(D\\) 이하인 약수의 개수를 \\(g[x]\\)라 하겠습니다.\n\n그러면\n\n\\[\n\\sum_{x=1}^{a}g[x]\n=\n\\sum_{j=1}^{D}\\left\\lfloor\\frac{a}{j}\\right\\rfloor\n\\]\n\n입니다. 왜냐하면 어떤 \\(j\\)는 \\(j,2j,3j,\\ldots\\)와 같이 \\(a\\) 이하의 배수에서 총 \\(\\lfloor a/j\\rfloor\\)번 등장하기 때문입니다.\n\n따라서 약수 배수 순회로 \\(g[x]\\)를 계산한 뒤 누적합을 구하면 모든 \\(a\\)에 대한 위 합을 \\(O(1)\\)에 얻을 수 있습니다.\n\n### 2. \\(10^8\\) 상한 보정\n\n\\(q=\\lfloor a/j\\rfloor\\)라 하면 상한이 적용되는 조건은\n\n\\[\nq(a+2)>C\n\\]\n\n입니다.\n\n\\[\nt=\\left\\lfloor\\frac{C}{a+2}\\right\\rfloor\n\\]\n\n라 두면, 상한이 적용되는 조건은 \\(q\\ge t+1\\)과 같습니다.\n\n또한\n\n\\[\n\\left\\lfloor\\frac{a}{j}\\right\\rfloor\\ge t+1\n\\iff\nj\\le \\left\\lfloor\\frac{a}{t+1}\\right\\rfloor\n\\]\n\n이므로, 상한이 적용되는 weight type은 항상 \\(1\\)부터 어떤 값 \\(L\\)까지의 연속된 구간입니다.\n\n\\[\nL=\\min\\left(k,\\left\\lfloor\\frac{a}{t+1}\\right\\rfloor\\right)\n\\]\n\n상한 적용 전 합에서 각 \\(j=1,\\ldots,L\\)에 대해 초과한 양\n\n\\[\n(a+2)\\left\\lfloor\\frac{a}{j}\\right\\rfloor-C\n\\]\n\n을 빼면 정확한 합을 얻을 수 있습니다.\n\n### 정당성 증명\n\n- 누적 약수 개수의 합은 각 \\(j\\)가 \\(a\\) 이하의 배수에 등장하는 횟수인 \\(\\lfloor a/j\\rfloor\\)를 모두 더한 값이므로, 상한 적용 전 합을 정확히 계산합니다.\n- \\(j\\le L\\)인 경우에만 \\(\\lfloor a/j\\rfloor(a+2)>C\\)이고, \\(j>L\\)이면 상한이 적용되지 않습니다.\n- 따라서 상한 적용 전 합에서 \\(j\\le L\\)인 항목의 초과분만 빼면 각 항목의 실제 기여값이 됩니다.\n- 같은 \\(a\\)를 가진 항목은 동일한 기여값을 가지므로 빈도를 곱해 모두 더하면 정답입니다.\n\n### 시간 복잡도\n\n\\(A=\\max(a_i)\\), \\(D=\\min(k,A)\\)라 하면 약수 배수 계산은\n\n\\[\nO\\left(\\sum_{d=1}^{D}\\frac{A}{d}\\right)=O(A\\log A)\n\\]\n\n입니다.\n\n상한 보정에 필요한 반복 횟수는 각 \\(a\\)에 대해\n\n\\[\nL_a=\\min\\left(k,\\left\\lfloor\\frac{a}{\\lfloor C/(a+2)\\rfloor+1}\\right\\rfloor\\right)\n\\]\n\n이며, 주어진 제한 \\(A\\le 10^5\\), \\(C=10^8\\)에서 전체 횟수는 약 340만 회 이하입니다.\n\n전체 시간 복잡도는 \\(O(n+A\\log A+\\sum L_a)\\), 공간 복잡도는 \\(O(n+A)\\)입니다.\n\n```python\nimport sys\n\n\ndef main():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    n, k = data[0], data[1]\n    values = data[2:2 + n]\n\n    max_a = max(values)\n\n    frequency = [0] * (max_a + 1)\n    for value in values:\n        frequency[value] += 1\n\n    # j > max_a이면 floor(a / j) = 0이므로 고려할 필요가 없다.\n    divisor_limit = min(k, max_a)\n\n    # divisor_count[x] = x의 약수 중 divisor_limit 이하인 약수의 개수\n    divisor_count = [0] * (max_a + 1)\n    for divisor in range(1, divisor_limit + 1):\n        for multiple in range(divisor, max_a + 1, divisor):\n            divisor_count[multiple] += 1\n\n    cap = 100_000_000\n    prefix_divisors = 0\n    answer = 0\n\n    for a in range(1, max_a + 1):\n        prefix_divisors += divisor_count[a]\n\n        count = frequency[a]\n        if count == 0:\n            continue\n\n        multiplier = a + 2\n\n        # 상한을 적용하지 않은 합\n        uncapped = multiplier * prefix_divisors\n\n        # 상한이 적용되는 j의 마지막 값\n        threshold = cap // multiplier\n        limit = a // (threshold + 1)\n        if limit > k:\n            limit = k\n\n        # 상한을 적용하면서 줄어드는 초과분\n        excess = 0\n        for j in range(1, limit + 1):\n            excess += multiplier * (a // j) - cap\n\n        contribution = uncapped - excess\n        answer += count * contribution\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 625,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 11765,
+      "output_tokens_details": {
+        "reasoning_tokens": 10358
+      },
+      "total_tokens": 12390
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 165.83316375199865,
+    "prompt_tokens": 625,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 11765,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 10358,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.014243,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 625,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 11765
+      }
+    }
+  },
+  "extracted_code": "import sys\n\n\ndef main():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    n, k = data[0], data[1]\n    values = data[2:2 + n]\n\n    max_a = max(values)\n\n    frequency = [0] * (max_a + 1)\n    for value in values:\n        frequency[value] += 1\n\n    # j > max_a이면 floor(a / j) = 0이므로 고려할 필요가 없다.\n    divisor_limit = min(k, max_a)\n\n    # divisor_count[x] = x의 약수 중 divisor_limit 이하인 약수의 개수\n    divisor_count = [0] * (max_a + 1)\n    for divisor in range(1, divisor_limit + 1):\n        for multiple in range(divisor, max_a + 1, divisor):\n            divisor_count[multiple] += 1\n\n    cap = 100_000_000\n    prefix_divisors = 0\n    answer = 0\n\n    for a in range(1, max_a + 1):\n        prefix_divisors += divisor_count[a]\n\n        count = frequency[a]\n        if count == 0:\n            continue\n\n        multiplier = a + 2\n\n        # 상한을 적용하지 않은 합\n        uncapped = multiplier * prefix_divisors\n\n        # 상한이 적용되는 j의 마지막 값\n        threshold = cap // multiplier\n        limit = a // (threshold + 1)\n        if limit > k:\n            limit = k\n\n        # 상한을 적용하면서 줄어드는 초과분\n        excess = 0\n        for j in range(1, limit + 1):\n            excess += multiplier * (a // j) - cap\n\n        contribution = uncapped - excess\n        answer += count * contribution\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 78,
+    "total_cases": 78,
+    "max_case_seconds": 0.14109105900206487,
+    "time_limit_seconds": 2.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013130436997016659,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012698390000878135,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010863778999919305,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11881902700042701,
+        "return_code": 0,
+        "stdout": "913937435784708\n",
+        "stderr": "",
+        "test_case": "tezina.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11679537500094739,
+        "return_code": 0,
+        "stdout": "917130748461446\n",
+        "stderr": "",
+        "test_case": "tezina.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12238197199985734,
+        "return_code": 0,
+        "stdout": "915873604723111\n",
+        "stderr": "",
+        "test_case": "tezina.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11918600699937087,
+        "return_code": 0,
+        "stdout": "913682645440018\n",
+        "stderr": "",
+        "test_case": "tezina.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12485300900152652,
+        "return_code": 0,
+        "stdout": "917070816478770\n",
+        "stderr": "",
+        "test_case": "tezina.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12789411999983713,
+        "return_code": 0,
+        "stdout": "916364743392033\n",
+        "stderr": "",
+        "test_case": "tezina.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12177050700120162,
+        "return_code": 0,
+        "stdout": "919344969265654\n",
+        "stderr": "",
+        "test_case": "tezina.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12286800299989409,
+        "return_code": 0,
+        "stdout": "920020583284126\n",
+        "stderr": "",
+        "test_case": "tezina.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.124786350002978,
+        "return_code": 0,
+        "stdout": "915911611114955\n",
+        "stderr": "",
+        "test_case": "tezina.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12469893999877968,
+        "return_code": 0,
+        "stdout": "917741522027506\n",
+        "stderr": "",
+        "test_case": "tezina.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11942199300028733,
+        "return_code": 0,
+        "stdout": "916036324393193\n",
+        "stderr": "",
+        "test_case": "tezina.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1294160159995954,
+        "return_code": 0,
+        "stdout": "915051022033912\n",
+        "stderr": "",
+        "test_case": "tezina.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11620702300206176,
+        "return_code": 0,
+        "stdout": "921253897034573\n",
+        "stderr": "",
+        "test_case": "tezina.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11801941399971838,
+        "return_code": 0,
+        "stdout": "919289230484572\n",
+        "stderr": "",
+        "test_case": "tezina.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11358905700035393,
+        "return_code": 0,
+        "stdout": "916090370878272\n",
+        "stderr": "",
+        "test_case": "tezina.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11050558599890792,
+        "return_code": 0,
+        "stdout": "919042181456607\n",
+        "stderr": "",
+        "test_case": "tezina.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.119965060002869,
+        "return_code": 0,
+        "stdout": "915826611895271\n",
+        "stderr": "",
+        "test_case": "tezina.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11617755699990084,
+        "return_code": 0,
+        "stdout": "914435534552249\n",
+        "stderr": "",
+        "test_case": "tezina.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1167667679983424,
+        "return_code": 0,
+        "stdout": "918732410466998\n",
+        "stderr": "",
+        "test_case": "tezina.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11779289200057974,
+        "return_code": 0,
+        "stdout": "913515840498354\n",
+        "stderr": "",
+        "test_case": "tezina.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12356265199923655,
+        "return_code": 0,
+        "stdout": "915751007769700\n",
+        "stderr": "",
+        "test_case": "tezina.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11823854199974448,
+        "return_code": 0,
+        "stdout": "919143254182517\n",
+        "stderr": "",
+        "test_case": "tezina.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.11892522099878988,
+        "return_code": 0,
+        "stdout": "919191465469233\n",
+        "stderr": "",
+        "test_case": "tezina.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01036511900019832,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01714449599967338,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011646290000498993,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05583827900045435,
+        "return_code": 0,
+        "stdout": "2585612613707477\n",
+        "stderr": "",
+        "test_case": "tezina.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05291131999911158,
+        "return_code": 0,
+        "stdout": "2501183531601470\n",
+        "stderr": "",
+        "test_case": "tezina.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05467954600317171,
+        "return_code": 0,
+        "stdout": "2626924434157829\n",
+        "stderr": "",
+        "test_case": "tezina.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05257268599962117,
+        "return_code": 0,
+        "stdout": "2516039116726919\n",
+        "stderr": "",
+        "test_case": "tezina.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0531741550003062,
+        "return_code": 0,
+        "stdout": "2536852400842211\n",
+        "stderr": "",
+        "test_case": "tezina.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.051541558001190424,
+        "return_code": 0,
+        "stdout": "2416491190134224\n",
+        "stderr": "",
+        "test_case": "tezina.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.055868278999696486,
+        "return_code": 0,
+        "stdout": "2588177106206482\n",
+        "stderr": "",
+        "test_case": "tezina.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.057356926998181734,
+        "return_code": 0,
+        "stdout": "2350177221132524\n",
+        "stderr": "",
+        "test_case": "tezina.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.06688456499978201,
+        "return_code": 0,
+        "stdout": "2570221754147557\n",
+        "stderr": "",
+        "test_case": "tezina.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05403272599869524,
+        "return_code": 0,
+        "stdout": "2475703098003784\n",
+        "stderr": "",
+        "test_case": "tezina.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05074168999999529,
+        "return_code": 0,
+        "stdout": "2731819609847592\n",
+        "stderr": "",
+        "test_case": "tezina.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.053024643999378895,
+        "return_code": 0,
+        "stdout": "2590810560798372\n",
+        "stderr": "",
+        "test_case": "tezina.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.053373925999039784,
+        "return_code": 0,
+        "stdout": "2903898846405043\n",
+        "stderr": "",
+        "test_case": "tezina.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05346501700114459,
+        "return_code": 0,
+        "stdout": "2657370083661617\n",
+        "stderr": "",
+        "test_case": "tezina.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05494244900182821,
+        "return_code": 0,
+        "stdout": "2545360883724264\n",
+        "stderr": "",
+        "test_case": "tezina.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.053791523998370394,
+        "return_code": 0,
+        "stdout": "2581165137039868\n",
+        "stderr": "",
+        "test_case": "tezina.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.050503931001003366,
+        "return_code": 0,
+        "stdout": "2638685825929675\n",
+        "stderr": "",
+        "test_case": "tezina.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.058770055999048054,
+        "return_code": 0,
+        "stdout": "2613458533674345\n",
+        "stderr": "",
+        "test_case": "tezina.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.04943896599797881,
+        "return_code": 0,
+        "stdout": "2459394119475663\n",
+        "stderr": "",
+        "test_case": "tezina.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.055036750996805495,
+        "return_code": 0,
+        "stdout": "2526260044466978\n",
+        "stderr": "",
+        "test_case": "tezina.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05350029100009124,
+        "return_code": 0,
+        "stdout": "2644690573588369\n",
+        "stderr": "",
+        "test_case": "tezina.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05172328400294646,
+        "return_code": 0,
+        "stdout": "2478656955916208\n",
+        "stderr": "",
+        "test_case": "tezina.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05482182199921226,
+        "return_code": 0,
+        "stdout": "2502380634066517\n",
+        "stderr": "",
+        "test_case": "tezina.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011983516000327654,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011597256998356897,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012807016999431653,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.14109105900206487,
+        "return_code": 0,
+        "stdout": "2598326869059392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12998904500273056,
+        "return_code": 0,
+        "stdout": "2593229530875663\n",
+        "stderr": "",
+        "test_case": "tezina.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12777917699713726,
+        "return_code": 0,
+        "stdout": "2606865855406498\n",
+        "stderr": "",
+        "test_case": "tezina.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1319968180032447,
+        "return_code": 0,
+        "stdout": "2600111557939424\n",
+        "stderr": "",
+        "test_case": "tezina.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1313955259975046,
+        "return_code": 0,
+        "stdout": "2611507307782727\n",
+        "stderr": "",
+        "test_case": "tezina.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12832175899893628,
+        "return_code": 0,
+        "stdout": "2610928433508446\n",
+        "stderr": "",
+        "test_case": "tezina.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12590085900228587,
+        "return_code": 0,
+        "stdout": "2606166333637711\n",
+        "stderr": "",
+        "test_case": "tezina.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13332986800014623,
+        "return_code": 0,
+        "stdout": "2601727116324734\n",
+        "stderr": "",
+        "test_case": "tezina.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12810767900009523,
+        "return_code": 0,
+        "stdout": "2611319205548615\n",
+        "stderr": "",
+        "test_case": "tezina.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1232446419999178,
+        "return_code": 0,
+        "stdout": "2618370374705584\n",
+        "stderr": "",
+        "test_case": "tezina.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13026751399956993,
+        "return_code": 0,
+        "stdout": "2596930778753959\n",
+        "stderr": "",
+        "test_case": "tezina.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12555363199862768,
+        "return_code": 0,
+        "stdout": "2603000326853392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12974821999887354,
+        "return_code": 0,
+        "stdout": "2601394284314747\n",
+        "stderr": "",
+        "test_case": "tezina.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12674652199712,
+        "return_code": 0,
+        "stdout": "2589987732384865\n",
+        "stderr": "",
+        "test_case": "tezina.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13008564700066927,
+        "return_code": 0,
+        "stdout": "2601855698086798\n",
+        "stderr": "",
+        "test_case": "tezina.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1296422640007222,
+        "return_code": 0,
+        "stdout": "2618370374705584\n",
+        "stderr": "",
+        "test_case": "tezina.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13132902800134616,
+        "return_code": 0,
+        "stdout": "2596930778753959\n",
+        "stderr": "",
+        "test_case": "tezina.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12595681400125613,
+        "return_code": 0,
+        "stdout": "2603000326853392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13908196200281964,
+        "return_code": 0,
+        "stdout": "2587974768915668\n",
+        "stderr": "",
+        "test_case": "tezina.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12899088499762001,
+        "return_code": 0,
+        "stdout": "2603057109890748\n",
+        "stderr": "",
+        "test_case": "tezina.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.12900890999662806,
+        "return_code": 0,
+        "stdout": "2604451607037053\n",
+        "stderr": "",
+        "test_case": "tezina.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.13502510000034817,
+        "return_code": 0,
+        "stdout": "2607057006408281\n",
+        "stderr": "",
+        "test_case": "tezina.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.1319089909993636,
+        "return_code": 0,
+        "stdout": "2597468934324533\n",
+        "stderr": "",
+        "test_case": "tezina.in.3z"
+      }
+    ]
+  },
+  "record_complete": true
+}

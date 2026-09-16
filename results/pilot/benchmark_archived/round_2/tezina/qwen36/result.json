@@ -1,0 +1,739 @@
+{
+  "run_id": "20260916_152847_220874",
+  "experiment": {
+    "type": "benchmark",
+    "round": 2
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_tezina",
+    "name": "tezina",
+    "title": "Težina",
+    "difficulty": 5,
+    "time_limit_seconds": 2.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nStrong Karlo is in the gym. An array $a$ of $n$ numbers is given, where each number represents the weight of one item in front of Karlo. An integer $k$ is also given, representing the number of different weights Karlo can use.\n\nFor each weight type from $1$ to $k$ and for each item in the array, Karlo does the following:\n\n1. Divide the item’s weight by the weight type and record the **integer part of the division** (discard the fractional part).\n2. Multiply the obtained integer by the item’s weight increased by $2$. If the resulting number is greater than $10^8$, Karlo replaces it with $10^8$.\n3. Sum all obtained numbers for that weight type. The obtained sum is called the **strength** of that weight type.\n\nKarlo is interested in the sum of strengths of all weight types in the gym. Since Karlo does not have time to calculate it, help him solve his problem.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $k$ ($1 \\le n,k \\le 10^5$), the number of items in front of Karlo and the number of weight types Karlo can use.\n\nThe second line contains an array of $n$ numbers ($1 \\le a_i \\le 10^5$), the weights of the items in front of Karlo.\n\n## Output\n\nPrint a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n1 2\n2\n```\n\nOutput\n\n```text\n12\n```\n\n### Example 2\n\nInput\n\n```text\n2 1\n3 4\n```\n\nOutput\n\n```text\n39\n```\n\n### Example 3\n\nInput\n\n```text\n7 19\n1 2 3 4 5 6 7\n```\n\nOutput\n\n```text\n414\n```\n\n### Clarification of the second example:\n\nKarlo will transform the number 3 into $3 \\cdot 5=15$, and the number 4 into $4 \\cdot 6=24$. Their sum equals 39."
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 30720,
+    "reasoning_budget_tokens": 26624,
+    "cache_prompt": false
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n\n1. **문제 분석**: \n   각 아이템의 무게 `x`와 가중치 타입 `w`에 대해 계산해야 할 값은 `min(floor(x/w) * (x+2), 10^8)`입니다. 이를 모든 `w ∈ [1, k]`와 모든 아이템에 대해 직접 계산하면 `O(n*k)`로 시간 초과가 발생합니다.\n\n2. **중복 제거**: \n   무게가 같은 아이템들은 동일한 기여도를 가지므로, 각 무게 `x`의 등장 횟수 `cnt[x]`를 세어 그룹화합니다. 이렇게 하면 최대 `10^5`개의 서로 다른 무게에 대해서만 계산하면 됩니다.\n\n3. **조화 급수 분해 (Harmonic Lemma / Square Root Decomposition)**: \n   고정된 `x`에 대해 `floor(x/w)`의 값은 `w`가 증가함에 따라 단계적으로 변하며, 서로 다른 값의 개수는 최대 `2√x`개입니다. 이를 이용해 `w`를 블록 단위로 건너뛰며 계산하면 각 `x`에 대해 `O(√x)` 시간에 합계를 구할 수 있습니다.\n   - 현재 블록의 시작 `w`에서 `v = x // w`를 계산합니다.\n   - `v`가 유지되는 최대 `w` 값은 `r = x // v`입니다.\n   - `r`이 `k`를 초과하면 `r = k`로 제한합니다.\n   - 블록 길이 `count = r - w + 1`만큼의 항이 모두 동일한 `v`를 가지므로, `count * min(v*(x+2), 10^8)`을 합산합니다.\n   - `w = r + 1`로 이동하여 다음 블록을 처리합니다.\n\n4. **최종 합산**: \n   각 무게 `x`에 대해 계산된 합계에 `cnt[x]`를 곱해 전체 정답에 더합니다.\n\n### 시간 복잡도 및 공간 복잡도\n\n- **시간 복잡도**: `O(max(a) * √max(a))`입니다. `max(a) ≤ 10^5`이므로 약 `3.2 × 10^7` 연산으로, 일반적인 1~2초 제한 내에서 충분히 실행 가능합니다.\n- **공간 복잡도**: `O(max(a))`입니다. 무게 등장 횟수를 저장하는 배열과 입력 데이터를 저장하는 데 `10^5` 크기의 배열이 사용되므로 매우 효율적입니다.\n\n```python\nimport sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    k = int(input_data[1])\n    a = map(int, input_data[2:])\n    \n    cnt = [0] * 100001\n    for x in a:\n        cnt[x] += 1\n        \n    ans = 0\n    CAP = 100000000\n    \n    for x in range(1, 100001):\n        if cnt[x] == 0:\n            continue\n            \n        limit = k if k < x else x\n        w = 1\n        total_x = 0\n        \n        while w <= limit:\n            v = x // w\n            r = x // v\n            if r > limit:\n                r = limit\n                \n            count = r - w + 1\n            term = v * (x + 2)\n            if term > CAP:\n                term = CAP\n                \n            total_x += count * term\n            w = r + 1\n            \n        ans += total_x * cnt[x]\n        \n    print(ans)\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - Input: `n`, `k` (1 ≤ n, k ≤ 10^5), and an array `a` of `n` integers (1 ≤ a_i ≤ 10^5).\n   - For each weight type `w` from 1 to `k`:\n     - For each item `x` in `a`:\n       - Compute `q = floor(x / w)`\n       - Compute `val = q * (x + 2)`\n       - If `val > 10^8`, set `val = 10^8`\n       - Add `val` to the strength for weight type `w`.\n     - Sum all strengths for `w = 1` to `k`.\n   - Output: The total sum.\n\n2.  **Analyze Constraints & Naive Approach:**\n   - `n, k ≤ 10^5`, `a_i ≤ 10^5`.\n   - Naive approach: Iterate `w` from 1 to `k`, iterate `x` in `a`, compute, sum.\n   - Complexity: O(n * k) = O(10^10), which is too slow. We need a more efficient approach.\n\n3.  **Identify Optimization Opportunities:**\n   - The formula for each pair `(w, x)` is: `min(floor(x/w) * (x+2), 10^8)`.\n   - Notice that `floor(x/w)` only takes a few distinct values for a fixed `x` as `w` varies. Specifically, for a fixed `x`, `floor(x/w)` changes at most `2*sqrt(x)` times. Since `x ≤ 10^5`, this is manageable.\n   - Alternatively, we can swap the loops: iterate over `x` in `a`, and for each `x`, compute its contribution to all `w` from 1 to `k`.\n   - For a fixed `x`, we want to compute `S_x = sum_{w=1}^{k} min(floor(x/w) * (x+2), 10^8)`.\n   - Since `x ≤ 10^5` and `k ≤ 10^5`, `floor(x/w)` will be 0 when `w > x`. So we only need to sum for `w` from 1 to `min(k, x)`.\n   - Also, `floor(x/w) * (x+2)` can exceed `10^8`. Let's check when this happens. `x ≤ 10^5`, `x+2 ≤ 100002`. `floor(x/w) * (x+2) > 10^8` implies `floor(x/w) > 10^8 / 100002 ≈ 999.98`. So `floor(x/w) ≥ 1000`. This happens only for small `w`. Specifically, `w ≤ x/1000`. Since `x ≤ 10^5`, `w ≤ 100`. So for `w > 100`, the value is always ≤ 10^8. We can handle the cap easily, or just compute directly since `10^8` is large and won't overflow 64-bit integers anyway. Python handles large integers automatically, so we can just compute `min(..., 10**8)` or just compute and cap at the end if needed, but the problem says \"If the resulting number is greater than 10^8, Karlo replaces it with 10^8.\" So we must cap each term.\n   - Actually, since `x ≤ 10^5`, `x+2 ≤ 100002`. `floor(x/w) * (x+2)` is at most `x * (x+2) ≈ 10^10`, which exceeds `10^8`. So capping is necessary.\n   - Let's analyze `S_x = sum_{w=1}^{min(k, x)} min(floor(x/w) * (x+2), 10^8)`.\n   - We can compute this efficiently using the harmonic lemma (square root decomposition / number theory trick for floor sums).\n   - For a fixed `x`, `floor(x/w)` takes values `v = floor(x/w)`. The range of `w` for a given `v` is `[l, r]` where `l` is the start of the current block, and `r = min(x // v, min(k, x))` if `v > 0`, else `r = min(k, x)`. Actually, the standard trick: for `w` from 1 to `min(k, x)`, let `v = x // w`. The largest `w'` such that `x // w' == v` is `x // v` (if `v > 0`). So `r = min(x // v, min(k, x))`. The number of terms is `r - l + 1`. Each contributes `min(v * (x+2), 10^8)`.\n   - This reduces the complexity per `x` to O(sqrt(x)). Total complexity: O(n * sqrt(max(a_i))) ≈ 10^5 * 316 ≈ 3.16 * 10^7, which is well within time limits (typically ~10^8 ops/sec).\n   - Wait, `k` can be up to `10^5`, but we only sum up to `min(k, x)`. So it's fine.\n   - Let's verify the harmonic lemma approach carefully.\n   - For each `x` in `a`:\n     - `limit = min(k, x)`\n     - `w = 1`\n     - `total_x = 0`\n     - `while w <= limit:`\n       - `v = x // w`\n       - `if v == 0:`\n         - `r = limit`\n       - `else:`\n         - `r = min(x // v, limit)`\n       - `count = r - w + 1`\n       - `term = v * (x + 2)`\n       - `if term > 10**8: term = 10**8`\n       - `total_x += count * term`\n       - `w = r + 1`\n     - `ans += total_x`\n   - This looks correct and efficient.\n\n4.  **Check Edge Cases & Constraints:**\n   - `n, k` up to 10^5.\n   - `a_i` up to 10^5.\n   - `term` can be up to `10^10`, but capped at `10^8`.\n   - Python handles large integers, so `count * term` won't overflow.\n   - Time complexity: O(n * sqrt(max(a))) ≈ 3e7 operations. In Python, this might be slightly slow if not careful, but usually acceptable for 1-2 seconds. We can optimize the inner loop.\n   - Actually, `x // v` computation is fast. The number of iterations per `x` is at most `2*sqrt(x)`. For `x=10^5`, sqrt is ~316. So total iterations ~ 3e7. Python might take 2-3 seconds. We should consider if we can do better or if this is acceptable. Typically, competitive programming in Python allows ~10^7-10^8 simple ops. 3e7 might be tight. Let's see if we can optimize further.\n   - Alternative: Precompute or use the fact that `a_i` values are small (≤ 10^5). We can count frequencies of each weight. Let `cnt[v]` be the number of items with weight `v`. Then we iterate `v` from 1 to 10^5, and for each `v`, compute its contribution to all `w` from 1 to `k`, multiplied by `cnt[v]`. This reduces the outer loop to 10^5 iterations, and inner loop still O(sqrt(v)). Total complexity O(max_a * sqrt(max_a)) ≈ 3e7. Same complexity but potentially faster due to fewer Python loop overheads if `n` is large but `max_a` is small. Actually, `n` and `max_a` are both 10^5, so it's similar.\n   - Wait, the harmonic lemma approach iterates `w` from 1 to `min(k, x)`. The number of blocks is `2*sqrt(x)`. So it's fine.\n   - Let's test the logic with Example 1: `n=1, k=2, a=[2]`\n     - `x=2`, `limit=min(2,2)=2`\n     - `w=1`: `v=2//1=2`, `r=min(2//2, 2)=1`. `count=1`. `term=2*(4)=8`. `total_x+=8`. `w=2`\n     - `w=2`: `v=2//2=1`, `r=min(2//1, 2)=2`. `count=1`. `term=1*(4)=4`. `total_x+=4`. `w=3`\n     - `total_x=12`. `ans=12`. Matches example.\n   - Example 2: `n=2, k=1, a=[3, 4]`\n     - `x=3`, `limit=1`. `w=1`: `v=3`, `r=1`. `term=3*5=15`. `total_x=15`.\n     - `x=4`, `limit=1`. `w=1`: `v=4`, `r=1`. `term=4*6=24`. `total_x=24`.\n     - `ans=39`. Matches.\n   - Example 3: `n=7, k=19, a=[1..7]`\n     - We'll trust the logic.\n\n   Let's consider optimization for Python. The inner loop has `x // v` which is fine. We can avoid `min` calls inside the loop if possible, but it's okay.\n   Actually, we can precompute `cnt` array to group identical `a_i`. This reduces the number of times we run the harmonic loop. If many `a_i` are the same, it's faster. Given constraints, it's a good practice.\n   `cnt = [0] * 100001`\n   `for x in a: cnt[x] += 1`\n   `for x in range(1, 100001):`\n     `if cnt[x] == 0: continue`\n     `... compute total_x ...`\n     `ans += total_x * cnt[x]`\n   This is better.\n\n   Wait, `k` can be up to 10^5, but `x` is up to 10^5. `limit = min(k, x)`.\n   Let's refine the inner loop:\n   ```python\n   limit = k if k < x else x\n   w = 1\n   total_x = 0\n   while w <= limit:\n       v = x // w\n       if v == 0:\n           r = limit\n       else:\n           r = x // v\n           if r > limit:\n               r = limit\n       count = r - w + 1\n       term = v * (x + 2)\n       if term > 100000000:\n           term = 100000000\n       total_x += count * term\n       w = r + 1\n   ans += total_x * cnt[x]\n   ```\n   This looks solid.\n\n   Let's double check the cap condition: \"If the resulting number is greater than 10^8, Karlo replaces it with 10^8.\"\n   So `term = min(v * (x + 2), 10**8)`. Correct.\n\n   Complexity: O(max_a * sqrt(max_a)) ≈ 3.16e7 operations. In Python, this might be close to TLE (Time Limit Exceeded) for 1-2 sec limits. Can we optimize further?\n   Notice that `v * (x+2)` is monotonic decreasing with `w`. The cap `10^8` is only triggered when `v * (x+2) > 10^8`. Since `x ≤ 10^5`, `x+2 ≤ 100002`. `v > 10^8 / 100002 ≈ 999.98`. So `v ≥ 1000`. This happens only when `w ≤ x/1000`. For `x=10^5`, `w ≤ 100`. So for `w > 100`, `term` is never capped. We could handle the cap separately, but it's probably not necessary. The `if` check is cheap.\n\n   Actually, we can compute the sum without the cap first, then subtract the excess? No, because it's per-term capping, not sum capping.\n   Wait, the problem says: \"If the resulting number is greater than 10^8, Karlo replaces it with 10^8.\" This is per term. So `min(...)` is correct.\n\n   Let's consider if we can swap loops differently. Instead of harmonic lemma per `x`, we can iterate `w` from 1 to `k`, and for each `w`, compute `sum_{x} floor(x/w) * (x+2)`. But `floor(x/w)` changes with `x`, not `w`. Harmonic lemma on `x` is standard.\n\n   Another idea: Precompute prefix sums of `a`? Not directly helpful because of `floor(x/w)`.\n\n   Let's stick with the harmonic lemma per distinct `x`. It's O(max_a * sqrt(max_a)). With `max_a = 10^5`, it's ~3e7. In Python, a simple while loop with integer division might take ~0.5-1.0 sec. It should pass. To be safe, we can use PyPy if available, but the prompt says Python 3. I'll write efficient code.\n\n   Let's test locally in mind:\n   `cnt` array size 100001.\n   Loop `x` from 1 to 100000.\n   Inner while loop runs ~2*sqrt(x) times.\n   Total iterations: sum_{x=1}^{100000} 2*sqrt(x) ≈ 2 * (2/3) * 100000^(3/2) ≈ 1.33 * 10^7. Actually, integral of sqrt(x) is (2/3)x^(3/2). So ~1.33e7 iterations. That's very fast! Python can handle ~10^7 simple ops easily. So it's fine.\n\n   Wait, `r = x // v` when `v > 0`. If `v=0`, `r=limit`. But `v = x // w`. Since `w <= limit <= x`, `v >= 1`. So `v` is never 0 in the loop! Because `w <= x` implies `x // w >= 1`. So `if v == 0` branch is unreachable. We can remove it.\n   So `r = x // v`. Then `if r > limit: r = limit`.\n   This simplifies the loop.\n\n   Let's rewrite carefully:\n   ```python\n   import sys\n\n   def solve():\n       input_data = sys.stdin.read().split()\n       if not input_data:\n           return\n       n = int(input_data[0])\n       k = int(input_data[1])\n       a = list(map(int, input_data[2:]))\n\n       cnt = [0] * 100001\n       for x in a:\n           cnt[x] += 1\n\n       ans = 0\n       LIMIT_CAP = 100000000\n\n       for x in range(1, 100001):\n           if cnt[x] == 0:\n               continue\n\n           limit = k if k < x else x\n           w = 1\n           total_x = 0\n           while w <= limit:\n               v = x // w\n               r = x // v\n               if r > limit:\n                   r = limit\n               count = r - w + 1\n               term = v * (x + 2)\n               if term > LIMIT_CAP:\n                   term = LIMIT_CAP\n               total_x += count * term\n               w = r + 1\n           ans += total_x * cnt[x]\n\n       print(ans)\n\n   if __name__ == '__main__':\n       solve()\n   ```\n\n   Let's trace Example 1: `n=1, k=2, a=[2]`\n   `cnt[2]=1`. `x=2`. `limit=2`.\n   `w=1`: `v=2`, `r=2//2=1`. `r>limit?` 1>2 False. `count=1`. `term=2*4=8`. `total_x=8`. `w=2`.\n   `w=2`: `v=1`, `r=2//1=2`. `r>limit?` 2>2 False. `count=1`. `term=1*4=4`. `total_x=12`. `w=3`.\n   `ans += 12 * 1 = 12`. Correct.\n\n   Example 2: `n=2, k=1, a=[3, 4]`\n   `cnt[3]=1, cnt[4]=1`.\n   `x=3`: `limit=1`. `w=1`: `v=3`, `r=1`. `count=1`. `term=15`. `total_x=15`. `ans+=15`.\n   `x=4`: `limit=1`. `w=1`: `v=4`, `r=1`. `count=1`. `term=24`. `total_x=24`. `ans+=24`.\n   `ans=39`. Correct.\n\n   Example 3: `n=7, k=19, a=[1..7]`\n   We'll trust it.\n\n   One detail: `r = x // v`. Since `v = x // w`, `r` is the largest integer such that `x // r == v`. This is standard.\n   Is it possible that `r < w`? No, because `v = x // w`, so `x // (x // v) >= w`. Actually, `r` is always `>= w`.\n   The loop terminates correctly.\n\n   Complexity: O(max_a * sqrt(max_a)) time, O(max_a) space. With max_a = 10^5, it's efficient.\n   Space: `cnt` array takes ~400KB. Fine.\n   Input reading: `sys.stdin.read().split()` handles all whitespace/newlines efficiently.\n\n   Check constraints: `n, k ≤ 10^5`, `a_i ≤ 10^5`. All good.\n   One minor thing: `k` can be larger than `x`, so `limit = min(k, x)` is correct.\n   What if `k` is very large? `limit` caps at `x`. Correct.\n   What if `a_i` has values up to `10^5`? `cnt` array size 100001 covers indices 0..100000. Correct.\n   The problem says `1 ≤ a_i ≤ 10^5`. So index 0 is unused. Fine.\n\n   Let's consider if `term > LIMIT_CAP` check can be optimized. Since `v * (x+2)` decreases as `w` increases, once `term <= LIMIT_CAP`, all subsequent terms in this block will also be `<= LIMIT_CAP`? Actually, within a block, `v` is constant, so `term` is constant. So the check is per block. It's fine.\n\n   Could there be a case where `v * (x+2)` exceeds `10^8` for many blocks? Only for small `w`. As analyzed, `v >= 1000` implies `w <= x/1000`. So at most ~100 blocks per `x` will be capped. The `if` check is cheap.\n\n   One potential issue: Python's `sys.setrecursionlimit` is not needed.\n   Input parsing: `input_data = sys.stdin.read().split()` creates a list of strings. For `n=10^5`, it's fine.\n   Memory: `input_data` list ~ 10^5 strings, ~ few MBs. Fine.\n\n   Let's double check the logic for `r`.\n   Standard harmonic lemma:\n   ```python\n   l = 1\n   while l <= limit:\n       v = x // l\n       r = x // v if v > 0 else limit\n       if r > limit: r = limit\n       # process [l, r]\n       l = r + 1\n   ```\n   This is correct. Since `l <= limit <= x`, `v = x // l >= 1`, so `v > 0` always. So `r = x // v` is safe.\n\n   One more check: `term = v * (x + 2)`. If `v * (x+2) > 10^8`, we cap it.\n   Is it possible that `count * term` overflows? Python handles arbitrary precision integers, so no overflow.\n   The sum `ans` can be up to `k * n * 10^8 ≈ 10^5 * 10^5 * 10^8 = 10^18`, which fits in 64-bit integer. Python handles it.\n\n   All good.\n\n   Let's write out the full solution carefully.\n   I will structure it as requested.\n   I'll add comments explaining the approach.\n   I'll ensure the code is self-contained and uses stdin/stdout.\n\n   One minor optimization: `LIMIT_CAP = 10**8` can be a constant.\n   I'll use `sys.stdin.read().split()` for fast I/O.\n   The code looks solid.\n\n   Final check of the problem statement: \"Divide the item’s weight by the weight type and record the integer part... Multiply the obtained integer by the item’s weight increased by 2... If greater than 10^8, replace with 10^8... Sum all obtained numbers for that weight type... Sum of strengths of all weight types.\"\n   Matches my interpretation.\n\n   Complexity Analysis:\n   - Time: O(max(a) * sqrt(max(a))) ≈ O(10^5 * 316) ≈ 3.16 * 10^7 operations. Well within limits.\n   - Space: O(max(a)) for frequency array ≈ 10^5 integers. Well within limits.\n\n   I will produce the final answer.\n   One thing: `cnt` array size should be `100001` to accommodate `a_i = 100000`.\n   `range(1, 100001)` covers it.\n   All set.\n   Output format: single number.\n   Code block: exactly one.\n   I'll generate it now. \n   Self-Correction/Refinement during thought:\n   Wait, is there any case where `x // v` could be less than `l`? No, by definition of integer division blocks, `r` is the upper bound of the block where `x // w == v`. It's always `>= l`.\n   What about `k`? If `k` is very large, `limit = x`. The loop runs up to `x`. Correct.\n   What if `a_i` contains values larger than `10^5`? Problem says `1 ≤ a_i ≤ 10^5`. So fixed size array is fine.\n   I'll stick with this.\n\n   One minor point: `sys.setrecursionlimit` is not needed.\n   I'll write the code cleanly.\n   ```python\n   import sys\n\n   def solve():\n       data = sys.stdin.read().split()\n       if not data:\n           return\n       n = int(data[0])\n       k = int(data[1])\n       a = map(int, data[2:])\n\n       cnt = [0] * 100001\n       for x in a:\n           cnt[x] += 1\n\n       ans = 0\n       CAP = 100000000\n\n       for x in range(1, 100001):\n           if cnt[x] == 0:\n               continue\n\n           limit = k if k < x else x\n           w = 1\n           total_x = 0\n           while w <= limit:\n               v = x // w\n               r = x // v\n               if r > limit:\n                   r = limit\n               count = r - w + 1\n               term = v * (x + 2)\n               if term > CAP:\n                   term = CAP\n               total_x += count * term\n               w = r + 1\n           ans += total_x * cnt[x]\n\n       print(ans)\n\n   if __name__ == '__main__':\n       solve()\n   ```\n   This looks correct and efficient.\n   I will now produce the final response. \n   I'll make sure to explain the approach, complexity, and provide the code as requested.\n   All constraints and requirements met.\n   One detail: `data[2:]` might be large, but `map` is lazy in Python 3, so it's fine. Actually, `a = map(int, data[2:])` works. But to be safe with indexing, `data` is a list of strings. `data[2:]` creates a slice, which copies references. It's fine for 10^5. Alternatively, iterate directly. I'll keep it simple.\n   Actually, `data` could have exactly `2 + n` elements. `data[2:]` is fine.\n   I'll adjust slightly to avoid slice copy if memory is tight, but it's not. It's fine.\n   Final code matches the refined version.\n   Proceed. \n   Output matches requirements.✅\n   Structure:\n   - Approach explanation\n   - Complexity analysis\n   - Code block\n   All good. \n   Generating response. \n   [Self-Correction/Verification during generation prep]\n   Wait, let's verify the harmonic lemma boundary condition carefully.\n   For `x=2, k=2`:\n   `w=1`, `v=2`, `r=2//2=1`. `r>limit?` 1>2 False. `count=1`. `w` becomes 2.\n   `w=2`, `v=1`, `r=2//1=2`. `r>limit?` 2>2 False. `count=1`. `w` becomes 3.\n   Loop ends. Correct.\n   For `x=5, k=3`:\n   `limit=3`.\n   `w=1`, `v=5`, `r=1`. `count=1`. `w=2`.\n   `w=2`, `v=2`, `r=2`. `count=1`. `w=3`.\n   `w=3`, `v=1`, `r=5`. `r>limit?` 5>3 True -> `r=3`. `count=1`. `w=4`.\n   Loop ends. Correct.\n   The logic handles `k < x` correctly by capping `r`.\n   All good.\n   I will produce the final answer. \n   One minor thing: `sys.stdin.read().split()` might be empty if input is empty, but problem guarantees valid input. I'll keep the check.\n   Code is ready.✅\n   Output matches exactly. \n   Proceeds. \n   [Final Check of the Prompt]\n   \"요구사항: 문제 해결 접근법을 설명하세요. 시간 복잡도와 공간 복잡도를 설명하세요. 실행 가능한 Python 3 정답 코드를 제공하세요. 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요. 최종 Python 코드는 ```python 코드 블록 안에 작성하세요. 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요. 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요. 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\"\n   All constraints met. I will structure the response accordingly. \n   Generating. \n   [Output Generation] -> *Proceeds*\n   *(Self-Correction/Note during thought)*: I should make sure the code doesn't use any external libraries. `sys` is standard. It's fine.\n   The complexity explanation should be clear.\n   Approach: Group identical weights, use harmonic lemma (square root decomposition) to compute sum of `floor(x/w)` efficiently for each distinct weight, handle the `10^8` cap per term.\n   Time: O(max_a * sqrt(max_a))\n   Space: O(max_a)\n   All correct.\n   Output matches.✅\n   Done. \n   [Output Generation] (matches the final response)\n   *(Done.)*\n",
+    "usage": {
+      "completion_tokens": 7471,
+      "prompt_tokens": 642,
+      "total_tokens": 8113,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 642,
+      "prompt_ms": 1550.274,
+      "prompt_per_token_ms": 2.414757009345794,
+      "prompt_per_second": 414.12034259750214,
+      "predicted_n": 7471,
+      "predicted_ms": 207700.657,
+      "predicted_per_token_ms": 27.804639491298527,
+      "predicted_per_second": 35.96522085146798
+    }
+  },
+  "metrics": {
+    "response_elapsed_seconds": 209.2860261470014,
+    "prompt_tokens": 642,
+    "completion_tokens": 7471,
+    "generation_tokens_per_second": 35.96522085146798,
+    "generation_tokens_per_second_reason": null,
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": null,
+    "completion_tokens_reason": null,
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T06:32:16.512235+00:00",
+      "phase": "response_received",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "Process query unavailable; no device-memory substitution (ValueError)",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": 265169
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 7068.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    k = int(input_data[1])\n    a = map(int, input_data[2:])\n    \n    cnt = [0] * 100001\n    for x in a:\n        cnt[x] += 1\n        \n    ans = 0\n    CAP = 100000000\n    \n    for x in range(1, 100001):\n        if cnt[x] == 0:\n            continue\n            \n        limit = k if k < x else x\n        w = 1\n        total_x = 0\n        \n        while w <= limit:\n            v = x // w\n            r = x // v\n            if r > limit:\n                r = limit\n                \n            count = r - w + 1\n            term = v * (x + 2)\n            if term > CAP:\n                term = CAP\n                \n            total_x += count * term\n            w = r + 1\n            \n        ans += total_x * cnt[x]\n        \n    print(ans)\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 78,
+    "total_cases": 78,
+    "max_case_seconds": 1.8724143729996285,
+    "time_limit_seconds": 2.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010790812000777805,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010513983001146698,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010310641999240033,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0804728869989049,
+        "return_code": 0,
+        "stdout": "913937435784708\n",
+        "stderr": "",
+        "test_case": "tezina.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.04603188100009,
+        "return_code": 0,
+        "stdout": "917130748461446\n",
+        "stderr": "",
+        "test_case": "tezina.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0363693430008425,
+        "return_code": 0,
+        "stdout": "915873604723111\n",
+        "stderr": "",
+        "test_case": "tezina.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0291375190026884,
+        "return_code": 0,
+        "stdout": "913682645440018\n",
+        "stderr": "",
+        "test_case": "tezina.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0406777280004462,
+        "return_code": 0,
+        "stdout": "917070816478770\n",
+        "stderr": "",
+        "test_case": "tezina.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.041263818002335,
+        "return_code": 0,
+        "stdout": "916364743392033\n",
+        "stderr": "",
+        "test_case": "tezina.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0483141799995792,
+        "return_code": 0,
+        "stdout": "919344969265654\n",
+        "stderr": "",
+        "test_case": "tezina.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0355157580015657,
+        "return_code": 0,
+        "stdout": "920020583284126\n",
+        "stderr": "",
+        "test_case": "tezina.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0651204700006929,
+        "return_code": 0,
+        "stdout": "915911611114955\n",
+        "stderr": "",
+        "test_case": "tezina.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0668144779992872,
+        "return_code": 0,
+        "stdout": "917741522027506\n",
+        "stderr": "",
+        "test_case": "tezina.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.094968223998876,
+        "return_code": 0,
+        "stdout": "916036324393193\n",
+        "stderr": "",
+        "test_case": "tezina.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0590810339999734,
+        "return_code": 0,
+        "stdout": "915051022033912\n",
+        "stderr": "",
+        "test_case": "tezina.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.067684317997191,
+        "return_code": 0,
+        "stdout": "921253897034573\n",
+        "stderr": "",
+        "test_case": "tezina.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0649095670014503,
+        "return_code": 0,
+        "stdout": "919289230484572\n",
+        "stderr": "",
+        "test_case": "tezina.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0838229449982464,
+        "return_code": 0,
+        "stdout": "916090370878272\n",
+        "stderr": "",
+        "test_case": "tezina.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.064901159999863,
+        "return_code": 0,
+        "stdout": "919042181456607\n",
+        "stderr": "",
+        "test_case": "tezina.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0719305810016522,
+        "return_code": 0,
+        "stdout": "915826611895271\n",
+        "stderr": "",
+        "test_case": "tezina.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0645797710021725,
+        "return_code": 0,
+        "stdout": "914435534552249\n",
+        "stderr": "",
+        "test_case": "tezina.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.1030810279989964,
+        "return_code": 0,
+        "stdout": "918732410466998\n",
+        "stderr": "",
+        "test_case": "tezina.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0980804479986546,
+        "return_code": 0,
+        "stdout": "913515840498354\n",
+        "stderr": "",
+        "test_case": "tezina.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0704565560008632,
+        "return_code": 0,
+        "stdout": "915751007769700\n",
+        "stderr": "",
+        "test_case": "tezina.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0698273630005133,
+        "return_code": 0,
+        "stdout": "919143254182517\n",
+        "stderr": "",
+        "test_case": "tezina.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.0521445680024044,
+        "return_code": 0,
+        "stdout": "919191465469233\n",
+        "stderr": "",
+        "test_case": "tezina.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011366159000317566,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010803561999637168,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011138339999888558,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.031212840000080178,
+        "return_code": 0,
+        "stdout": "2585612613707477\n",
+        "stderr": "",
+        "test_case": "tezina.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03661747200021637,
+        "return_code": 0,
+        "stdout": "2501183531601470\n",
+        "stderr": "",
+        "test_case": "tezina.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.031927035000990145,
+        "return_code": 0,
+        "stdout": "2626924434157829\n",
+        "stderr": "",
+        "test_case": "tezina.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029811909000272863,
+        "return_code": 0,
+        "stdout": "2516039116726919\n",
+        "stderr": "",
+        "test_case": "tezina.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02868480400138651,
+        "return_code": 0,
+        "stdout": "2536852400842211\n",
+        "stderr": "",
+        "test_case": "tezina.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028908659998705843,
+        "return_code": 0,
+        "stdout": "2416491190134224\n",
+        "stderr": "",
+        "test_case": "tezina.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030872381998051424,
+        "return_code": 0,
+        "stdout": "2588177106206482\n",
+        "stderr": "",
+        "test_case": "tezina.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03122324799915077,
+        "return_code": 0,
+        "stdout": "2350177221132524\n",
+        "stderr": "",
+        "test_case": "tezina.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03127385200059507,
+        "return_code": 0,
+        "stdout": "2570221754147557\n",
+        "stderr": "",
+        "test_case": "tezina.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03507125499891117,
+        "return_code": 0,
+        "stdout": "2475703098003784\n",
+        "stderr": "",
+        "test_case": "tezina.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03242924400183256,
+        "return_code": 0,
+        "stdout": "2731819609847592\n",
+        "stderr": "",
+        "test_case": "tezina.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029039069999271305,
+        "return_code": 0,
+        "stdout": "2590810560798372\n",
+        "stderr": "",
+        "test_case": "tezina.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030532397999195382,
+        "return_code": 0,
+        "stdout": "2903898846405043\n",
+        "stderr": "",
+        "test_case": "tezina.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029344533999392297,
+        "return_code": 0,
+        "stdout": "2657370083661617\n",
+        "stderr": "",
+        "test_case": "tezina.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03016092799953185,
+        "return_code": 0,
+        "stdout": "2545360883724264\n",
+        "stderr": "",
+        "test_case": "tezina.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029191918998549227,
+        "return_code": 0,
+        "stdout": "2581165137039868\n",
+        "stderr": "",
+        "test_case": "tezina.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02938728200024343,
+        "return_code": 0,
+        "stdout": "2638685825929675\n",
+        "stderr": "",
+        "test_case": "tezina.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030241202002798673,
+        "return_code": 0,
+        "stdout": "2613458533674345\n",
+        "stderr": "",
+        "test_case": "tezina.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02874567999970168,
+        "return_code": 0,
+        "stdout": "2459394119475663\n",
+        "stderr": "",
+        "test_case": "tezina.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02900159299679217,
+        "return_code": 0,
+        "stdout": "2526260044466978\n",
+        "stderr": "",
+        "test_case": "tezina.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02878060199873289,
+        "return_code": 0,
+        "stdout": "2644690573588369\n",
+        "stderr": "",
+        "test_case": "tezina.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.030366035000042757,
+        "return_code": 0,
+        "stdout": "2478656955916208\n",
+        "stderr": "",
+        "test_case": "tezina.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029535472000134178,
+        "return_code": 0,
+        "stdout": "2502380634066517\n",
+        "stderr": "",
+        "test_case": "tezina.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011861333998240298,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "tezina.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011823930999526056,
+        "return_code": 0,
+        "stdout": "39\n",
+        "stderr": "",
+        "test_case": "tezina.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012136271001509158,
+        "return_code": 0,
+        "stdout": "414\n",
+        "stderr": "",
+        "test_case": "tezina.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.800655289000133,
+        "return_code": 0,
+        "stdout": "2598326869059392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.76473027099928,
+        "return_code": 0,
+        "stdout": "2593229530875663\n",
+        "stderr": "",
+        "test_case": "tezina.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7982954979997885,
+        "return_code": 0,
+        "stdout": "2606865855406498\n",
+        "stderr": "",
+        "test_case": "tezina.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.8724143729996285,
+        "return_code": 0,
+        "stdout": "2600111557939424\n",
+        "stderr": "",
+        "test_case": "tezina.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7767314599987003,
+        "return_code": 0,
+        "stdout": "2611507307782727\n",
+        "stderr": "",
+        "test_case": "tezina.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.8579784619978454,
+        "return_code": 0,
+        "stdout": "2610928433508446\n",
+        "stderr": "",
+        "test_case": "tezina.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.8673148660018342,
+        "return_code": 0,
+        "stdout": "2606166333637711\n",
+        "stderr": "",
+        "test_case": "tezina.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.866130135000276,
+        "return_code": 0,
+        "stdout": "2601727116324734\n",
+        "stderr": "",
+        "test_case": "tezina.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7802417839993723,
+        "return_code": 0,
+        "stdout": "2611319205548615\n",
+        "stderr": "",
+        "test_case": "tezina.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.804661586000293,
+        "return_code": 0,
+        "stdout": "2618370374705584\n",
+        "stderr": "",
+        "test_case": "tezina.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.801579570001195,
+        "return_code": 0,
+        "stdout": "2596930778753959\n",
+        "stderr": "",
+        "test_case": "tezina.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7690670680021867,
+        "return_code": 0,
+        "stdout": "2603000326853392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.77079750899793,
+        "return_code": 0,
+        "stdout": "2601394284314747\n",
+        "stderr": "",
+        "test_case": "tezina.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.777863803999935,
+        "return_code": 0,
+        "stdout": "2589987732384865\n",
+        "stderr": "",
+        "test_case": "tezina.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.8162512740018428,
+        "return_code": 0,
+        "stdout": "2601855698086798\n",
+        "stderr": "",
+        "test_case": "tezina.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7782856859994354,
+        "return_code": 0,
+        "stdout": "2618370374705584\n",
+        "stderr": "",
+        "test_case": "tezina.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7515007600013632,
+        "return_code": 0,
+        "stdout": "2596930778753959\n",
+        "stderr": "",
+        "test_case": "tezina.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.763108094000927,
+        "return_code": 0,
+        "stdout": "2603000326853392\n",
+        "stderr": "",
+        "test_case": "tezina.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7352668550011003,
+        "return_code": 0,
+        "stdout": "2587974768915668\n",
+        "stderr": "",
+        "test_case": "tezina.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7488779119994433,
+        "return_code": 0,
+        "stdout": "2603057109890748\n",
+        "stderr": "",
+        "test_case": "tezina.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.753856896997604,
+        "return_code": 0,
+        "stdout": "2604451607037053\n",
+        "stderr": "",
+        "test_case": "tezina.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.7526964569988195,
+        "return_code": 0,
+        "stdout": "2607057006408281\n",
+        "stderr": "",
+        "test_case": "tezina.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.8258815980007057,
+        "return_code": 0,
+        "stdout": "2597468934324533\n",
+        "stderr": "",
+        "test_case": "tezina.in.3z"
+      }
+    ]
+  }
+}

@@ -1,0 +1,715 @@
+{
+  "run_id": "20260916_150925_130674",
+  "experiment": {
+    "type": "benchmark",
+    "round": 2
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_cokolada",
+    "name": "cokolada",
+    "title": "Čokolada",
+    "difficulty": 2,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nLuka loves chocolate. He is very excited to eat a large chocolate bar made of $n$ rows and $m$ columns he got for his birthday. The chocolate consists of black and white squares of chocolate. However, Luka doesn’t really like white chocolate and would only like to eat the black squares.\n\nBefore he starts eating, Luka will cut the chocolate. He will make a number of vertical and/or horizontal cuts in between the rows and the columns of the chocolate. A vertical cut goes from the top edge of the chocolate to the bottom edge, while a horizontal cut goes from the left edge to the right edge. After making the cuts, Luka will obtain several rectangular pieces of chocolate.\n\nSince Luka will only eat the black parts of the chocolate, he wants to completely seperate the black squares from the white squares. This means that every resulting piece must consist entirely of black chocolate or entirely of white chocolate.\n\nLuka would rather start eating as soon as possible instead of wasting time cutting so he asks you to help him determine the minimum number of cuts required to separate the black squares from the white squares.\n\n![Slika 1](images/cokolada-example-1.png)\n\nSlika 1: This is how the chocolate from the first example should be cut in order to separate the black parts from the white parts with minimum number of cuts\n\n## Input\n\nIn the first line, there are two natural numbers $n$ and $m$ ($1 \\le n,m \\le 200$), representing the number of rows and columns of the chocolate.\n\nEach of the following $n$ lines contains $m$ characters, each of which is either 0 or 1. The character 0 denotes a white square, and 1 denotes a black square.\n\n## Output\n\nIn the first and only line, output a single number - the minimum number of cuts required to separate the black squares from the white squares.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 7\n0000000\n0111000\n0111100\n0000000\n```\n\nOutput\n\n```text\n6\n```\n\n### Example 2\n\nInput\n\n```text\n4 5\n00000\n01100\n01100\n00000\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 3\n\nInput\n\n```text\n4 4\n0101\n1010\n0101\n1010\n```\n\nOutput\n\n```text\n6\n```\n\n### Clarification of the first example:\n\nExplained in the drawing.\n\n### Clarification of the second example:\n\nLuka should make a cut between the first and second row, third and fourth row, first and second column, and third and fourth column.\n\n### Clarification of the third example:\n\nLuka should make a cut between every two adjacent rows and columns - a total of 6 cuts."
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 30720,
+    "reasoning_budget_tokens": 26624,
+    "cache_prompt": false
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n초콜릿을 자를 때, 각 잘려나온 조각은 검은색(`1`) 또는 흰색(`0`)으로 완전히 균일해야 합니다. 이는 **인접한 두 셀의 색이 다르다면 반드시 그 사이에 컷이 존재해야 함**을 의미합니다.\n\n- **수평 컷**: 인접한 두 행이 완전히 동일하지 않다면, 두 행 사이에는 적어도 하나의 열에서 색이 달라지므로 수평 컷이 필수적입니다. 행이 동일하다면 수평 컷이 필요하지 않습니다.\n- **수직 컷**: 인접한 두 열이 완전히 동일하지 않다면, 두 열 사이에는 적어도 하나의 행에서 색이 달라지므로 수직 컷이 필수적입니다. 열이 동일하다면 수직 컷이 필요하지 않습니다.\n\n컷은 초콜릿 전체를 가로지르므로, 인접한 행(또는 열) 쌍이 다른지 여부만 확인하면 최소 컷 개수를 정확히 구할 수 있습니다. 따라서 인접한 행 쌍이 다른 개수와 인접한 열 쌍이 다른 개수를 각각 세어 합산하면 정답이 됩니다.\n\n### 시간 복잡도 및 공간 복잡도\n- **시간 복잡도**: $O(n \\times m)$. 입력을 읽는 과정과 인접한 행/열을 비교하는 과정이 모두 격자 크기에 비례하여 수행됩니다. $n, m \\le 200$이므로 매우 빠르게 실행됩니다.\n- **공간 복잡도**: $O(n \\times m)$. 초콜릿 격자를 저장하는 데 필요한 공간입니다. 제약 조건이 작아 메모리 사용에 문제가 없습니다.\n\n### Python 3 정답 코드\n\n```python\nimport sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    m = int(input_data[1])\n    grid = input_data[2:]\n    \n    cuts = 0\n    \n    # 인접한 행이 다른 경우 수평 컷 추가\n    for i in range(n - 1):\n        if grid[i] != grid[i+1]:\n            cuts += 1\n            \n    # 인접한 열이 다른 경우 수직 컷 추가\n    for j in range(m - 1):\n        for i in range(n):\n            if grid[i][j] != grid[i][j+1]:\n                cuts += 1\n                break\n                \n    print(cuts)\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an $n \\times m$ grid of chocolate squares, each either black ('1') or white ('0').\n   - We can make vertical cuts (between columns) and horizontal cuts (between rows).\n   - After cuts, every resulting rectangular piece must be entirely black or entirely white.\n   - We need to find the *minimum* number of cuts required to achieve this.\n\n2.  **Key Insight:**\n   - A cut is necessary between two adjacent rows if they contain different colors in the same column. Wait, let's think carefully.\n   - Actually, the condition is: after all cuts, every piece is monochromatic.\n   - This means if two adjacent cells (horizontally or vertically) have different colors, there *must* be a cut between them.\n   - Conversely, if two adjacent cells have the same color, do we *need* a cut between them? Not necessarily. We can leave them together.\n   - So, the minimum number of cuts is simply the number of boundaries between adjacent rows that have different colors in at least one column, plus the number of boundaries between adjacent columns that have different colors in at least one row.\n   - Wait, is that correct? Let's verify.\n   - Suppose we have:\n     ```\n     1 1\n     1 0\n     ```\n     Adjacent rows: row 0 and row 1 differ at column 1. So we need a horizontal cut between row 0 and 1.\n     Adjacent columns: col 0 and col 1 differ at row 1. So we need a vertical cut between col 0 and 1.\n     Total cuts: 2. Pieces: (0,0) is 1, (0,1) is 1, (1,0) is 1, (1,1) is 0. Wait, if we cut horizontally between rows and vertically between cols, we get 4 pieces: all monochromatic. Correct.\n   - What if:\n     ```\n     1 1\n     1 1\n     ```\n     No differences in adjacent rows or cols. Cuts = 0. Correct.\n   - What if:\n     ```\n     1 0\n     1 0\n     ```\n     Adjacent rows: identical. No horizontal cut needed.\n     Adjacent cols: differ in both rows. Vertical cut needed. Total = 1. Pieces: left col (1,1), right col (0,0). Both monochromatic. Correct.\n   - So the rule seems to be:\n     - Count horizontal cuts: for each $i$ from $0$ to $n-2$, if row $i$ and row $i+1$ are not identical, we need a cut between them.\n     - Count vertical cuts: for each $j$ from $0$ to $m-2$, if col $j$ and col $j+1$ are not identical, we need a cut between them.\n     - Total cuts = (number of adjacent row pairs that differ) + (number of adjacent column pairs that differ).\n   - Let's double check this logic. Is it possible that we need *more* cuts? Or could we get away with *fewer*?\n   - The condition \"every resulting piece must consist entirely of black or entirely of white\" means that within any piece, all cells must have the same color.\n   - If two adjacent cells have different colors, they cannot be in the same piece. Therefore, a cut must separate them.\n   - Cuts are global: a horizontal cut spans the entire width, and a vertical cut spans the entire height.\n   - If row $i$ and row $i+1$ differ in *any* column, then for that column, the cells $(i, j)$ and $(i+1, j)$ have different colors. Thus, they must be separated by a horizontal cut. Since horizontal cuts are full-width, one cut between row $i$ and $i+1$ separates all such differing cells in that row boundary.\n   - Could we avoid a horizontal cut between row $i$ and $i+1$ if they differ? No, because at least one column would have different colors vertically adjacent, violating the monochromatic piece condition.\n   - So, a horizontal cut is *necessary and sufficient* between row $i$ and $i+1$ if and only if row $i$ and row $i+1$ are not identical.\n   - Similarly for vertical cuts.\n   - Therefore, the minimum number of cuts is exactly the number of adjacent row pairs that are different plus the number of adjacent column pairs that are different.\n\n3.  **Algorithm:**\n   - Read $n, m$.\n   - Read the grid.\n   - Initialize `cuts = 0`.\n   - For $i$ from $0$ to $n-2$:\n     - If `grid[i] != grid[i+1]`, increment `cuts`.\n   - For $j$ from $0$ to $m-2$:\n     - Check if `grid[i][j] != grid[i][j+1]` for any $i$. If yes, increment `cuts`.\n     - Alternatively, extract columns as strings/lists and compare adjacent columns.\n   - Output `cuts`.\n\n   Complexity:\n   - Time: $O(n \\cdot m)$ to read and compare. Comparing adjacent rows takes $O(m)$, done $n-1$ times. Comparing adjacent cols takes $O(n)$, done $m-1$ times. Total $O(nm)$.\n   - Space: $O(nm)$ to store the grid. Can be optimized to $O(m)$ by storing only the previous row, but $nm \\le 200 \\times 200 = 40000$, which is trivial.\n\n4.  **Edge Cases & Verification:**\n   - $n=1$ or $m=1$: loops won't execute, cuts=0. Correct.\n   - All same: cuts=0. Correct.\n   - Checkerboard: every adjacent row differs, every adjacent col differs. Cuts = $(n-1) + (m-1)$. Example 3: $4 \\times 4$ checkerboard. Output should be $3+3=6$. Matches example.\n   - Example 1:\n     ```\n     0000000\n     0111000\n     0111100\n     0000000\n     ```\n     Rows:\n     0 vs 1: differ -> +1\n     1 vs 2: differ -> +1\n     2 vs 3: differ -> +1\n     Horizontal cuts: 3\n     Cols:\n     0 vs 1: col0 is all 0, col1 has 1s -> differ -> +1\n     1 vs 2: col1 has 1s, col2 has 1s -> identical? Let's check:\n     col1: 0,1,1,0\n     col2: 0,1,1,0 -> identical\n     2 vs 3: col2: 0,1,1,0; col3: 0,1,1,0 -> identical\n     3 vs 4: col3: 0,1,1,0; col4: 0,0,1,0 -> differ -> +1\n     4 vs 5: col4: 0,0,1,0; col5: 0,0,0,0 -> differ -> +1\n     5 vs 6: col5: 0,0,0,0; col6: 0,0,0,0 -> identical\n     Vertical cuts: 1+1+1 = 3\n     Total: 6. Matches example.\n   - Example 2:\n     ```\n     00000\n     01100\n     01100\n     00000\n     ```\n     Rows:\n     0 vs 1: differ -> +1\n     1 vs 2: identical -> 0\n     2 vs 3: differ -> +1\n     Horiz: 2\n     Cols:\n     0 vs 1: col0 all 0, col1 has 1s -> differ -> +1\n     1 vs 2: col1: 0,1,1,0; col2: 0,1,1,0 -> identical\n     2 vs 3: col2: 0,1,1,0; col3: 0,0,0,0 -> differ -> +1\n     3 vs 4: col3: 0,0,0,0; col4: 0,0,0,0 -> identical\n     Vert: 2\n     Total: 4. Matches example.\n\n   The logic holds perfectly.\n\n5.  **Implementation Details:**\n   - Read input using `sys.stdin`.\n   - Parse $n, m$.\n   - Read $n$ lines.\n   - Compute horizontal cuts: iterate $i$ from $0$ to $n-2$, check `grid[i] != grid[i+1]`.\n   - Compute vertical cuts: iterate $j$ from $0$ to $m-2$, check if any `grid[i][j] != grid[i][j+1]` for $i$ in $0..n-1$.\n   - Print sum.\n   - Constraints: $n, m \\le 200$. $O(nm)$ is fine.\n   - Python code structure:\n     ```python\n     import sys\n\n     def solve():\n         input = sys.stdin.read().split()\n         if not input:\n             return\n         n = int(input[0])\n         m = int(input[1])\n         grid = input[2:]\n         cuts = 0\n         for i in range(n - 1):\n             if grid[i] != grid[i+1]:\n                 cuts += 1\n         for j in range(m - 1):\n             for i in range(n):\n                 if grid[i][j] != grid[i][j+1]:\n                     cuts += 1\n                     break\n         print(cuts)\n\n     if __name__ == '__main__':\n         solve()\n     ```\n   - Wait, `sys.stdin.read().split()` will split all tokens. The grid rows are strings without spaces, so each row is one token. This works.\n   - Let's verify token parsing: `input` will be `['4', '7', '0000000', '0111000', ...]`. `grid = input[2:]` gives the rows. Correct.\n   - Check constraints: $n, m \\ge 1$. If $n=1$, `range(n-1)` is empty, cuts=0 for rows. Correct.\n   - Space complexity: $O(nm)$ for storing grid. Could be $O(m)$ but not needed.\n   - Time complexity: $O(nm)$.\n   - One minor thing: `sys.setrecursionlimit` not needed.\n   - The problem statement says \"natural numbers\", usually means positive integers. $1 \\le n, m \\le 200$.\n   - All good.\n\n   Let's double check the vertical cut logic.\n   For each column boundary $j$ (between col $j$ and $j+1$), we need a cut if there exists at least one row $i$ where `grid[i][j] != grid[i][j+1]`.\n   This matches the code.\n   Could there be a case where we don't need a cut even if they differ? No, because if they differ at row $i$, then cells $(i, j)$ and $(i, j+1)$ are adjacent horizontally and have different colors. They must be in different pieces. Since pieces are rectangles formed by full cuts, a vertical cut must exist between col $j$ and $j+1$.\n   So the condition is necessary and sufficient.\n\n   One detail: `sys.stdin.read().split()` might be safer than line-by-line if there are extra newlines or spaces. The problem says each of the following $n$ lines contains $m$ characters. `split()` handles whitespace properly.\n   I'll stick with `sys.stdin.read().split()`.\n\n   Let's write out the full solution carefully.\n\n   ```python\n   import sys\n\n   def solve():\n       data = sys.stdin.read().split()\n       if not data:\n           return\n       n = int(data[0])\n       m = int(data[1])\n       grid = data[2:]\n       \n       cuts = 0\n       # Horizontal cuts\n       for i in range(n - 1):\n           if grid[i] != grid[i+1]:\n               cuts += 1\n               \n       # Vertical cuts\n       for j in range(m - 1):\n           for i in range(n):\n               if grid[i][j] != grid[i][j+1]:\n                   cuts += 1\n                   break\n                   \n       print(cuts)\n\n   if __name__ == '__main__':\n       solve()\n   ```\n\n   Wait, is there any case where `grid[i] != grid[i+1]` is not enough? What if the grid contains characters other than '0' and '1'? Problem says only 0 or 1.\n   What about memory? $200 \\times 200$ strings is tiny.\n   Time: $200 \\times 200 = 40000$ operations. Extremely fast.\n   The logic is solid.\n\n   Let's consider an alternative interpretation: Could cuts be placed such that they don't span the entire chocolate? The problem says: \"A vertical cut goes from the top edge of the chocolate to the bottom edge, while a horizontal cut goes from the left edge to the right edge.\" So cuts are full-length. This confirms our approach.\n\n   One minor point: `data[2:]` might contain more than $n$ elements if there's trailing whitespace, but `split()` ignores extra whitespace. It will exactly contain $n$ strings. If $n=0$ (not possible per constraints), it would be empty. Constraints say $n \\ge 1$.\n\n   All good.\n\n   I will structure the final answer according to requirements:\n   - Explain approach\n   - Explain complexity\n   - Provide code in a single python block\n   - Ensure stdin/stdout usage\n   - No extra code blocks.\n\n   Approach explanation:\n   - A cut is required between two adjacent rows if they contain different colors in at least one column. If they are identical, no cut is needed between them because any vertical cuts that separate differing columns will apply uniformly, and identical rows can be grouped together.\n   - Similarly, a cut is required between two adjacent columns if they contain different colors in at least one row.\n   - Since cuts span the entire chocolate, the minimum number of cuts is simply the count of adjacent row pairs that differ plus the count of adjacent column pairs that differ.\n   - We iterate through all adjacent row pairs and count differences. Then we iterate through all adjacent column pairs and check if any row has differing values in those columns. Summing these gives the answer.\n\n   Complexity:\n   - Time: $O(n \\cdot m)$ to read input and compare adjacent rows/columns.\n   - Space: $O(n \\cdot m)$ to store the grid (or $O(m)$ if processed on the fly, but $O(nm)$ is fine for $n,m \\le 200$).\n\n   Code matches the draft.\n   I will produce the final response. \n   One check: `sys.stdin.read().split()` works, but sometimes competitive programming inputs might have spaces within the grid lines? The problem says \"Each of the following n lines contains m characters, each of which is either 0 or 1.\" Usually no spaces. `split()` is safe.\n   I'll use `sys.stdin.readline` for clarity if needed, but `read().split()` is robust.\n   I'll stick with `read().split()`.\n\n   Final check of the code:\n   ```python\n   import sys\n\n   def solve():\n       input_data = sys.stdin.read().split()\n       if not input_data:\n           return\n       n = int(input_data[0])\n       m = int(input_data[1])\n       grid = input_data[2:]\n       \n       cuts = 0\n       for i in range(n - 1):\n           if grid[i] != grid[i+1]:\n               cuts += 1\n               \n       for j in range(m - 1):\n           for i in range(n):\n               if grid[i][j] != grid[i][j+1]:\n                   cuts += 1\n                   break\n                   \n       print(cuts)\n\n   if __name__ == '__main__':\n       solve()\n   ```\n   This looks correct and robust.\n   I will now generate the response. \n   Structure:\n   - Problem solving approach\n   - Complexity analysis\n   - Code block\n   All requirements met.✅\n   One minor thing: The problem statement says \"natural numbers\", which in some contexts includes 0, but constraints say $1 \\le n,m \\le 200$. So $n-1$ and $m-1$ ranges are valid.\n   All good. \n   Output matches exactly. \n   Proceed. \n   [Self-Correction/Refinement during thought]\n   Wait, is there any scenario where `grid[i] != grid[i+1]` is true, but we don't need a cut? No, because if they differ, there's at least one column where vertically adjacent cells have different colors. They must be separated. Since cuts are full-width, one horizontal cut separates them.\n   What about vertical cuts? Same logic.\n   The logic is mathematically sound. This is a known problem (Codeforces 1141B? No, it's \"Chocolate\" from a contest, likely COCI or similar. Actually it's COCI 2017/2018 Contest 5 #2 KOKO). The solution is indeed counting differing adjacent rows and columns.\n   I'm confident.\n   Output generation. \n   Structure of response:\n   - 접근법 설명\n   - 시간/공간 복잡도\n   - 코드 블록\n   Matches requirements.✅\n   Proceeds. \n   [Output Generation] -> *Self-Correction/Verification during generation prep*\n   I will make sure the code uses `sys.stdin` correctly and handles potential trailing newlines gracefully. `sys.stdin.read().split()` is standard.\n   The code is ready.\n   All steps verified.\n   Output matches request.✅\n   Final Answer Generation. \n   *(Done.)*\n",
+    "usage": {
+      "completion_tokens": 4728,
+      "prompt_tokens": 801,
+      "total_tokens": 5529,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 801,
+      "prompt_ms": 1918.902,
+      "prompt_per_token_ms": 2.395632958801498,
+      "prompt_per_second": 417.426215617056,
+      "predicted_n": 4728,
+      "predicted_ms": 132159.851,
+      "predicted_per_token_ms": 27.958504548339327,
+      "predicted_per_second": 35.7672921407879
+    }
+  },
+  "metrics": {
+    "response_elapsed_seconds": 134.11857567400148,
+    "prompt_tokens": 801,
+    "completion_tokens": 4728,
+    "generation_tokens_per_second": 35.7672921407879,
+    "generation_tokens_per_second_reason": null,
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": null,
+    "completion_tokens_reason": null,
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T06:11:39.253714+00:00",
+      "phase": "response_received",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "Process query unavailable; no device-memory substitution (ValueError)",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": 265169
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 7068.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    m = int(input_data[1])\n    grid = input_data[2:]\n    \n    cuts = 0\n    \n    # 인접한 행이 다른 경우 수평 컷 추가\n    for i in range(n - 1):\n        if grid[i] != grid[i+1]:\n            cuts += 1\n            \n    # 인접한 열이 다른 경우 수직 컷 추가\n    for j in range(m - 1):\n        for i in range(n):\n            if grid[i][j] != grid[i][j+1]:\n                cuts += 1\n                break\n                \n    print(cuts)\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 75,
+    "total_cases": 75,
+    "max_case_seconds": 0.015459322999959113,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014751630998944165,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012582018996909028,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014340028999868082,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013944370999524835,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01418263699815725,
+        "return_code": 0,
+        "stdout": "199\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01428918999954476,
+        "return_code": 0,
+        "stdout": "199\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014845731002424145,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014354395996633684,
+        "return_code": 0,
+        "stdout": "397\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015459322999959113,
+        "return_code": 0,
+        "stdout": "141\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014729298000020208,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015357932999904733,
+        "return_code": 0,
+        "stdout": "309\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014278372000262607,
+        "return_code": 0,
+        "stdout": "166\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015384949001600035,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014128075003100093,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015128746003028937,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013828819999616826,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014286091998656048,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013806899998598965,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013127529000485083,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014289664999523666,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013502697001968045,
+        "return_code": 0,
+        "stdout": "10\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01489790699997684,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014398979998077266,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014384760001121322,
+        "return_code": 0,
+        "stdout": "17\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014487806001852732,
+        "return_code": 0,
+        "stdout": "11\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01358854899808648,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013675518999662017,
+        "return_code": 0,
+        "stdout": "25\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013660636999702547,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014039312001841608,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01528417699955753,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0126087729986466,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010039122000307543,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009670746003394015,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00941475900253863,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009678123002231587,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009692015999462456,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009465347000514157,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010059367003123043,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010122314000909682,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010294741001416696,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010537868001847528,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010869335001189029,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009773114001291106,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010480490996997105,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010506816000997787,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01022945200020331,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009527661000902299,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010142769999220036,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009966574001737172,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009580521000316367,
+        "return_code": 0,
+        "stdout": "33\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010139755999261979,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009445544998015976,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009595195999281714,
+        "return_code": 0,
+        "stdout": "38\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01006517599671497,
+        "return_code": 0,
+        "stdout": "337\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00972508300037589,
+        "return_code": 0,
+        "stdout": "397\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01021652700001141,
+        "return_code": 0,
+        "stdout": "57\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010526638998271665,
+        "return_code": 0,
+        "stdout": "132\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009805868001421914,
+        "return_code": 0,
+        "stdout": "398\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00922233200253686,
+        "return_code": 0,
+        "stdout": "378\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009308781998697668,
+        "return_code": 0,
+        "stdout": "398\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010444055002153618,
+        "return_code": 0,
+        "stdout": "248\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009893394002574496,
+        "return_code": 0,
+        "stdout": "247\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010812514999997802,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010170513000048231,
+        "return_code": 0,
+        "stdout": "36\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009740970999700949,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009909471998980734,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009804083001654362,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009593981001671636,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01007907999883173,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010414155000034953,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010472022000612924,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010572629002126632,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01107361400136142,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011525887999596307,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010534577999351313,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4z"
+      }
+    ]
+  }
+}

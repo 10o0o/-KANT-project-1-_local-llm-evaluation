@@ -1,0 +1,947 @@
+{
+  "run_id": "20260916_140934_373572",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_dzeparac",
+    "name": "dzeparac",
+    "title": "Džeparac",
+    "difficulty": 4,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n문제:\n\nMother Antonija has earned $N$ euros and must spend all of it as soon as possible. She may keep a portion of the money for herself, but the remaining amount must be equally distributed to her two sons over several days.\n\nFirst, she chooses a non-negative integer $k$ ($0 \\le k \\le N$) to keep for herself. The remaining amount of $N-k$ euros is then distributed to the sons over $d$ days.\n\nMother Antonija may also choose not to distribute anything to her sons, which corresponds to the case when $N=k$ and $d=0$.\n\nIf the money is distributed, it is done so that each day both sons receive the same amount of money. If one son receives $x$ euros on a given day, the other son also receives $x$ euros, where $x$ must be a positive integer. In total, each son must receive the same total amount of money.\n\nTwo distributions are considered different if at least one of the following holds:\n\n- the chosen amount $k$ is different\n- the number of days $d$ is different\n- there exists at least one day on which the amounts received by the sons differ (i.e., the sequence of daily payments is not identical).\n\nYour task is to determine the number of different ways in which the mother can distribute the money. Since the number of ways can be very large, output the result modulo $10^9+7$.\n\n## Input\n\nThe first line contains a natural number $n$ ($1 \\le n \\le 10^{18}$), the number from the problem statement.\n\n## Output\n\nPrint a single number - the number of ways in which mother Antonija can distribute the money.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 2\n\nInput\n\n```text\n5\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 3\n\nInput\n\n```text\n793\n```\n\nOutput\n\n```text\n137435472\n```\n\n### Clarification of the first example:\n\nWe consider all possible values of the number $k$:\n\n$k=4 \\to$ the mother keeps all the money, so the only distribution is the one where the sons receive no money.\n\n$k=2 \\to$ 2 euros remain to be distributed to the sons. The only valid distribution is $d=1$, where each son receives 1 euro.\n\n$k=0 \\to$ 4 euros remain to be distributed to the sons. There are two valid distributions:\n\n- $d=1 \\to$ each son receives 2 euros\n- $d=2 \\to$ each day, each son receives 1 euro\n\n$k=1$ and $k=3 \\to$ there is no way to divide the remaining amount so that both sons receive the same positive integer amount each day.\n\nIn total, there are $1+1+2=4$ different ways of distribution."
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 30720,
+    "reasoning_budget_tokens": 26624,
+    "cache_prompt": false
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n어머니가 $k$ 유로를 보관하면 남은 금액 $R = N - k$를 두 아들에게 분배합니다. 매일 두 아들은 동일한 양의 정수 $x_i \\ge 1$ 유로를 받으며, 총 $d$일 동안 분배됩니다. 따라서 분배된 총 금액은 $2 \\sum_{i=1}^d x_i = R$입니다. 이는 $R$이 짝수여야 함을 의미하며, $M = R/2$라고 하면 $\\sum_{i=1}^d x_i = M$인 양의 정수 순서쌍 $(x_1, \\dots, x_d)$의 개수를 세는 문제와 동일합니다.\n\n양의 정수 $M$을 순서를 고려하여 분할하는 방법의 수(Composition)는 $2^{M-1}$입니다 ($M \\ge 1$일 때). $M=0$인 경우($k=N$)는 분배를 하지 않는 경우로 1가지입니다.\n\n가능한 모든 $k$에 대해 경우의 수를 합산하면, $R$이 짝수인 경우만 기여하므로 $M = 0, 1, \\dots, \\lfloor N/2 \\rfloor$에 대해 합을 구합니다.\n$$\\text{총 경우의 수} = 1 + \\sum_{M=1}^{\\lfloor N/2 \\rfloor} 2^{M-1} = 1 + (2^0 + 2^1 + \\dots + 2^{\\lfloor N/2 \\rfloor - 1}) = 1 + (2^{\\lfloor N/2 \\rfloor} - 1) = 2^{\\lfloor N/2 \\rfloor}$$\n따라서 답은 $2^{\\lfloor N/2 \\rfloor} \\pmod{10^9+7}$로 간단히 계산할 수 있습니다.\n\n### 시간 복잡도와 공간 복잡도\n- **시간 복잡도**: 모듈러 지수 연산 `pow(2, exp, mod)`은 이진법 지수법(Binary Exponentiation)을 사용하므로 $O(\\log N)$ 시간에 수행됩니다.\n- **공간 복잡도**: 상수 개의 변수만 사용하므로 $O(1)$입니다.\n\n```python\nimport sys\n\ndef main():\n    n = int(sys.stdin.readline())\n    mod = 10**9 + 7\n    print(pow(2, n // 2, mod))\n\nif __name__ == '__main__':\n    main()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - Mother Antonija has $N$ euros.\n   - She chooses $k$ ($0 \\le k \\le N$) to keep.\n   - Remaining amount $R = N - k$ is distributed to two sons over $d$ days.\n   - Each day, both sons receive the same positive integer amount $x_i \\ge 1$.\n   - Total amount each son receives is the same, which is automatically satisfied if each day they get the same amount.\n   - Total distributed amount is $2 \\times \\sum_{i=1}^d x_i = R$.\n   - So $R$ must be even. Let $R = 2M$. Then $\\sum_{i=1}^d x_i = M$, where $x_i \\ge 1$ are integers.\n   - This means $M$ is partitioned into $d$ positive integers, where order matters (since days are distinct, sequence of daily payments matters). This is a composition of $M$ into $d$ parts.\n   - The number of compositions of $M$ into exactly $d$ positive parts is $\\binom{M-1}{d-1}$.\n   - $d$ can range from $1$ to $M$ (since each $x_i \\ge 1$, max $d = M$).\n   - Also, the case $d=0$ is allowed only if $R=0$ (i.e., $k=N$). This corresponds to 1 way.\n   - So for a fixed $k$, let $R = N-k$.\n     - If $R=0$ ($k=N$): 1 way ($d=0$).\n     - If $R>0$ and $R$ is odd: 0 ways.\n     - If $R>0$ and $R$ is even: Let $M = R/2$. The number of ways is the number of compositions of $M$ into any number of parts $d \\ge 1$. The total number of compositions of $M$ is $2^{M-1}$.\n   - So for each $k$, the number of ways is:\n     - $1$ if $k=N$\n     - $2^{(N-k)/2 - 1}$ if $N-k$ is even and $>0$\n     - $0$ if $N-k$ is odd\n   - We need to sum these over all $0 \\le k \\le N$.\n   - Let $R = N-k$. As $k$ ranges from $0$ to $N$, $R$ ranges from $N$ down to $0$.\n   - Sum = $\\sum_{R=0}^{N} f(R)$, where $f(0)=1$, $f(R)=2^{R/2 - 1}$ if $R$ even $>0$, else $0$.\n   - Let's compute this sum:\n     - Case 1: $N$ is even. Let $N = 2m$.\n       $R$ takes even values: $0, 2, 4, \\dots, 2m$.\n       Sum = $f(0) + f(2) + f(4) + \\dots + f(2m)$\n       $= 1 + 2^{1-1} + 2^{2-1} + \\dots + 2^{m-1}$\n       $= 1 + 1 + 2 + 4 + \\dots + 2^{m-1}$\n       $= 1 + (2^0 + 2^1 + \\dots + 2^{m-1})$\n       $= 1 + (2^m - 1) = 2^m$.\n       Since $m = N/2$, Sum = $2^{N/2}$.\n     - Case 2: $N$ is odd. Let $N = 2m+1$.\n       $R$ takes even values: $0, 2, 4, \\dots, 2m$.\n       Sum = $f(0) + f(2) + \\dots + f(2m)$\n       $= 1 + 2^0 + 2^1 + \\dots + 2^{m-1}$\n       $= 1 + (2^m - 1) = 2^m$.\n       Since $m = (N-1)/2$, Sum = $2^{(N-1)/2}$.\n   - Wait, let's double check with examples.\n     Example 1: $N=4$ (even). $m=2$. Sum = $2^2 = 4$. Matches example output.\n     Example 2: $N=5$ (odd). $m=2$. Sum = $2^2 = 4$. Matches example output.\n     Example 3: $N=793$ (odd). $m=(793-1)/2 = 396$. Sum = $2^{396} \\pmod{10^9+7}$.\n     Let's compute $2^{396} \\pmod{10^9+7}$. I'll trust the formula.\n     Wait, is it really that simple? Let's re-read carefully.\n     \"Two distributions are considered different if at least one of the following holds: the chosen amount $k$ is different, the number of days $d$ is different, there exists at least one day on which the amounts received by the sons differ.\"\n     This exactly matches counting pairs $(k, (x_1, \\dots, x_d))$ such that $\\sum x_i = (N-k)/2$, $x_i \\ge 1$, $d \\ge 1$, plus the case $k=N, d=0$.\n     My derivation: For a fixed $R=N-k$, if $R$ is even, $R=2M$, number of compositions of $M$ is $2^{M-1}$. Sum over all valid $R$ gives $2^{\\lfloor N/2 \\rfloor}$.\n     Let's verify $N=1$: $m=0$, sum=$2^0=1$. Let's manually check $N=1$.\n     $k=1 \\to R=0 \\to 1$ way.\n     $k=0 \\to R=1$ (odd) $\\to 0$ ways.\n     Total = 1. Formula gives $2^{\\lfloor 1/2 \\rfloor} = 2^0 = 1$. Correct.\n     $N=2$: $m=1$, sum=$2^1=2$.\n     $k=2 \\to R=0 \\to 1$ way.\n     $k=1 \\to R=1 \\to 0$ ways.\n     $k=0 \\to R=2 \\to M=1 \\to 2^{1-1}=1$ way.\n     Total = 2. Formula gives $2^1=2$. Correct.\n     $N=3$: $m=1$, sum=$2^1=2$.\n     $k=3 \\to 1$\n     $k=2 \\to 0$\n     $k=1 \\to R=2 \\to M=1 \\to 1$\n     $k=0 \\to R=3 \\to 0$\n     Total = 2. Formula gives $2^1=2$. Correct.\n     $N=4$: $m=2$, sum=$4$. Matches.\n     So the answer is simply $2^{\\lfloor N/2 \\rfloor} \\pmod{10^9+7}$.\n\n2.  **Complexity Analysis:**\n   - Time Complexity: Computing $2^{\\lfloor N/2 \\rfloor} \\pmod P$ takes $O(\\log N)$ using modular exponentiation.\n   - Space Complexity: $O(1)$.\n   - This is extremely efficient and handles $N \\le 10^{18}$ easily.\n\n3.  **Implementation Details:**\n   - Read $N$ from stdin.\n   - Compute exponent $e = N // 2$.\n   - Compute result = pow(2, e, 10**9 + 7).\n   - Print result.\n   - Python's `pow(2, e, mod)` handles large exponents efficiently.\n   - Check constraints: $N \\le 10^{18}$, fits in 64-bit integer, Python handles arbitrarily large integers automatically.\n   - Modulo is $10^9+7$.\n\n   Let's double check the logic one more time.\n   Is there any catch? \"each day both sons receive the same amount of money. If one son receives $x$ euros on a given day, the other son also receives $x$ euros, where $x$ must be a positive integer.\"\n   This means on day $i$, son 1 gets $x_i$, son 2 gets $x_i$. Total per day is $2x_i$.\n   Total distributed is $\\sum 2x_i = 2 \\sum x_i = N-k$.\n   So $\\sum x_i = (N-k)/2 = M$.\n   $x_i \\ge 1$.\n   Number of sequences $(x_1, \\dots, x_d)$ of positive integers summing to $M$ is indeed $2^{M-1}$ for $M \\ge 1$.\n   For $M=0$ ($k=N$), $d=0$ is the only option, 1 way.\n   Sum over $k$: $\\sum_{M=0}^{\\lfloor N/2 \\rfloor} 2^{M-1}$ (with $2^{-1}$ treated as 1 for $M=0$? Wait.)\n   Let's be precise:\n   For $M=0$: 1 way.\n   For $M \\ge 1$: $2^{M-1}$ ways.\n   Sum = $1 + \\sum_{M=1}^{\\lfloor N/2 \\rfloor} 2^{M-1} = 1 + (2^0 + 2^1 + \\dots + 2^{\\lfloor N/2 \\rfloor - 1}) = 1 + (2^{\\lfloor N/2 \\rfloor} - 1) = 2^{\\lfloor N/2 \\rfloor}$.\n   Yes, the formula holds perfectly.\n\n   One minor point: The problem says \"Two distributions are considered different if ... the chosen amount $k$ is different ...\". This means we are counting pairs $(k, \\text{sequence})$. My summation correctly counts these distinct pairs.\n   The logic is solid.\n\n   Code structure:\n   ```python\n   import sys\n\n   def solve():\n       n = int(sys.stdin.readline())\n       mod = 10**9 + 7\n       exp = n // 2\n       print(pow(2, exp, mod))\n\n   if __name__ == '__main__':\n       solve()\n   ```\n\n   Check constraints: $N \\le 10^{18}$. `pow(2, exp, mod)` is $O(\\log N)$. Perfect.\n   Input format: single integer $n$.\n   Output format: single integer.\n   Examples match.\n   All good.\n\n   Let's quickly manually verify Example 3: $N=793$. $\\lfloor 793/2 \\rfloor = 396$.\n   $2^{396} \\pmod{10^9+7}$. I can't compute it mentally, but the formula is mathematically sound.\n   I will write the solution accordingly.\n\n   One thing to consider: Is there any case where $N=0$? The constraint says $1 \\le n \\le 10^{18}$, so $N \\ge 1$.\n   The problem statement says \"natural number $n$\", usually means positive integer.\n   So $N \\ge 1$ is guaranteed.\n\n   Final check of the problem statement: \"Mother Antonija may also choose not to distribute anything to her sons, which corresponds to the case when $N=k$ and $d=0$.\" -> This is the $M=0$ case, counted as 1.\n   \"If the money is distributed, it is done so that each day both sons receive the same amount of money... $x$ must be a positive integer.\" -> $x_i \\ge 1$.\n   Everything aligns.\n\n   Complexity:\n   Time: $O(\\log N)$ due to modular exponentiation.\n   Space: $O(1)$.\n\n   I will structure the response as requested:\n   - Explain approach\n   - Explain time/space complexity\n   - Provide Python 3 code in a single code block.\n   - Ensure no extra code blocks.\n\n   Draft response:\n   문제 해결 접근법:\n   어머니가 $k$ 유로를 보관하면 남은 금액 $R = N - k$를 두 아들에게 분배합니다. 매일 두 아들은 동일한 양의 정수 $x_i \\ge 1$ 유로를 받으며, 총 $d$일 동안 분배됩니다. 따라서 분배된 총 금액은 $2 \\sum_{i=1}^d x_i = R$입니다. 이는 $R$이 짝수여야 함을 의미하며, $M = R/2$라고 하면 $\\sum_{i=1}^d x_i = M$인 양의 정수 순서쌍 $(x_1, \\dots, x_d)$의 개수를 세는 문제와 동일합니다.\n   양의 정수 $M$을 순서를 고려하여 분할하는 방법의 수(Composition)는 $2^{M-1}$입니다 ($M \\ge 1$일 때). $M=0$인 경우($k=N$)는 분배를 하지 않는 경우로 1가지입니다.\n   가능한 모든 $k$에 대해 경우의 수를 합산하면, $R$이 짝수인 경우만 기여하므로 $M = 0, 1, \\dots, \\lfloor N/2 \\rfloor$에 대해 합을 구합니다.\n   총 경우의 수 = $1 + \\sum_{M=1}^{\\lfloor N/2 \\rfloor} 2^{M-1} = 1 + (2^{\\lfloor N/2 \\rfloor} - 1) = 2^{\\lfloor N/2 \\rfloor}$입니다.\n   따라서 답은 $2^{\\lfloor N/2 \\rfloor} \\pmod{10^9+7}$로 간단히 계산할 수 있습니다.\n\n   시간 복잡도: 모듈러 지수 연산 `pow(2, exp, mod)`은 $O(\\log N)$ 시간에 수행되므로 전체 시간 복잡도는 $O(\\log N)$입니다.\n   공간 복잡도: 추가적인 자료 구조를 사용하지 않으므로 $O(1)$입니다.\n\n   코드 제공.\n   All steps verified. Ready. \n   One minor thing: The problem says \"natural number $n$ ($1 \\le n \\le 10^{18}$)\". Python's `sys.stdin.read().split()` or `readline()` works fine.\n   I'll use `sys.stdin.readline` for simplicity.\n   The code will be exactly as drafted.\n   I will produce the final answer. \n   Self-Correction/Verification during thought:\n   Wait, is there any interpretation where \"sequence of daily payments\" means the multiset of payments? No, \"sequence\" implies order matters. \"there exists at least one day on which the amounts received by the sons differ (i.e., the sequence of daily payments is not identical).\" This confirms order matters. So compositions are correct.\n   What about $d$? $d$ is determined by the sequence length. Different sequences can have different lengths, which is covered.\n   The formula $2^{\\lfloor N/2 \\rfloor}$ is robust.\n   Example 1: N=4 -> 2^2 = 4. Correct.\n   Example 2: N=5 -> 2^2 = 4. Correct.\n   All good.\n   Output matches requirements.\n   Proceed. \n   Structure of response:\n   - Approach explanation\n   - Complexity explanation\n   - Code block\n   Matches prompt exactly.✅\n   Generating response. \n   [Output Generation] -> *Proceeds*\n   *(Self-Correction/Refinement during drafting)*: \n   I should make sure the explanation clearly maps to the mathematical derivation. The prompt asks for explanation of approach and complexity. I will keep it concise.\n   The code will be:\n   ```python\n   import sys\n\n   def main():\n       n = int(sys.stdin.readline())\n       mod = 10**9 + 7\n       print(pow(2, n // 2, mod))\n\n   if __name__ == '__main__':\n       main()\n   ```\n   This is standard and efficient.\n   All constraints and requirements met.\n   Final check of the prompt: \"최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\" \"최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\"\n   I will strictly follow this.\n   Done. \n   Output matches response. \n   [Proceeds]\n",
+    "usage": {
+      "completion_tokens": 4414,
+      "prompt_tokens": 806,
+      "total_tokens": 5220,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 806,
+      "prompt_ms": 2615.584,
+      "prompt_per_token_ms": 3.245141439205955,
+      "prompt_per_second": 308.15297845528954,
+      "predicted_n": 4414,
+      "predicted_ms": 116703.793,
+      "predicted_per_token_ms": 26.445455019261274,
+      "predicted_per_second": 37.813681000068264
+    }
+  },
+  "metrics": {
+    "response_elapsed_seconds": 119.3626956909975,
+    "prompt_tokens": 806,
+    "completion_tokens": 4414,
+    "generation_tokens_per_second": 37.813681000068264,
+    "generation_tokens_per_second_reason": null,
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": null,
+    "completion_tokens_reason": null,
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T05:11:33.740681+00:00",
+      "phase": "response_received",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "Process query unavailable; no device-memory substitution (ValueError)",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": 265169
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 7025.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": "import sys\n\ndef main():\n    n = int(sys.stdin.readline())\n    mod = 10**9 + 7\n    print(pow(2, n // 2, mod))\n\nif __name__ == '__main__':\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 104,
+    "total_cases": 104,
+    "max_case_seconds": 0.012395013000059407,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0090082339993387,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008121139999275329,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00968598699910217,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009486921000643633,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009232532000169158,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008865480998792918,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009039788998052245,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009901752000587294,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009267115998227382,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009411756000190508,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009203510999213904,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009572016999300104,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008950600000389386,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009673500000644708,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009403232998010935,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01040801799899782,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009770007000042824,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009447574000660097,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010685294000722934,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010063764002552489,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009588191998773254,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012395013000059407,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011670305000734515,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011819503000879195,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011483017999125877,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010341429999243701,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00961653099875548,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00949049300106708,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008900553999410477,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009733471997606102,
+        "return_code": 0,
+        "stdout": "560523804\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010017420001531718,
+        "return_code": 0,
+        "stdout": "16777216\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009214611000061268,
+        "return_code": 0,
+        "stdout": "562080146\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009032705002027797,
+        "return_code": 0,
+        "stdout": "421709488\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008875209001416806,
+        "return_code": 0,
+        "stdout": "190350546\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009680609000497498,
+        "return_code": 0,
+        "stdout": "957494261\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010137273999134777,
+        "return_code": 0,
+        "stdout": "539480341\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009530283998174127,
+        "return_code": 0,
+        "stdout": "536870912\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009913289999531116,
+        "return_code": 0,
+        "stdout": "164688009\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009981762999814237,
+        "return_code": 0,
+        "stdout": "422922539\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009465693001402542,
+        "return_code": 0,
+        "stdout": "918957746\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010719442998379236,
+        "return_code": 0,
+        "stdout": "803796174\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010339214000850916,
+        "return_code": 0,
+        "stdout": "721477393\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010788069001137046,
+        "return_code": 0,
+        "stdout": "884119779\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010168445001909276,
+        "return_code": 0,
+        "stdout": "928968775\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01226695299919811,
+        "return_code": 0,
+        "stdout": "941778035\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010470891000295524,
+        "return_code": 0,
+        "stdout": "433510734\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010484267000720138,
+        "return_code": 0,
+        "stdout": "8388608\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010239127001113957,
+        "return_code": 0,
+        "stdout": "685425692\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010988494999764953,
+        "return_code": 0,
+        "stdout": "850767097\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011410037001041928,
+        "return_code": 0,
+        "stdout": "372663667\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010573180003120797,
+        "return_code": 0,
+        "stdout": "494186807\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010169984998356085,
+        "return_code": 0,
+        "stdout": "755810045\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010089914001582656,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010430932998133358,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009888943000987638,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011547177000466036,
+        "return_code": 0,
+        "stdout": "354261260\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010390876999736065,
+        "return_code": 0,
+        "stdout": "84321226\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009708183002658188,
+        "return_code": 0,
+        "stdout": "328003509\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009882413000013912,
+        "return_code": 0,
+        "stdout": "508033869\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010994354001013562,
+        "return_code": 0,
+        "stdout": "533276192\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01182767399950535,
+        "return_code": 0,
+        "stdout": "61746838\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010724718998972094,
+        "return_code": 0,
+        "stdout": "809663752\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010379262999776984,
+        "return_code": 0,
+        "stdout": "685491149\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010405046999949263,
+        "return_code": 0,
+        "stdout": "650791348\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009570428999722935,
+        "return_code": 0,
+        "stdout": "230396504\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00966276100007235,
+        "return_code": 0,
+        "stdout": "949391\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009953151002264349,
+        "return_code": 0,
+        "stdout": "610583517\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008971416998974746,
+        "return_code": 0,
+        "stdout": "602191206\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009993108000344364,
+        "return_code": 0,
+        "stdout": "377039766\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011177322001458379,
+        "return_code": 0,
+        "stdout": "878340792\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01000343600026099,
+        "return_code": 0,
+        "stdout": "230396504\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009555684999213554,
+        "return_code": 0,
+        "stdout": "949391\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009842054001637734,
+        "return_code": 0,
+        "stdout": "610583517\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011190396999154473,
+        "return_code": 0,
+        "stdout": "134634018\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009869159999652766,
+        "return_code": 0,
+        "stdout": "778470901\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009029496999573894,
+        "return_code": 0,
+        "stdout": "411543888\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009690913000667933,
+        "return_code": 0,
+        "stdout": "164214333\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011303774997941218,
+        "return_code": 0,
+        "stdout": "743231571\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01106978700045147,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011331376001180615,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011058658998081228,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01195437999922433,
+        "return_code": 0,
+        "stdout": "17145937\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010361690998252016,
+        "return_code": 0,
+        "stdout": "785141416\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010781703000247944,
+        "return_code": 0,
+        "stdout": "148895240\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011602963000768796,
+        "return_code": 0,
+        "stdout": "790649499\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01061409100293531,
+        "return_code": 0,
+        "stdout": "595263919\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009892296999169048,
+        "return_code": 0,
+        "stdout": "598696141\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009522079999442212,
+        "return_code": 0,
+        "stdout": "905225583\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010237959999358281,
+        "return_code": 0,
+        "stdout": "298431581\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011516262002260191,
+        "return_code": 0,
+        "stdout": "314419793\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010596162999718217,
+        "return_code": 0,
+        "stdout": "543634523\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010572664999926928,
+        "return_code": 0,
+        "stdout": "944027743\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011207430001377361,
+        "return_code": 0,
+        "stdout": "251919394\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009846780998486793,
+        "return_code": 0,
+        "stdout": "658339092\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010060415999760153,
+        "return_code": 0,
+        "stdout": "881288095\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010025175997725455,
+        "return_code": 0,
+        "stdout": "804582781\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011052622001443524,
+        "return_code": 0,
+        "stdout": "242030990\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00993931899938616,
+        "return_code": 0,
+        "stdout": "173878525\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009621959001378855,
+        "return_code": 0,
+        "stdout": "528600580\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01038521600275999,
+        "return_code": 0,
+        "stdout": "501434488\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009754310998687288,
+        "return_code": 0,
+        "stdout": "806458284\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010403881999081932,
+        "return_code": 0,
+        "stdout": "82240201\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009943467000994133,
+        "return_code": 0,
+        "stdout": "53658989\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01008503000048222,
+        "return_code": 0,
+        "stdout": "88591109\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4z"
+      }
+    ]
+  }
+}
