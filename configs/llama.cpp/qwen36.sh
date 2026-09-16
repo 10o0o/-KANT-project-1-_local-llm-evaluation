@@ -12,12 +12,11 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --ctx-size 12288 \
   --n-predict 8192 \
   --parallel 1 \
-  --fit off \
   --gpu-layers all \
   --n-cpu-moe 32 \
   --load-mode none \
   --flash-attn on \
-  --temp 0 \
   --reasoning on \
-  --reasoning-budget 2048 \
-  -lv 4
+  --reasoning-budget -1 \
+  --threads 16 \
+  --threads-batch 24
