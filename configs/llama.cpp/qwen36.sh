@@ -16,8 +16,9 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --n-cpu-moe 32 \
   --load-mode none \
   --flash-attn on \
+  --temp 0 \
   --reasoning on \
-  --reasoning-budget -1 \
+  --reasoning-budget 2048 \
   --threads 16 \
   --threads-batch 24 \
   --cache-ram 0

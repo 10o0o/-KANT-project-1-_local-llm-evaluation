@@ -16,7 +16,7 @@
 | 모델 ID/digest | c1f47f017694 | `5571076f3d70` (전체 digest는 아래) |
 | Architecture | qwen35moe | gemma4 / Mixture-of-Experts (MoE) |
 | 지원 언어 | 지원 언어 목록 미명시 | 공식 카드: 35개 이상 언어 지원, 140개 이상 언어 사전학습 |
-| 공개 Benchmark·출처 | LiveCodeBench v6, AIME26 등 — [공식 모델 카드](https://huggingface.co/Qwen/Qwen3.6-35B-A3B#benchmark-results) | LiveCodeBench v6 77.1%, AIME 2026 88.3%, Codeforces ELO 1718 — [공식 카드](https://ai.google.dev/gemma/docs/core/model_card_4#benchmark_results), 원본 IT 평가이며 로컬 Q4 실측 아님 |
+| 공개 Benchmark·출처 | LiveCodeBench v6, AIME26 등 — [공식 모델 카드](https://huggingface.co/Qwen/Qwen3.6-35B-A3B#benchmark-results) | LiveCodeBench v6 77.1%, AIME 2026 88.3%, Codeforces ELO 1718 — [공식 카드](https://ai.google.dev/gemma/docs/core/model_card_4#benchmark_results) |
 | Ollama·GGUF와 원본 모델의 대응 관계 | `qwen3.6:35b-a3b-q4_K_M`의 동일 가중치를 사용하는 설정 변경본 (`num_gpu 12`, `num_ctx 4096`) | Gemma 4 26B A4B instruction-tuned 모델의 Ollama Q4_K_M 배포 — [태그 출처](https://ollama.com/library/gemma4:26b-a4b-it-q4_K_M) |
 | 후보 선정 이유 | 로컬 LLM관련 reddit 커뮤니티 반응을 조사한 결과 괜찮은 후보가 qwen3.6이라고 판단함 (기존 공동 선정 이유 원문은 제외 이력에 보존) | HyperCLOVA를 현재 구성의 성능 미달로 제외하고, 이미 Ollama에 설치된 Gemma를 대체 후보로 선택함. 실제 적합성은 이후 직접 평가 |
 
@@ -44,6 +44,12 @@ PARAMETER num_ctx 4096
 - 전체 digest: `5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251`.
 - 기본 호출에서 Context 4096과 응답 저장·재읽기를 확인했다. 당시 CLI의 CPU/GPU 적재 비율은 73%/27%였다. 자세한 진행 근거는 [STATE](../STATE.md)에 기록했다.
 - 이후 llama.cpp 전환과 현재 실행·평가 상태는 [STATE](../STATE.md)를 따른다. 위 Ollama 식별값과 연결 결과는 당시 이력으로 보존하며 새 GGUF와 같은 파일이라고 간주하지 않는다.
+
+## llama.cpp 실행 산출물 식별
+
+새 실행의 실제 GGUF 파일명·바이트 크기·SHA-256, 바이너리 식별값·소스 커밋과 변경 여부는 `results/environment/<session_id>/environment.json`에서 수집한다. 결과 레코드는 해당 환경 기록을 참조한다. 파일 크기는 실행 산출물 식별용이며 위 조사표의 배포 문서상 크기를 대체하지 않는다.
+
+서버 인수는 설정값으로, Context·양자화·적재 상태는 props/로그에서 확인된 관측값으로 구분한다. 과거 Ollama digest를 새 GGUF 식별값으로 재사용하지 않는다. 현재 실제 환경 수집 결과는 아직 없다.
 
 ## 제외 이력: HyperCLOVA
 

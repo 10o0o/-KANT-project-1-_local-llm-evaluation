@@ -4,6 +4,7 @@ from pathlib import Path
 from time import perf_counter
 
 from llm_eval.llama_cpp import chat
+from llm_eval.runtime import measured_metrics, safe_memory, validate_environment
 
 WARMUP_PROMPT = "워밍업 요청입니다. 최종 답변으로 WARMUP_OK라고만 답하세요."
 WARMUP_TEMPERATURE = 0
@@ -15,11 +16,14 @@ def run_warmup(
     project_root: Path,
     model: str,
     client,
+    environment,
 ):
     result_dir = project_root / "results" / "warmup" / model
 
     if result_dir.exists():
         raise SystemExit(f"\nABORT: warmup result already exists\npath: {result_dir}\n")
+
+    validate_environment(environment, model)
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
@@ -42,6 +46,7 @@ def run_warmup(
     except Exception as exc:
         response_elapsed = perf_counter() - response_start
 
+        memory = safe_memory(environment["data"]["process"]["pid"], "call_error")
         failure_record = {
             "run_id": run_id,
             "experiment": {
@@ -64,6 +69,7 @@ def run_warmup(
                 "temperature": WARMUP_TEMPERATURE,
                 "max_tokens": WARMUP_MAX_TOKENS,
                 "reasoning_budget_tokens": WARMUP_REASONING_BUDGET_TOKENS,
+                "cache_prompt": False,
             },
             "call": {
                 "status": "error",
@@ -80,6 +86,9 @@ def run_warmup(
                 "generation_tokens_per_second": None,
             },
         }
+
+        failure_record["environment"] = environment["reference"]
+        failure_record["metrics"] = measured_metrics(response_elapsed, {}, {}, memory)
 
         result_path.write_text(
             json.dumps(
@@ -106,6 +115,8 @@ def run_warmup(
         ),
         encoding="utf-8",
     )
+
+    memory = safe_memory(environment["data"]["process"]["pid"], "response_received")
 
     choice = response_data["choices"][0]
     message = choice["message"]
@@ -135,6 +146,7 @@ def run_warmup(
             "temperature": WARMUP_TEMPERATURE,
             "max_tokens": WARMUP_MAX_TOKENS,
             "reasoning_budget_tokens": WARMUP_REASONING_BUDGET_TOKENS,
+            "cache_prompt": False,
         },
         "call": {
             "status": "success",
@@ -155,6 +167,9 @@ def run_warmup(
         },
     }
 
+    record["environment"] = environment["reference"]
+    record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
+
     result_path.write_text(
         json.dumps(
             record,
@@ -171,6 +186,6 @@ def run_warmup(
     print("response_elapsed_seconds:", response_elapsed)
     print(
         "generation_tokens_per_second:",
-        timings.get("predicted_per_second"),
+        record["metrics"]["generation_tokens_per_second"],
     )
     print("saved:", result_dir)

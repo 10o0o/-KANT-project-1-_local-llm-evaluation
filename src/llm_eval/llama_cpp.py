@@ -31,5 +31,6 @@ def chat(
         max_tokens=max_tokens,
         extra_body={
             "reasoning_budget_tokens": reasoning_budget_tokens,
+            "cache_prompt": False,
         },
     )

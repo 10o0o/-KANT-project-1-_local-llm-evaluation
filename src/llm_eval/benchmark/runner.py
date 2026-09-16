@@ -14,6 +14,7 @@ from llm_eval.benchmark.utils import (
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat
+from llm_eval.runtime import measured_metrics, safe_memory, validate_environment
 
 # Final frozen benchmark generation config.
 TEMPERATURE = 0
@@ -27,6 +28,7 @@ def run_problem(
     model: str,
     round_number: int,
     client,
+    environment,
 ):
     (
         problem_name,
@@ -64,6 +66,8 @@ def run_problem(
             f"path: {result_dir}\n"
         )
 
+    validate_environment(environment, model)
+
     statement = statement_path.read_text(encoding="utf-8")
 
     prompt = build_round1_prompt(statement)
@@ -88,6 +92,7 @@ def run_problem(
         )
     except Exception as exc:
         response_elapsed = perf_counter() - response_start
+        memory = safe_memory(environment["data"]["process"]["pid"], "call_error")
         print("호출 실패:", type(exc).__name__)
         print("실패까지 걸린 시간:", response_elapsed)
 
@@ -105,6 +110,9 @@ def run_problem(
             exc,
         )
 
+        failure_record["environment"] = environment["reference"]
+        failure_record["metrics"] = measured_metrics(response_elapsed, {}, {}, memory)
+
         result_path.write_text(
             json.dumps(
                 failure_record,
@@ -119,14 +127,6 @@ def run_problem(
     response_elapsed = perf_counter() - response_start
     response_data = response.model_dump()
 
-    choice = response_data["choices"][0]
-    message_data = choice["message"]
-
-    response_text = message_data.get("content") or ""
-    reasoning_text = message_data.get("reasoning_content") or ""
-
-    code = extract_python_code(response_text)
-
     with open(response_path, "w", encoding="utf-8") as f:
         json.dump(
             response_data,
@@ -135,6 +135,16 @@ def run_problem(
             indent=2,
             default=str,
         )
+
+    memory = safe_memory(environment["data"]["process"]["pid"], "response_received")
+
+    choice = response_data["choices"][0]
+    message_data = choice["message"]
+
+    response_text = message_data.get("content") or ""
+    reasoning_text = message_data.get("reasoning_content") or ""
+
+    code = extract_python_code(response_text)
 
     if code is None:
         judge_result = {
@@ -180,6 +190,9 @@ def run_problem(
         judge_result=judge_result,
     )
 
+    record["environment"] = environment["reference"]
+    record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
+
     with open(result_path, "w", encoding="utf-8") as f:
         json.dump(
             record,
@@ -196,7 +209,7 @@ def run_problem(
         problem=problem,
         choice=choice,
         usage=usage,
-        timings=timings,
+        metrics=record["metrics"],
         code=code,
         judge_result=judge_result,
         result_dir=result_dir,

@@ -12,6 +12,7 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --ctx-size 12288 \
   --n-predict 8192 \
   --parallel 1 \
+  --gpu-layers auto \
   --flash-attn on \
   --temp 0 \
   --reasoning on \

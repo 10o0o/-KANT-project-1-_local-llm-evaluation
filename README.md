@@ -46,75 +46,61 @@ data/coci/2025_2026/contest5/testdata/skare/
 
 문제문에 포함된 그림은 Markdown에서 확인할 수 있습니다. 현재 호출기는 텍스트만 전송하므로 이미지 파일 자체는 모델에 전달되지 않습니다.
 
-### 3. 모델 서버 실행
+### 3. 서버 시작과 환경 기록
 
-별도 터미널에서 사용할 모델의 서버 하나를 실행합니다. 아래 경로는 설치 위치에 맞게 바꿉니다.
-
-Gemma:
+별도 터미널에서 사용할 모델 하나를 시작한다. 기본 경로가 현재 설치 위치와 다르면 환경변수로 경로를 지정한다.
 
 ```bash
 LLAMA_ROOT=/path/to/llama.cpp \
 GEMMA4_MODEL_PATH=/path/to/gemma4/model.gguf \
-bash configs/llama.cpp/gemma4.sh
+uv run python scripts/start_model.py --model gemma4
 ```
 
-Qwen:
+Qwen은 `QWEN36_MODEL_PATH`를 지정하고 `--model qwen36`으로 시작한다. 실행기는 기존 [서버 셸](configs/llama.cpp/)을 실행한다. 두 서버는 `127.0.0.1:8080`을 공유하며 이미 사용 중이면 기존 프로세스를 건드리지 않고 중단한다. 준비 제한 시간은 기본 600초이며 `--ready-timeout`으로 바꿀 수 있다.
 
-```bash
-LLAMA_ROOT=/path/to/llama.cpp \
-QWEN36_MODEL_PATH=/path/to/qwen36/model.gguf \
-bash configs/llama.cpp/qwen36.sh
-```
+로그는 `results/environment/<session_id>/server.log`에 저장한다. 준비 완료와 파일 식별값 수집 후 출력되는 **`--environment .../environment.json` 경로**를 다음 명령에 사용한다. GGUF 해싱에 시간이 추가로 걸릴 수 있지만 서버 시작 시간에는 포함하지 않는다. 이 터미널을 유지하고, 모델 전환 시 Ctrl-C로 해당 서버를 종료한 뒤 다른 모델을 시작한다.
 
-두 서버는 모두 `127.0.0.1:8080`을 사용합니다. 모델을 바꿀 때는 실행 중인 서버를 종료한 뒤 다른 서버를 시작합니다. 서버의 모델 로딩이 끝난 후 문제 실행기를 호출합니다.
-
-| 항목 | Qwen | Gemma |
-|---|---:|---:|
-| Context | 12288 | 12288 |
-| Max output | 8192 | 8192 |
-| Reasoning budget | 2048 | 2048 |
-| Temperature | 0 | 0 |
-| Parallel | 1 | 1 |
-| Flash Attention | on | on |
-| GPU layers | all | auto |
-| CPU MoE layers | 32 | 해당 없음/설정값 |
-| Generation threads | 16 | auto |
-| Batch threads | 24 | auto |
-| Fit | off | off |
-| Runtime | llama.cpp `4c9233c03` | 동일 |
-
-| 항목 | Gemma | Qwen |
+| 서버 설정 | Qwen | Gemma |
 | --- | --- | --- |
-| API 모델 이름 | `gemma4` | `qwen36` |
+| API 모델 이름 | `qwen36` | `gemma4` |
 | Context | 12288 | 12288 |
-| GPU 설정 | `--gpu-layers auto` | `--gpu-layers all --n-cpu-moe 32` |
-| 서버 기본 출력 한도 | 8192 | 8192 |
-| 서버 기본 reasoning budget | 2048 | 2048 |
-| Temperature | 0 | 0 |
+| 기본 출력 / reasoning / temperature | 8192 / 2048 / 0 | 8192 / 2048 / 0 |
+| Parallel / Flash Attention | 1 / on | 1 / on |
+| GPU layers | all | auto |
+| CPU MoE layers | 32 | 미지정 |
+| Generation / batch threads | 16 / 24 | 미지정 |
+| Load mode | none | 미지정 |
+| RAM prompt cache | 0 MiB (비활성) | 0 MiB (비활성) |
 
-서버 설정은 [configs/llama.cpp](configs/llama.cpp/)에 있습니다. Python 요청의 출력·추론 한도는 아래 실행기에서 별도로 지정합니다.
+미지정 옵션은 런타임 기본값을 따른다. `--fit` 동작은 변경하지 않았다. 기준 소스는 llama.cpp `4c9233c03`이며, 실행한 바이너리의 SHA-256·서버 build 정보·소스 커밋과 변경 여부는 환경 기록에서 구분해 확인한다. 셸 인수는 **설정값**, `/props`와 로그에서 얻은 값은 **관측값**이다. Gemma의 auto나 Qwen의 MoE 혼합 적재를 GPU 이용률로 해석하지 않는다.
 
-### 4. 문제 선택과 평가
+### 4. 워밍업 후 두 회차 평가
 
-[scripts/run_benchmark.py](scripts/run_benchmark.py)에 모델·문제 ID·라운드를 전달합니다.
-
-```bash
-uv run python scripts/run_benchmark.py \
-  --model qwen36 --problems coci_2025_2026_c5_skare --round 1
-```
-
-`--model`은 `qwen36` 또는 `gemma4`, `--problems`은 `problems.json`에 등록한 ID를 사용합니다. Round 1과 Round 2는 같은 문제문·지시문·생성 설정의 독립 반복입니다. 각 요청은 새 대화이며 이전 답변과 채점 결과를 전달하지 않습니다. Round 1 결과가 없어도 Round 2를 실행할 수 있습니다.
+다른 터미널에서 launcher가 출력한 환경 JSON 경로를 지정한다. 아래는 Qwen 예시이며 Gemma는 모델과 환경 경로를 함께 바꾼다.
 
 ```bash
+uv run python scripts/run_warmup.py \
+  --model qwen36 \
+  --environment results/environment/SESSION_ID/environment.json
+
 uv run python scripts/run_benchmark.py \
-  --model qwen36 --problems coci_2025_2026_c5_skare --round 2
+  --model qwen36 --problems all --round 1 \
+  --environment results/environment/SESSION_ID/environment.json
+
+uv run python scripts/run_benchmark.py \
+  --model qwen36 --problems all --round 2 \
+  --environment results/environment/SESSION_ID/environment.json
 ```
 
-현재 요청 설정은 [benchmark/runner.py](src/llm_eval/benchmark/runner.py), 서버 기본값은 [configs/llama.cpp](configs/llama.cpp/)에서 확인합니다. 현재 튜닝 중이며 본 실험 전에 최종 조건을 고정하고 실제 적용값을 확인합니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. VRAM 적합성과 문제 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
+명령의 `SESSION_ID`는 실제 출력된 세션 ID로 바꾼다. `--problems`에는 `all` 또는 `problems.json`의 ID를 쉼표로 나열한다. 각 요청 전 모델·서버 프로세스 시작 식별값·포트 소유권·실행 파일과 모델 파일 상태·현재 서버 정보를 확인한다. 잘못된 환경 연결은 모델 요청 전에 중단하며 본 실험 시도 수에 포함하지 않는다. 서버를 재시작했다면 새 환경 JSON을 사용한다.
 
-실행기는 `http://127.0.0.1:8080/v1`에 연결합니다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있습니다. 연결 오류는 서버 터미널을, 테스트 케이스를 찾을 수 없다는 오류는 `problem_dir`와 압축 해제 위치를 확인합니다.
+워밍업은 별도 짧은 입력으로 모델당 1회 실행하고 본 실험 40회 및 평균에서 제외한다. 워밍업 요청은 출력 128·reasoning 64·temperature 0이다. 성공 여부는 저장 결과에서 직접 확인한 뒤 본 실험을 시작한다. 기존 워밍업 폴더가 있으면 실패 기록도 덮어쓰지 않고 중단한다. 재시도나 재시작 후 추가 워밍업이 필요하면 기존 폴더를 별도 보관하고 경과를 기록한다.
 
-과거 Ollama 실습과 HyperCLOVA 진단 코드는 [정리 전 Git 이력](docs/history/README.md)에서 확인할 수 있습니다.
+본 실험은 동일 문제문·지시문·생성 설정으로 두 번 독립 요청한다. 이전 답변이나 채점 결과는 전달하지 않으며 Round 1 없이 Round 2도 실행할 수 있다. 공통 Python 요청에서 `cache_prompt=false`를 보내 슬롯의 이전 프롬프트 재사용도 끈다. 이는 서버의 `--cache-ram 0`과 별도 설정이다.
+
+설정 변경은 서버 재시작과 새 환경 기록이 필요하다. 실제 VRAM 적합성·입력 수용 여부·현재 코드의 모델 실행은 직접 확인해야 한다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있다. 호출 실패는 기록한 뒤 중단하고, 같은 명령 재실행 시 보존된 실패 시도는 건너뛴다.
+
+과거 calibration·diagnostic 실행기는 당시 실험용이며 현재 환경 연결 검증을 사용하는 본 실험 진입점이 아니다. 과거 Ollama 실습은 [정리 전 Git 이력](docs/history/README.md)에 보존했다.
 
 ## 결과 확인
 
@@ -129,7 +115,17 @@ results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
 
 `--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 건너뜁니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다.
 
-기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다. reasoning 부족으로 단정한 것은 아닙니다. 현재 요청 출력 한도는 튜닝 과정에서 6144이며 최종 설정은 미확정입니다. 최종 조건을 고정한 뒤 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않습니다.
+기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다.
+
+본 실험 설정을 서버 Context 12288, 공통 요청 max_tokens 8192 / reasoning 2048 / temperature 0 / cache_prompt false로 동결했다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
+
+각 성공·실패 결과의 `environment`는 환경 JSON의 세션 ID·경로·SHA-256과 연결된다. 환경 JSON은 준비 완료 후 변경하지 않으며 서버 종료는 같은 폴더의 `exit.json`에 따로 기록한다. 이전 결과 형식도 과거 원본 그대로 보존한다.
+
+`server_startup_seconds`는 프로세스 시작부터 첫 정상 `/health` 응답까지로, 초기화와 준비 확인 간격을 포함한다. 순수 모델 로딩 시간이나 요청 지연이 아니다. 요청별 `model_load_seconds`는 llama.cpp에서 미제공하므로 null과 사유를 기록한다. 전체 응답 시간은 요청 전후로 측정하고 GPU 관측 시간은 제외한다.
+
+VRAM은 서버 준비 직후와 응답/호출 실패 직후의 스냅샷이다. `memory.process`는 해당 서버 프로세스 메모리, `memory.devices`는 전체 장치 사용량으로 서로 대체하지 않는다. WSL에서 프로세스 정보가 없으면 null과 사유를 남긴다. 최대 VRAM이나 모델 가중치만의 메모리로 표시하지 않는다. 생성 시간·속도 필드가 없거나 유효하지 않으면 생성 속도도 null과 사유를 남긴다.
+
+모델별 집계에는 호출 성공 수/시도 수와 지표별 평균·n을 표시한다. 누락값을 0으로 대체하지 않고, 환경의 시작 시간은 응답마다 반복 관측한 값처럼 평균 내지 않는다.
 
 추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 `NO_CODE`로 기록합니다.
 
@@ -173,3 +169,11 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 현재 benchmark는 llama.cpp 로컬 모델용입니다. 발제 STEP 7의 Cloud 모델 1개·공통 5문항·각 1회 비교는 이후 추가할 단계이며, 이번 구조화에 Cloud 호출 기능은 포함하지 않았습니다. 기존 문제 로딩·프롬프트·코드 추출·Judge를 재사용할 수 있도록 실행 진입점과 역할을 분리했습니다.
 
 llama.cpp 전환은 튜터에게 허락받았다. [평가 기준](docs/requirements.md)과 [기록 복구 점검](docs/logging-review.md)을 따른다. 기록 복구와 본 실험 준비는 아직 완료되지 않았다.
+
+## 모의 검증
+
+```bash
+uv run python -m unittest discover -s tests -v
+```
+
+네트워크·프로세스 실행·GPU 조회·모델 응답을 모의 처리한다. 이 검증은 실제 서버 실행, 모델 품질·VRAM 적합성이나 본 실험 완료를 증명하지 않는다.

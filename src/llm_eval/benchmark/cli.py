@@ -4,6 +4,7 @@ from pathlib import Path
 from llm_eval.benchmark.runner import run_problem
 from llm_eval.llama_cpp import create_client
 from llm_eval.problems import load_problems, select_problems
+from llm_eval.runtime import load_environment
 
 
 def parse_args():
@@ -33,11 +34,19 @@ def parse_args():
         help="Independent repeat number (1 or 2); no previous answer is used.",
     )
 
+    parser.add_argument(
+        "--environment",
+        required=True,
+        type=Path,
+        help="Environment JSON from start_model.py",
+    )
+
     return parser.parse_args()
 
 
 def main(project_root: Path):
     args = parse_args()
+    environment = load_environment(args.environment, args.model, project_root)
     problems = load_problems(project_root)
     selected_problems = select_problems(problems, args.problems)
 
@@ -53,4 +62,5 @@ def main(project_root: Path):
                 model=args.model,
                 round_number=args.round,
                 client=client,
+                environment=environment,
             )

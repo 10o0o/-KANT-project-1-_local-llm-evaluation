@@ -88,6 +88,7 @@ def build_failure_record(
             "temperature": temperature,
             "max_tokens": max_tokens,
             "reasoning_budget_tokens": reasoning_budget_tokens,
+            "cache_prompt": False,
         },
         "call": {
             "status": "error",
@@ -160,6 +161,7 @@ def build_success_record(
             "temperature": temperature,
             "max_tokens": max_tokens,
             "reasoning_budget_tokens": reasoning_budget_tokens,
+            "cache_prompt": False,
         },
         "call": {
             "status": "success",
@@ -191,7 +193,7 @@ def print_benchmark_result(
     problem,
     choice,
     usage,
-    timings,
+    metrics,
     code,
     judge_result,
     result_dir,
@@ -206,7 +208,7 @@ def print_benchmark_result(
     print("completion_tokens:", usage.get("completion_tokens"))
     print(
         "generation_tokens_per_second:",
-        timings.get("predicted_per_second"),
+        metrics.get("generation_tokens_per_second"),
     )
     print("has_code:", code is not None)
     print("judge:", judge_result["status"])
