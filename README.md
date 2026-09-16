@@ -88,14 +88,14 @@ uv run python scripts/run_benchmark.py \
   --model qwen36 --problems coci_2025_2026_c5_skare --round 1
 ```
 
-`--model`은 `qwen36` 또는 `gemma4`, `--problems`은 `problems.json`에 등록한 ID를 사용합니다. Round 2는 같은 문제·모델의 새 Round 1 최종 답변을 읽어 자체 검토하며, 외부 채점 결과는 프롬프트에 넣지 않습니다.
+`--model`은 `qwen36` 또는 `gemma4`, `--problems`은 `problems.json`에 등록한 ID를 사용합니다. Round 1과 Round 2는 같은 문제문·지시문·생성 설정의 독립 반복입니다. 각 요청은 새 대화이며 이전 답변과 채점 결과를 전달하지 않습니다. Round 1 결과가 없어도 Round 2를 실행할 수 있습니다.
 
 ```bash
 uv run python scripts/run_benchmark.py \
   --model qwen36 --problems coci_2025_2026_c5_skare --round 2
 ```
 
-요청 설정은 [benchmark/runner.py](src/llm_eval/benchmark/runner.py)의 `TEMPERATURE=0`, `MAX_TOKENS=8192`, `REASONING_BUDGET_TOKENS=2048`로 고정합니다. 서버 셸도 Context 12288·출력 8192·reasoning 2048·temperature 0으로 맞췄습니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. Context 12288에서의 VRAM 적합성과 긴 Round 2 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
+현재 요청 설정은 [benchmark/runner.py](src/llm_eval/benchmark/runner.py), 서버 기본값은 [configs/llama.cpp](configs/llama.cpp/)에서 확인합니다. 현재 튜닝 중이며 본 실험 전에 최종 조건을 고정하고 실제 적용값을 확인합니다. 변경한 서버 설정은 **서버를 재시작해야** 적용됩니다. VRAM 적합성과 문제 입력의 수용 여부는 실제 실행으로 확인해야 합니다.
 
 실행기는 `http://127.0.0.1:8080/v1`에 연결합니다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있습니다. 연결 오류는 서버 터미널을, 테스트 케이스를 찾을 수 없다는 오류는 `problem_dir`와 압축 해제 위치를 확인합니다.
 
@@ -114,7 +114,7 @@ results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
 
 `--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 건너뜁니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다.
 
-기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 된 것을 계기로 출력 한도를 늘렸습니다. reasoning 부족으로 단정하지 않고 2048을 유지했으며, 새 설정의 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계와 Round 2 입력에서 제외합니다.
+기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다. reasoning 부족으로 단정한 것은 아닙니다. 현재 요청 출력 한도는 튜닝 과정에서 6144이며 최종 설정은 미확정입니다. 최종 조건을 고정한 뒤 본 실험 40회는 처음부터 진행합니다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않습니다.
 
 추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 `NO_CODE`로 기록합니다.
 
@@ -156,3 +156,5 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 실행 결과의 용도와 집계 범위는 [결과 분류](results/README.md), 이전 파일의 위치와 복원 방법은 [정리 이력](docs/history/README.md)에 정리했습니다.
 
 현재 benchmark는 llama.cpp 로컬 모델용입니다. 발제 STEP 7의 Cloud 모델 1개·공통 5문항·각 1회 비교는 이후 추가할 단계이며, 이번 구조화에 Cloud 호출 기능은 포함하지 않았습니다. 기존 문제 로딩·프롬프트·코드 추출·Judge를 재사용할 수 있도록 실행 진입점과 역할을 분리했습니다.
+
+llama.cpp 전환은 튜터에게 허락받았다. [평가 기준](docs/requirements.md)과 [기록 복구 점검](docs/logging-review.md)을 따른다. 기록 복구와 본 실험 준비는 아직 완료되지 않았다.

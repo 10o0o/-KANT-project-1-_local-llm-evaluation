@@ -22,13 +22,13 @@ def parse_args():
         help="Comma-separated problem IDs, or 'all'.",
     )
 
-    # Round 2 reviews the same model's Round 1 answer without judge feedback.
+    # Both rounds independently use the same prompt and generation settings.
     parser.add_argument(
         "--round",
         required=True,
         type=int,
         choices=[1, 2],
-        help="Benchmark round.",
+        help="Independent repeat number (1 or 2); no previous answer is used.",
     )
 
     return parser.parse_args()

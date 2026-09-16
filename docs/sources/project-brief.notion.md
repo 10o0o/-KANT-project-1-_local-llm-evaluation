@@ -1,0 +1,581 @@
+Here is the result of "fetch" for the Page with URL https://app.notion.com/p/3ddde5bf9074809787d7f6a5a5a263e7 as of 2026-09-16T00:24:20.828Z:
+<page url="https://app.notion.com/p/3ddde5bf9074809787d7f6a5a5a263e7">
+<ancestor-path></ancestor-path>
+<properties>
+{"title":"프로젝트 발제 문서"}
+</properties>
+<iconMetadata>null</iconMetadata>
+<content>
+<callout icon="🚩" color="gray_bg">
+	**모든 토글을 열고 닫는 단축키**
+	- Windows: `Ctrl` + `Alt` + `T`
+	- Mac: `⌘` + `⌥` + `T`
+</callout>
+# 1️⃣ 프로젝트 개요 {toggle="true"}
+	<callout icon="🎯">
+		개인 또는 팀으로 서비스 상황을 정하고, **로컬 LLM 2개를 Ollama로 실행·비교한 뒤 적합한 모델 1개를 선정**합니다. 진행 기간은 **5일**이며, Cloud API 모델 1개에는 공통 질문 일부를 적용해 실제 운영 방식도 검토합니다.
+		<empty-block/>
+		### 필수·선택 범위
+		<table header-row="true">
+		<colgroup>
+		<col>
+		<col width="449">
+		</colgroup>
+<tr>
+<td>구분</td>
+<td>수행 범위</td>
+</tr>
+<tr>
+<td>필수</td>
+<td>사용 사례와 요구사항 정의, Hugging Face 모델 정보 조사, 서로 다른 로컬 모델 2개 실행, 동일 질문 기반 품질·성능 비교, 소규모 Local–Cloud 비교, 모델 선정과 발표</td>
+</tr>
+<tr>
+<td>선택</td>
+<td>세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델의 양자화 버전 비교, Sentence Transformers 임베딩 실습</td>
+</tr>
+<tr>
+<td>공통 환경</td>
+<td>Windows 수업용 노트북, Ollama, VS Code + uv + Python 3.12. 2번 선행 가이드의 실행 환경을 이어서 사용</td>
+</tr>
+<tr>
+<td>산출물</td>
+<td>GitHub 저장소 하나에 실행 코드, 환경 정보, 실험 기록, 비교표, 최종 선정 근거를 함께 제출</td>
+</tr>
+		</table>
+		선택 실습은 필수 실험과 결과 정리를 완료한 뒤 진행하며, 필수 완료 기준에는 포함하지 않습니다.
+	</callout>
+	<details>
+	<summary>프로젝트 시작 전 준비</summary>
+		- Lv.1부터 Lv.2 **\[딥러닝 실전 & 프롬프트 엔지니어링\]**까지 학습합니다.
+		- 1번<mention-page url="https://app.notion.com/p/3d11698118388056836bc8d123945912"/>  선행 가이드에서 설치, 모델 다운로드, CLI 대화, GPU 확인을 완료합니다.
+		- 2번 <mention-page url="https://app.notion.com/p/3d41698118388039be07cca84e1f743c"/> 선행 가이드에서 VS Code + uv + Python 환경, Ollama/Luna 호출, 전체 응답 시간 측정을 익힙니다.
+		- 코드의 `QUESTION`과 `MODEL`을 찾아 질문을 바꾸고 저장·실행한 뒤 답변과 측정값을 설명할 수 있어야 합니다.
+		- 사전 가이드의 공통 모델은 연습용이며, 프로젝트에서는 실행 가능한 서로 다른 로컬 후보 2개를 선정하고 선택 이유를 기록합니다.
+	</details>
+# 2️⃣ 프로젝트 목표와 학습 연결 {toggle="true"}
+	<details>
+	<summary>이번 프로젝트에서 배우는 내용</summary>
+		### 1. 오픈소스 LLM 직접 실행
+		- Hugging Face Model Card, 모델 특성, License 조사
+		- Ollama로 로컬 모델 다운로드·실행
+		- Python 호출 예제를 바탕으로 반복 실행, 추가 측정, 결과 기록 구성
+		- Transformers / PyTorch 직접 모델 로딩은 선택 실습
+		### 2. 모델 정보 읽기
+		- Model Card, Parameter Size, License, Context Length, Tokenizer, Chat Template, Quantization, 공개 Benchmark, VRAM 요구량
+		### 3. 모델 성능과 특성 비교
+		- Quality: 답변 정확성, Instruction Following, 한국어 품질
+		- Performance: 응답 시간, Token 생성 속도, VRAM 사용량
+		- Model Characteristics: Model Size, Context Length, Quantization, License
+		### 4. Local LLM과 Cloud LLM 비교
+		- 품질, 비용, 데이터 통제, 인프라, 커스터마이징, 운영 부담을 비교하고 서비스 상황에 맞는 운영 방식을 제안합니다.
+	</details>
+	<details>
+	<summary>기존 강의에서 배운 내용 활용</summary>
+		<table header-row="true">
+<tr>
+<td>기존 학습 내용</td>
+<td>프로젝트 활용</td>
+</tr>
+<tr>
+<td>Git & GitHub</td>
+<td>프로젝트 Repository 관리 및 협업</td>
+</tr>
+<tr>
+<td>AI Literacy</td>
+<td>Closed API와 Open-source LLM 비교</td>
+</tr>
+<tr>
+<td>기초 수학 / 선형대수</td>
+<td>벡터·유사도 이해, 선택 임베딩 실습 결과 해석</td>
+</tr>
+<tr>
+<td>딥러닝 기초</td>
+<td>Tensor, GPU, 모델 실행 구조 이해</td>
+</tr>
+<tr>
+<td>Transformer / Tokenizer</td>
+<td>LLM 구조와 모델별 Tokenization 방식 이해</td>
+</tr>
+<tr>
+<td>Hugging Face / Model Card / License</td>
+<td>모델 저장소·설정·특성·사용 가능 여부 판단</td>
+</tr>
+<tr>
+<td>Chat Template / Generation Decoding</td>
+<td>Chat 모델 입력 형식과 모델별 출력 특성 비교</td>
+</tr>
+<tr>
+<td>Prompt Engineering</td>
+<td>모델 비교를 위한 동일 Prompt 설계</td>
+</tr>
+<tr>
+<td>Structured Output</td>
+<td>필요한 태스크의 출력 형식 검사. JSON 강제, Tool Calling, 멀티모달 구현은 요구하지 않음</td>
+</tr>
+		</table>
+		<empty-block/>
+		구현이 막히면 Python의 파일/pathlib/JSON/JSONL, Hugging Face Hub와 입력 디버깅, Baseline·Few-shot·평가 루브릭, Timeout·Retry·Fallback·Latency logging, GitHub 저장소 구성과 Issue 관리 내용을 복습합니다.
+	</details>
+	<details>
+	<summary>프로젝트 종료 시 갖게 되는 역량</summary>
+		- Hugging Face에서 필요한 모델을 탐색하고 Model Card와 License를 읽을 수 있습니다.
+		- Ollama와 Python으로 로컬 모델 2개를 호출하고 결과를 기록할 수 있습니다.
+		- 모델별 품질, 속도, 메모리 사용량 차이를 측정하고 Quantization의 영향을 이해할 수 있습니다.
+		- Local–Cloud의 실측 결과와 운영 조건을 구분해 모델과 실행 위치를 설명할 수 있습니다.
+		- 선택 실습을 수행한 경우 Sentence Transformers로 Embedding을 만들고 유사도를 해석할 수 있습니다.
+	</details>
+# 3️⃣ 과제와 Use Case {toggle="true"}
+	<callout icon="🧩">
+		특정 Use Case에 맞는 오픈소스 LLM 후보를 탐색하고, 실행·평가 결과를 바탕으로 모델을 선정합니다. 완성형 챗봇, 웹 UI, 웹서버, 배포, Vector DB, 검색·RAG 구현은 필수 산출물에 포함하지 않습니다.
+	</callout>
+	<details>
+	<summary>Use Case 예시</summary>
+		- 고객 상담 챗봇
+		- 사내 문서 요약
+		- 개발자 Coding Assistant
+		- 한국어 질의응답
+		- 문서 분류
+		- 뉴스 요약
+		- 교육용 AI Tutor
+		- 개인 업무 Assistant
+		<empty-block/>
+		문서 요약이나 문서 질의응답을 선택한 경우 공개·가상 문서를 프롬프트에 직접 제공하는 범위로 수행합니다.
+	</details>
+	<details>
+	<summary>모델 후보 조사 항목</summary>
+		- Model Name, Parameter Size, License, Context Length, Architecture, Language, Benchmark
+		- Model Card, Quantization 지원 여부
+		- 실제 실행한 Ollama 모델의 전체 태그, digest 등 식별값, 원본 모델과의 대응 관계
+		- 다운로드 파일 크기, 시스템 RAM, VRAM 사용량을 구분해 기록
+		- Model Card의 최대 Context Length와 실험에서 실제로 사용한 Context Length를 따로 기록
+	</details>
+# 4️⃣ 프로젝트 전체 프로세스 {toggle="true"}
+	<callout icon="🛠️">
+		**문제 정의 → 요구사항 정의 → 모델 탐색 → 실행 환경 확인 → 평가 질문 확정 → 로컬 비교 실험 → 소규모 Cloud 비교 → 최종 모델 선정**
+	</callout>
+	<details>
+	<summary>STEP 1. 문제 정의</summary>
+		모델을 선택하기 전에 해결할 문제를 정의합니다.
+		> **한국어 고객 문의에 답변하는 사내 상담 Assistant에 사용할 로컬 모델을 선정한다.**
+		- 어떤 사용자가 사용하는가?
+		- 어떤 종류의 질문에 답해야 하는가?
+		- 한국어 성능, 데이터 보안, 응답 속도 중 무엇이 중요한가?
+		- 사용 가능한 GPU 환경은 어느 정도인가?
+	</details>
+	<details>
+	<summary>STEP 2. 모델 요구사항 정의</summary>
+		- **필수 통과 조건:** 수업용 노트북에서의 실행 가능 여부, Use Case에 맞는 License, 입력·출력 길이 수용 여부, 태스크에 필요한 최소 품질과 확인 방법
+		- **선호 우선순위:** 필수 조건을 충족한 후보 사이에서 품질, 전체 응답 시간, 메모리 사용량 등의 우선순위와 판정 기준
+		- **확정 시점:** STEP 5에서 질문과 품질 채점 기준을 구체화하고 본 실험 전에 확정
+		<table header-row="true">
+<tr>
+<td>항목</td>
+<td>확인할 정보</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Korean</td>
+</tr>
+<tr>
+<td>Model Size</td>
+<td>수업용 노트북에서 실행 가능한 후보</td>
+</tr>
+<tr>
+<td>License</td>
+<td>Commercial Use 가능 여부</td>
+</tr>
+<tr>
+<td>Context Length</td>
+<td>사용할 입력 문서와 출력 길이 수용 여부</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>실제 GPU·VRAM과 CPU/GPU 적재 상태</td>
+</tr>
+<tr>
+<td>Task</td>
+<td>Chat / QA</td>
+</tr>
+		</table>
+	</details>
+	<details>
+	<summary>STEP 3. 후보 모델 탐색</summary>
+		서로 다른 로컬 모델 2개를 필수 후보로 선정합니다. 동일 모델의 양자화 버전 2개만 비교하는 것은 이 요건을 대신하지 않습니다. Cloud 모델 1개는 별도의 비교 기준이며 로컬 후보 수에 포함하지 않습니다.
+		<empty-block/>
+		Model Card와 License 원문 링크, 후보 선정 이유, 실제 실행 태그와 식별값을 직접 기록합니다.
+	</details>
+	<details>
+	<summary>STEP 4. 모델 실행 환경 확인과 Python 연결</summary>
+		**Windows → Python 코드 → 같은 PC의 Ollama → 로컬 모델** 경로를 사용합니다.
+		- 후보 모델을 다운로드한 뒤 `01_ollama_chat.py`의 `MODEL`을 전체 태그로 변경합니다.
+		- `QUESTION`에 질문 한 개를 넣어 응답을 확인하고 결과 한 건을 JSON/CSV/JSONL 등 다시 읽을 수 있는 파일로 저장합니다.
+		- CLI 대화 성공과 Python 호출 성공을 각각 확인합니다.
+		- Python/Ollama/주요 패키지 버전, GPU/VRAM, 실행 설정, 오류 증상과 확인 내용을 기록합니다.
+		- 기본 실험은 모델을 한 번에 하나씩 실행하고 같은 PC에서 두 후보를 비교합니다.
+	</details>
+	<details>
+	<summary>STEP 5. 평가 질문과 품질 기준 확정</summary>
+		- Use Case에 맞는 **고정 질문 10개**를 만들고 모든 로컬 후보에 동일하게 적용합니다.
+		- 질문마다 ID, 입력 자료, 기대 결과 또는 확인할 항목을 기록합니다.
+		- 정상 사례, 경계 사례, 정보 부족·범위 밖 사례를 포함합니다.
+		- 정확성, 핵심 정보 누락, 지시·형식 준수, 한국어 표현, 정보 부족 시 대응 등 태스크에 맞는 채점 기준과 점수 근거를 사전에 정합니다.
+		- 동일한 질문·지시문·대화 이력 처리·출력 한도·생성 설정을 적용하고, 차이가 있으면 명시합니다.
+		- Cloud 비교 질문 5개도 결과를 보기 전에 이 세트에서 선정합니다.
+	</details>
+	<details>
+	<summary>STEP 6. 로컬 모델 품질·성능 측정</summary>
+		**로컬 모델 2개 × 질문 10개 × 질문별 2회 = 모델당 본 실험 20회**를 수행합니다. 모델당 워밍업 1회는 본 비교 집계에서 분리합니다.
+		<empty-block/>
+		### Quality
+		- 원본 응답을 STEP 5의 동일 기준으로 평가합니다.
+		- 평균 점수, 대표 성공·실패 사례, 점수의 근거가 되는 응답 부분을 남깁니다.
+		- 호출 실패는 품질 점수와 별도로 기록하고 성공 응답으로 대체하지 않습니다.
+		### Performance
+		- 전체 응답 시간: `elapsed` 초
+		- 모델 로딩 시간: `response.load_duration / 1,000,000,000` 초
+		- 토큰 생성 속도: `eval_count / (eval_duration / 1,000,000,000)` tokens/s
+		- VRAM: `client.ps()`의 해당 모델 `size_vram` 바이트를 MiB로 변환
+		- 실행 조건: 모델 태그, `digest`, `details.quantization_level`, 실제 `context_length`, 출력 한도·생성 설정, CPU/GPU 적재 상태
+		<empty-block/>
+		통계 필드가 없거나 `eval_duration`이 0 이하이면 생성 속도를 계산하지 않고 사유를 기록합니다. 측정 불가 값을 0으로 채우지 않습니다.
+		### 집계 원칙
+		- 호출 성공 수 / 전체 시도 수를 모델별로 표시합니다.
+		- 품질 점수와 각 성능 지표의 평균 옆에 계산에 사용한 응답 수(n)를 표시합니다.
+		- 워밍업, 재시도, 추가 실험은 본 실험과 별도로 기록합니다.
+		- 첫 실행의 로딩 지연과 로드된 상태의 응답 지연을 구분합니다.
+		- tokens/s만으로 품질이나 사용자 체감 속도를 판단하지 않습니다.
+		- 첫 토큰 지연을 별도로 측정하지 않았다면 전체 응답 시간을 TTFT로 표기하지 않습니다.
+	</details>
+	<details>
+	<summary>STEP 7. Open-source LLM vs Cloud API 비교</summary>
+		Cloud API 모델 1개에 STEP 5에서 미리 정한 공통 질문 5개를 각각 1회 적용합니다. 로컬 모델은 동일 질문을 2회 수행하므로 반복 수 차이를 표시하고, 로컬의 좋은 결과 한 건만 골라 비교하지 않습니다.
+		<table header-row="true">
+<tr>
+<td>기준</td>
+<td>Local LLM</td>
+<td>Cloud API</td>
+</tr>
+<tr>
+<td>Quality</td>
+<td>실측</td>
+<td>실측</td>
+</tr>
+<tr>
+<td>Latency</td>
+<td>실측</td>
+<td>실측. 네트워크 조건 포함</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>장비·전력·관리 비용 고려</td>
+<td>토큰 사용량과 실제 단가로 계산</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>데이터 통제 가능</td>
+<td>외부 API 의존 및 개인정보 고려</td>
+</tr>
+<tr>
+<td>Infrastructure / Operations</td>
+<td>장비 확보·관리와 모델 서빙 필요</td>
+<td>인프라 운영 부담이 비교적 낮음</td>
+</tr>
+<tr>
+<td>Customization</td>
+<td>모델 커스터마이징·내부망 구성 가능</td>
+<td>제공 모델·API 범위에 의존</td>
+</tr>
+		</table>
+		- `02_luna_chat.py`를 출발점으로 사용하고 응답, 성공·오류 상태, 입력, 출력 토큰, 전체 응답 시간, 예상 비용을 기록합니다.
+		- API 키는 코드·저장소·실험 로그·스크린샷에 포함하지 않습니다. 공개·가상 데이터만 사용합니다.
+		- 추정 비용과 [OpenAI API 사용량](https://platform.openai.com/usage)의 실제 사용 내역을 구분합니다.
+		- 실측 결과와 서비스 요구사항에 따른 운영 조건 분석을 구분합니다.
+	</details>
+	<details>
+	<summary>STEP 8. 최종 모델 선정과 발표</summary>
+		- 비교한 로컬 후보 중 Use Case에 가장 적합한 모델 1개를 선정합니다.
+		- STEP 2의 필수 통과 조건을 먼저 확인하고, 충족한 후보에 선호 우선순위를 적용합니다.
+		- 호출 성공 수/전체 시도 수, 지표별 집계 응답 수(n), 대표 실패 사례를 선정 근거에 반영합니다.
+		- Cloud가 더 높은 품질을 보였더라도 Cloud 결과, 로컬 선정 이유, 실제 서비스의 운영 방식 권고를 분리해 설명합니다.
+		- 두 로컬 후보 모두 핵심 요구사항을 충족하지 못하면 상대적으로 적합한 후보와 실제 도입 가능 여부를 구분합니다.
+		<empty-block/>
+		> Model A가 가장 높은 Benchmark 점수를 기록했지만, 우리 서비스에서는 Model B를 선택했습니다.<br>Model B는 품질 차이가 크지 않으면서 VRAM 사용량이 적고 응답 속도가 빠르며, 상업적 사용이 가능한 License를 가지고 있어 더 적합하다고 판단했습니다.
+	</details>
+# 5️⃣ 선택 실습 {toggle="true"}
+	<details>
+	<summary>선택 실습 A. Quantization 비교</summary>
+		기본 과제에서는 양자화의 목적을 이해하고 사용한 버전을 기록합니다. 직접 비교할 때는 **같은 모델의 양자화 버전 2개**를 질문·설정·실행 조건에 맞춰 비교합니다.
+		- 예시: FP16, 8bit, 4bit
+		- VRAM 사용량, 속도, 품질 변화를 실제 관측 결과로 설명합니다.
+		- 서로 다른 모델의 차이를 양자화 효과로 해석하지 않습니다.
+	</details>
+	<details>
+	<summary>선택 실습 B. Embedding 실험</summary>
+		Sentence Transformers로 다음 흐름을 실습합니다.
+		> Sentence → Embedding Vector → Cosine Similarity → Semantic Similarity
+		- “고양이가 소파 위에 있다”, “소파 위에 고양이가 앉아 있다”, “오늘 주식시장이 상승했다” 같은 문장을 비교합니다.
+		- 생성 모델의 토큰 ID와 문장 비교용 임베딩을 구분합니다.
+		- 같은 임베딩 모델·설정으로 비교하며, 유사도 값을 답변의 사실성 점수로 해석하지 않습니다.
+		- Vector DB와 RAG 시스템 구현은 요구하지 않습니다.
+	</details>
+# 6️⃣ 5일 진행 안내 {toggle="true"}
+	<table header-row="true">
+<tr>
+<td>일차</td>
+<td>주요 작업</td>
+<td>확인할 결과</td>
+</tr>
+<tr>
+<td>1일차</td>
+<td>사용 사례·요구사항 정의, 후보 모델 2개 조사, 모델별 호출 확인</td>
+<td>후보 비교표, 두 모델의 기본 응답, 결과 저장 확인, 평가 질문 초안</td>
+</tr>
+<tr>
+<td>2일차</td>
+<td>평가 질문·채점 기준 확정, 동일 조건 로컬 실험</td>
+<td>원본 응답, 설정, 측정값, 성공·오류 기록</td>
+</tr>
+<tr>
+<td>3일차</td>
+<td>품질 채점·실패 사례 분석, 소규모 Cloud 비교</td>
+<td>Local–Cloud 비교와 선정 근거 초안</td>
+</tr>
+<tr>
+<td>4일차</td>
+<td>필요한 재실험 진행</td>
+<td></td>
+</tr>
+<tr>
+<td>5일차</td>
+<td>저장소·README 정리, 재실행 확인, 최종 발표</td>
+<td>실험 근거가 연결된 최종 제출물</td>
+</tr>
+	</table>
+	<details>
+	<summary>참여 및 제출 단위</summary>
+		- 개인 또는 팀으로 수행합니다.
+		- 로컬 모델 2개 × 질문 10개 × 각 2회 = 기본 실험 40회
+		- Cloud 모델 1개 × 공통 질문 5개 × 각 1회 = 기본 실험 5회
+		- 로컬 워밍업은 모델당 1회이며 기본 실험과 구분합니다.
+		- 팀은 질문·평가 기준·최종 선정을 함께 결정하고, 모든 팀원이 모델 실행·결과 기록·채점에 참여합니다.
+		- 작업을 나눈 경우 README에 참여 내용을 남깁니다.
+	</details>
+# 7️⃣ 주요 산출물 {toggle="true"}
+	<details>
+	<summary>1. GitHub Repository</summary>
+		모델 실행 코드, 환경 설정, `pyproject.toml`/`uv.lock`/Python 버전, README, 실행 방법, 입력 질문·실행 설정·결과 파일 위치를 포함합니다. 모델 가중치, API 키, 가상환경 전체는 저장소에 올리지 않습니다.
+	</details>
+	<details>
+	<summary>2. Model Comparison Table</summary>
+		Model Name, Parameter, License, Context Length, Quantization, VRAM, 주요 특징, Model Card/License 출처, 실제 모델 태그·식별값, 문서상 최대 Context와 실험 Context 설정을 기록합니다.
+	</details>
+	<details>
+	<summary>3. Model Test / Benchmark 결과</summary>
+		Prompt, Response, Latency, VRAM Usage, 품질 평가, 질문·실행 ID, 반복 회차, 실행 설정, 성공·오류 상태, 워밍업 여부, 로딩 시간, 출력 토큰 수, 생성 속도, 점수 근거, 실패 사례, 모델별 성공 수/전체 시도 수, 지표별 n을 기록합니다. 원본 결과는 JSON/CSV/JSONL 등 다시 읽을 수 있는 형식으로 저장합니다.
+	</details>
+	<details>
+	<summary>4. Local LLM vs Cloud API 비교</summary>
+		품질, 비용, 속도, 보안, 인프라, 운영 난이도, 커스터마이징 가능성을 비교합니다.
+	</details>
+	<details>
+	<summary>5. 최종 Model Selection Report</summary>
+		요구사항 → 평가 항목 → 실험 기록 → 선택·탈락 이유를 연결합니다. 작은 평가셋과 제한된 장비에서 얻은 결과라는 한계, 개선이 필요한 실패 사례, Local–Cloud 운영 방식 권고를 포함합니다.
+	</details>
+# 8️⃣ 필수 완료 기준과 평가표 {toggle="true"}
+	<page url="https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820">프로젝트 수행 평가표 </page>
+	<callout icon="✅">
+		- [ ] 사용 사례와 모델 요구사항, 로컬 후보 2개의 정보·출처·실행 조건을 정의했습니다.
+		- [ ] 고정 질문 10개를 로컬 모델 2개에 각각 2회 적용하고 원본 응답·측정값·실패 기록을 저장했습니다.
+		- [ ] 동일 품질 기준으로 평가하고 점수 근거·대표 실패 사례를 설명했습니다. 평균과 성공 수/전체 시도 수, 지표별 n을 표시했습니다.
+		- [ ] Cloud 모델 1개에 공통 질문 5개를 적용하고 응답·측정값·토큰 사용량·비용을 기록했습니다.
+		- [ ] 필수 통과 조건과 선호 우선순위에 따라 최종 로컬 모델 1개를 선정했습니다.
+		- [ ] GitHub 저장소와 README를 정리하고 재실행 결과를 확인했습니다.
+	</callout>
+	<span underline="true">**요구사항 평가표**</span> 
+	<table fit-page-width="true" header-row="true">
+<tr>
+<td>요구사항</td>
+<td>수행할 작업</td>
+<td>완료 기준·확인할 증빙</td>
+<td>평가 관점</td>
+</tr>
+<tr>
+<td>1. 문제·요구사항 정의</td>
+<td>사용 사례, 필수 통과 조건, 선호 우선순위를 실험 전에 정합니다.</td>
+<td>사용자·태스크·제약조건·확인 방법·우선순위를 설명할 수 있습니다.</td>
+<td>모델 선정 기준이 실험 전에 명확한가</td>
+</tr>
+<tr>
+<td>2. 후보 모델 조사</td>
+<td>서로 다른 로컬 후보 2개의 특성과 실행 가능 조건을 조사합니다.</td>
+<td>Model Card/License 출처, 모델 크기·Context·양자화, 태그·식별값, 선정 이유가 있습니다.</td>
+<td>Use Case와 실행 환경에 맞는 서로 다른 후보를 선정했는가</td>
+</tr>
+<tr>
+<td>3. 실행 환경·기록 확인</td>
+<td>두 후보를 Python으로 호출하고 결과를 파일에 저장합니다.</td>
+<td>기본 응답, 버전·장비·설정 정보, 원본 기록을 확인할 수 있습니다.</td>
+<td>실제 환경에서 재현 가능하게 실행했는가</td>
+</tr>
+<tr>
+<td>4. 평가 질문·기준 확정</td>
+<td>질문 10개, 기대 결과·채점 기준, Cloud용 5문항을 미리 정합니다.</td>
+<td>질문 ID·입력·기대 결과·정상/경계/정보 부족 사례와 동일 조건 기준이 있습니다.</td>
+<td>모델마다 공정한 비교 조건을 통제했는가</td>
+</tr>
+<tr>
+<td>5. 로컬 비교 실험</td>
+<td>모델 2개 × 질문 10개 × 각 2회를 실행하고 워밍업과 구분합니다.</td>
+<td>40회의 응답·설정·성공·오류, 시간·토큰·속도·VRAM과 호출 성공 수·전체 시도 수·지표별 n이 있습니다.</td>
+<td>필수 반복 횟수와 동일 조건을 지키고 실패도 기록했는가</td>
+</tr>
+<tr>
+<td>6. 품질 평가·해석</td>
+<td>원본 응답을 동일 기준으로 채점하고 성공·실패 사례를 분석합니다.</td>
+<td>점수 근거가 응답 부분과 연결되고 평균·집계 응답 수를 확인할 수 있습니다.</td>
+<td>점수와 원본 응답 근거·한계를 함께 설명했는가</td>
+</tr>
+<tr>
+<td>7. Local–Cloud 비교</td>
+<td>Cloud 모델 1개에 공통 질문 5개를 각 1회 적용합니다.</td>
+<td>응답·상태·시간·토큰·비용·품질과 반복 수 차이, 실측·운영 분석 구분이 있습니다.</td>
+<td>품질·비용·보안·운영·인프라·커스터마이징을 비교했는가</td>
+</tr>
+<tr>
+<td>8. 최종 선정·발표</td>
+<td>필수 조건과 우선순위에 따라 로컬 후보 1개를 선정합니다.</td>
+<td>선택·탈락 이유가 요구사항·실험 근거·한계·운영 권고와 연결됩니다.</td>
+<td>요구사항과 실측 근거를 연결해 합리적으로 결정했는가</td>
+</tr>
+<tr>
+<td>9. 제출·재실행 확인</td>
+<td>저장소 하나에 코드·환경·질문·원본 기록·비교표·선정 근거를 모읍니다.</td>
+<td>README의 실행 방법·자료 위치와 개인 또는 팀 재실행 기록을 확인할 수 있습니다.</td>
+<td>제3자가 실험 흐름과 결과를 이해·재현할 수 있는가</td>
+</tr>
+	</table>
+	평가에서는 필수 실험의 수행 기록과 해석 근거를 확인합니다. 답변 품질이 낮다는 이유만으로 미수행으로 판정하지 않으며, 실제 결과·실패·한계를 어떻게 설명했는지 살펴봅니다. 선택 실습은 필수 항목에 포함하지 않습니다.
+	<empty-block/>
+	<span underline="true">**역할별 수행 체크리스트**</span>
+	<table header-row="true">
+	<colgroup>
+	<col width="67.99999237060547">
+	<col>
+	<col width="331.99998474121094">
+	</colgroup>
+<tr>
+<td>No.</td>
+<td>역할</td>
+<td>수행 충족도 평가 문항</td>
+</tr>
+<tr>
+<td>1</td>
+<td>프로젝트 리드·요구사항 담당</td>
+<td>서비스 Use Case, 사용자, 입력·출력, 사용 환경을 팀이 이해할 수 있도록 문서화했는가?</td>
+</tr>
+<tr>
+<td>2</td>
+<td>프로젝트 리드·요구사항 담당</td>
+<td>한국어 품질, 속도, 보안, 비용, GPU 제약의 우선순위와 필수 통과 조건을 실험 전에 합의했는가?</td>
+</tr>
+<tr>
+<td>3</td>
+<td>프로젝트 리드·요구사항 담당</td>
+<td>평가 질문, 품질 루브릭, 최종 모델 선정 기준을 팀원과 함께 확정하고 변경 사항을 기록했는가?</td>
+</tr>
+<tr>
+<td>4</td>
+<td>프로젝트 리드·요구사항 담당</td>
+<td>필수 조건과 실험 결과를 근거로 최종 로컬 모델을 선정하고, 선정·탈락 사유와 실험 한계를 설명했는가?</td>
+</tr>
+<tr>
+<td>5</td>
+<td>모델 리서치·환경 담당</td>
+<td>서로 다른 로컬 모델 후보 2개의 Model Card, License, 실행 조건과 선정 이유를 조사·기록했는가?</td>
+</tr>
+<tr>
+<td>6</td>
+<td>모델 리서치·환경 담당</td>
+<td>각 후보의 모델명, 양자화 수준, 실제 실행 태그·digest, Context Length를 구분하여 기록했는가?</td>
+</tr>
+<tr>
+<td>7</td>
+<td>모델 리서치·환경 담당</td>
+<td>후보 모델 2개를 CLI와 Python에서 모두 실행하고, 재현에 필요한 환경 정보를 기록했는가?</td>
+</tr>
+<tr>
+<td>8</td>
+<td>모델 리서치·환경 담당</td>
+<td>Python·Ollama·주요 라이브러리 버전, 시스템 RAM, GPU·VRAM 정보를 기록하고 API 키가 코드·로그에 포함되지 않도록 관리했는가?</td>
+</tr>
+<tr>
+<td>9</td>
+<td>실험·성능 측정 담당</td>
+<td>모든 모델에 동일한 질문, 시스템 지시문, 출력 한도, 생성 설정을 적용하고 해당 조건을 결과 파일에 기록했는가?</td>
+</tr>
+<tr>
+<td>10</td>
+<td>실험·성능 측정 담당</td>
+<td>모델 A/B 각각에 질문 10개를 2회씩 실행하여 총 40회의 로컬 본 실험 결과를 저장했는가?</td>
+</tr>
+<tr>
+<td>11</td>
+<td>실험·성능 측정 담당</td>
+<td>워밍업, 성공·오류·재시도 상태와 모든 원본 응답을 구분하여 기록했는가?</td>
+</tr>
+<tr>
+<td>12</td>
+<td>실험·성능 측정 담당</td>
+<td>응답 시간, 로딩 시간, 생성 속도, VRAM 등 성능 지표를 수집하고, 측정 불가 항목은 사유를 기록했는가?</td>
+</tr>
+<tr>
+<td>13</td>
+<td>실험·성능 측정 담당</td>
+<td>Cloud 모델에 공통 질문 5개를 적용하고 응답·상태·시간·토큰·비용을 기록했는가?</td>
+</tr>
+<tr>
+<td>14</td>
+<td>품질 평가·문서화 담당</td>
+<td>질문별 기대 결과 또는 확인 항목을 정의하고, 동일 루브릭으로 모든 응답을 평가했는가?</td>
+</tr>
+<tr>
+<td>15</td>
+<td>품질 평가·문서화 담당</td>
+<td>모델별 품질 평균, 사용 응답 수(n), 성공 수/전체 시도 수를 계산하고 점수 근거를 남겼는가?</td>
+</tr>
+<tr>
+<td>16</td>
+<td>품질 평가·문서화 담당</td>
+<td>대표 성공·실패 사례를 제시하고, 실패 원인이 모델·프롬프트·환경·측정 중 어디에 있는지 구분해 해석했는가?</td>
+</tr>
+<tr>
+<td>17</td>
+<td>품질 평가·문서화 담당</td>
+<td>README에 목적, 실행 환경, 실행 방법, 결과 파일 위치, 재실행 방법과 팀원별 기여를 정리했는가?</td>
+</tr>
+<tr>
+<td>18</td>
+<td>품질 평가·문서화 담당</td>
+<td>코드·환경 설정·질문 세트·원본 결과·비교표·최종 보고서를 저장소에 정리하고, 민감 정보가 포함되지 않았음을 확인했는가?</td>
+</tr>
+	</table>
+# 9️⃣ 참고 및 주의사항 {toggle="true"}
+	<details>
+	<summary>실험 기록·해석 주의</summary>
+		- 다른 PC의 절대 속도를 합쳐 모델 순위를 매기지 않습니다.
+		- 모델마다 같은 PC·같은 실행 조건을 사용합니다.
+		- `ollama ps`의 PROCESSOR는 CPU/GPU 적재 상태이며 GPU 이용률이나 VRAM 용량 자체가 아닙니다.
+		- `size_vram`은 측정 시점의 값이며 별도 측정 없이 최대 VRAM이라고 표시하지 않습니다.
+		- 실패한 회차, 측정 누락, 재시도 성공 결과를 구분해 원본 기록을 남깁니다.
+		- AI가 생성한 예시 결과를 실제 실행 결과로 제출하지 않습니다.
+	</details>
+	<details>
+	<summary>보안 및 API 키 주의</summary>
+		API 키를 코드 파일, 저장소, 실험 로그, 스크린샷에 포함하지 않습니다. 공개·가상 데이터만 사용하고 실제 사용량과 추정 비용을 구분합니다.
+	</details>
+<empty-block/>
+<mention-page url="https://app.notion.com/p/3912dc3ef51480f59e12d15c2df709c7"/> 
+<mention-page url="https://app.notion.com/p/3da2dc3ef51480208e3df7146f6f1a38"/> 
+<empty-block/>
+</content>
+</page>
