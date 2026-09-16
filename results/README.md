@@ -2,13 +2,22 @@
 
 | 경로 | 용도 | 본 실험 집계 |
 | --- | --- | --- |
-| `benchmark/` | 고정 설정으로 수행하는 본 평가 | 포함 |
+| `benchmark/` | 고정 설정으로 수행하는 본 평가 | 아래 진단 예외를 제외하고 포함 |
+| `pilot/reasoning_block/` | Reasoning 종료 메시지 추가 후 Tomahawk 진단 | 제외 |
 | [pilot/6144](pilot/6144/) | 출력 한도 6144에서 중단한 초기 benchmark 8회 | 제외 |
 | [calibration/stress](calibration/stress/) | 생성 한도 결정용 스트레스 실행 | 제외 |
 | [diagnostics/struktura](diagnostics/struktura/) | WA 원인을 확인하기 위한 수동 코드 수정본 | 제외 |
 | [archive/legacy-runs](archive/legacy-runs/) | 초기 연결·Ollama 실습·benchmark 개발 과정의 timestamp 결과 | 제외 |
 
-본 평가 결과는 `benchmark/round_<라운드>/<문제>/<모델>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 로컬 요청 설정은 출력 8192·reasoning 2048·temperature 0이며 서버 셸 Context는 12288이다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
+## Reasoning 진단의 이동과 집계 예외
+
+처음 `benchmark/round_1/tomahawk/qwen36/`에서 확인한 run `20260916_124351_312419`는 reasoning 종료 메시지 추가 후 진단이다. `experiment.type=benchmark`로 저장돼 있어도 **본 실험 40회·품질·성능 집계에서 제외한다**. 결과는 `stop`·completion 3703·코드 생성·`RE`이며 [진단 기록](../docs/reasoning-budget-diagnostic.md)에 근거를 남겼다.
+
+문서 검증 중 `pilot/reasoning_block/tomahawk/qwen36/`로 이동된 것을 확인했다. 실행기는 같은 경로의 완료 결과를 건너뛰므로 이 진단을 원래 benchmark 경로에 다시 두면 정식 요청이 건너뛰어진다. 경로 분리는 확인했으며 요청 설정 기록 보완은 남아 있다. 이번 문서 작업에서는 이동·삭제·JSON 수정을 하지 않았다. 이 예외는 run ID로 식별하며 동일 문제의 다른 실행으로 확대하지 않는다.
+
+## 기록과 집계 원칙
+
+본 평가 결과는 `benchmark/round_<라운드>/<문제>/<모델>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 로컬 요청 설정은 출력 8192·reasoning 2048·temperature 0이며 서버 셸 Context는 12288이다. 현재 작업 트리의 공통 요청에는 [종료 메시지](../docs/reasoning-budget-diagnostic.md)도 있지만 benchmark JSON에 해당 설정은 아직 기록되지 않는다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
 
 `response.json`은 원본 응답, `candidate.py`는 추출 코드, `result.json`은 설정·응답·판정 기록이다. 코드가 없으면 `candidate.py`가 없을 수 있다. 초기 보관 기록은 파일명과 스키마가 다를 수 있다.
 

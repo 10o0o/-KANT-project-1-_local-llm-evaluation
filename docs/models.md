@@ -47,7 +47,7 @@ PARAMETER num_ctx 4096
 
 ## llama.cpp 실행 산출물 식별
 
-자동 환경 기록은 제거했다. 현재 GGUF 경로·바이트 크기, 실행 도구 버전·설정의 확인 근거와 미확인 항목은 [실행 환경](environment.md)에 정리했다. GGUF 해시와 내부 양자화 메타데이터, 실제 적재 상태는 미확인이다. 과거 Ollama digest를 새 GGUF 식별값으로 재사용하지 않는다. 조사표의 파일 크기는 배포 문서상 값을 유지한다.
+자동 환경 기록은 제거했다. 현재 GGUF 경로·바이트 크기, 실행 도구 버전·설정의 확인 근거와 미확인 항목은 [실행 환경](environment.md)에 정리했다. Qwen 내부 메타데이터·Context·혼합 적재는 첨부 로그 인용 근거로, Gemma 내부 메타데이터는 직접 확인한 근거로 구분했다. Gemma 실제 적재 상태와 두 GGUF 해시는 미확인이다. 공통 요청의 [reasoning 종료 메시지 진단](reasoning-budget-diagnostic.md)은 모델 품질 평가와 구분한다. 과거 Ollama digest를 새 GGUF 식별값으로 재사용하지 않는다. 조사표의 파일 크기는 배포 문서상 값을 유지한다.
 
 ## 제외 이력: HyperCLOVA
 
