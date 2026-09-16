@@ -4,6 +4,12 @@ from pathlib import Path
 from time import perf_counter
 
 from llm_eval.benchmark.prompts import build_round1_prompt
+from llm_eval.benchmark.utils import (
+    build_failure_record,
+    build_success_record,
+    print_benchmark_result,
+    print_benchmark_run,
+)
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
 from llm_eval.llama_cpp import chat
@@ -67,23 +73,15 @@ def run_problem(
     statement = statement_path.read_text(encoding="utf-8")
 
     prompt = build_round1_prompt(statement)
+    print_benchmark_run(
+        round_number, model, problem, TEMPERATURE, MAX_TOKENS, REASONING_BUDGET_TOKENS
+    )
 
-    print("===== Benchmark Run =====")
-    print("round:", round_number)
-    print("model:", model)
-    print("problem:", problem["id"])
-    print("temperature:", TEMPERATURE)
-    print("max_tokens:", MAX_TOKENS)
-    print("reasoning_budget_tokens:", REASONING_BUDGET_TOKENS)
-    print()
-
-    print("문제 요청...")
-
-    response_start = perf_counter()
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     result_dir.mkdir(parents=True, exist_ok=False)
     response_path = result_dir / "response.json"
     result_path = result_dir / "result.json"
+    response_start = perf_counter()
 
     try:
         response = chat(
@@ -99,56 +97,19 @@ def run_problem(
         print("호출 실패:", type(exc).__name__)
         print("실패까지 걸린 시간:", response_elapsed)
 
-        failure_record = {
-            "run_id": run_id,
-            "experiment": {
-                "type": "benchmark",
-                "round": round_number,
-            },
-            "model": {
-                "id": model,
-                "name": model,
-                "runtime": "llama.cpp",
-            },
-            "problem": {
-                "id": problem["id"],
-                "name": problem["name"],
-                "title": problem["title"],
-                "difficulty": problem["difficulty"],
-                "time_limit_seconds": time_limit_seconds,
-                "memory_limit_mib": problem["memory_limit_mib"],
-                "judge_type": problem["judge_type"],
-            },
-            "request": {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-            },
-            "generation_config": {
-                "temperature": TEMPERATURE,
-                "max_tokens": MAX_TOKENS,
-                "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
-            },
-            "call": {
-                "status": "error",
-                "error": {
-                    "type": type(exc).__name__,
-                    "message": str(exc),
-                },
-            },
-            "generation": None,
-            "metrics": {
-                "response_elapsed_seconds": response_elapsed,
-                "prompt_tokens": None,
-                "completion_tokens": None,
-                "generation_tokens_per_second": None,
-            },
-            "extracted_code": None,
-            "judge": None,
-        }
+        failure_record = build_failure_record(
+            run_id,
+            round_number,
+            model,
+            problem,
+            time_limit_seconds,
+            prompt,
+            TEMPERATURE,
+            MAX_TOKENS,
+            REASONING_BUDGET_TOKENS,
+            response_elapsed,
+            exc,
+        )
 
         result_path.write_text(
             json.dumps(
@@ -162,7 +123,6 @@ def run_problem(
         raise
 
     response_elapsed = perf_counter() - response_start
-
     response_data = response.model_dump()
 
     choice = response_data["choices"][0]
@@ -206,59 +166,25 @@ def run_problem(
     usage = response_data.get("usage") or {}
     timings = response_data.get("timings") or {}
 
-    record = {
-        "run_id": run_id,
-        "experiment": {
-            "type": "benchmark",
-            "round": round_number,
-        },
-        "model": {
-            "id": model,
-            "name": model,
-            "runtime": "llama.cpp",
-        },
-        "problem": {
-            "id": problem["id"],
-            "name": problem["name"],
-            "title": problem["title"],
-            "difficulty": problem["difficulty"],
-            "time_limit_seconds": time_limit_seconds,
-            "memory_limit_mib": problem["memory_limit_mib"],
-            "judge_type": problem["judge_type"],
-        },
-        "request": {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ]
-        },
-        "generation_config": {
-            "temperature": TEMPERATURE,
-            "max_tokens": MAX_TOKENS,
-            "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
-        },
-        "call": {
-            "status": "success",
-            "error": None,
-        },
-        "generation": {
-            "finish_reason": choice["finish_reason"],
-            "content": response_text,
-            "reasoning_content": reasoning_text,
-            "usage": usage,
-            "timings": timings,
-        },
-        "metrics": {
-            "response_elapsed_seconds": response_elapsed,
-            "prompt_tokens": usage.get("prompt_tokens"),
-            "completion_tokens": usage.get("completion_tokens"),
-            "generation_tokens_per_second": timings.get("predicted_per_second"),
-        },
-        "extracted_code": code,
-        "judge": judge_result,
-    }
+    record = build_success_record(
+        run_id=run_id,
+        round_number=round_number,
+        model=model,
+        problem=problem,
+        time_limit_seconds=time_limit_seconds,
+        prompt=prompt,
+        temperature=TEMPERATURE,
+        max_tokens=MAX_TOKENS,
+        reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
+        response_elapsed=response_elapsed,
+        choice=choice,
+        response_text=response_text,
+        reasoning_text=reasoning_text,
+        usage=usage,
+        timings=timings,
+        code=code,
+        judge_result=judge_result,
+    )
 
     with open(result_path, "w", encoding="utf-8") as f:
         json.dump(
@@ -269,25 +195,15 @@ def run_problem(
             default=str,
         )
 
-    print()
-    print("===== Result =====")
-    print("run_id:", run_id)
-    print("round:", round_number)
-    print("model:", model)
-    print("problem:", problem["id"])
-    print("finish_reason:", choice["finish_reason"])
-    print("completion_tokens:", usage.get("completion_tokens"))
-    print(
-        "generation_tokens_per_second:",
-        timings.get("predicted_per_second"),
+    print_benchmark_result(
+        run_id=run_id,
+        round_number=round_number,
+        model=model,
+        problem=problem,
+        choice=choice,
+        usage=usage,
+        timings=timings,
+        code=code,
+        judge_result=judge_result,
+        result_dir=result_dir,
     )
-    print("has_code:", code is not None)
-    print("judge:", judge_result["status"])
-    print(
-        "passed:",
-        judge_result["passed_cases"],
-        "/",
-        judge_result["total_cases"],
-    )
-    print("max_case_seconds:", judge_result["max_case_seconds"])
-    print("saved:", result_dir)
