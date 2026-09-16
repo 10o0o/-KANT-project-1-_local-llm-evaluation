@@ -63,7 +63,7 @@ Qwen:
 ```bash
 LLAMA_ROOT=/path/to/llama.cpp \
 QWEN36_MODEL_PATH=/path/to/qwen36/model.gguf \
-bash configs/llama.cpp/qwen36-moe-lowvram.sh
+bash configs/llama.cpp/qwen36.sh
 ```
 
 두 서버는 모두 `127.0.0.1:8080`을 사용합니다. 모델을 바꿀 때는 실행 중인 서버를 종료한 뒤 다른 서버를 시작합니다. 서버의 모델 로딩이 끝난 후 문제 실행기를 호출합니다.

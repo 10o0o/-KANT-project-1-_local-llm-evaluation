@@ -18,5 +18,4 @@ data/coci/**/*.zip
 data/coci/**/*.pdf
 data/coci/**/testdata/
 
-tmp/
 *.tmp
