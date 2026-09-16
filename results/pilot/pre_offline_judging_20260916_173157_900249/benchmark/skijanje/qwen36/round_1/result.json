@@ -1,0 +1,83 @@
+{
+  "run_id": "20260916_171509_061520",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_skijanje",
+    "name": "skijanje",
+    "title": "Skijanje",
+    "difficulty": 9,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nSkier Mia spent a day at an unusual ski resort. The resort consists of $n$ apres-ski locations (hereafter: apres) connected by slopes such that they form a connected tree rooted at the apres labeled 1. Each slope is directed from the apres with a smaller number to the apres with a larger number.\n\nThe tree is defined as follows: for each apres $i>1$, it is known from which apres $p_i$ ($p_i<i$) one arrives at it, i.e., its parent in the tree is known. This uniquely determines all slopes (slope $i$ leads to the apres labeled $i$).\n\nDuring the day, Mia skied each slope exactly once and for each slope remembered its fun factor $z_i$ and speed $b_i$.\n\nAt the end of the day, Mia wants to ski down once more. Since Mia is very tired from skiing all day, she will choose a run consisting of at most $k$ consecutive slopes. The run must follow the direction of the slopes (from apres with smaller numbers to those with larger numbers). After finishing the run, a helicopter will pick her up and take her home.\n\nFor any chosen run, we define its hecticness as follows. Let:\n\n- $z_{\\mathrm{first}}$ be the fun factor of the first slope in the run\n- $z_{\\mathrm{last}}$ be the fun factor of the last slope in the run\n- $b_i$ be the speeds of all slopes in that run\n\nThen the hecticness of the run is: $z_{\\mathrm{last}} \\cdot (z_{\\mathrm{last}} + \\sum b_i) + z_{\\mathrm{first}}^2$. In the case $k=1$, the formula remains unchanged, and $first=last$ holds.\n\nYour task is to determine the maximum hecticness of a run that Mia can ski.\n\n## Input\n\nThe first line contains natural numbers $n,k$ ($1 \\le k \\le n \\le 3 \\cdot 10^5$), as described in the problem statement.\n\nThe second line contains $n-1$ integers, where the $i$-th number represents from which apres one can reach the apres labeled $i+1$ ($1 \\le p_i \\le i$).\n\nThe third line contains $n-1$ integers, where the $i$-th number represents the fun factor of the $(i+1)$-th slope ($1 \\le z_i \\le 10^5$).\n\nThe fourth line contains $n-1$ integers, where the $i$-th number represents the speed of the $(i+1)$-th slope ($-10^5 \\le b_i \\le 10^5$).\n\n## Output\n\nIn the first and only line, output a single number - the maximum hecticness of a run that Mia can ski.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n5 1\n1 2 2 1\n5 4 8 7\n6 3 9 3\n```\n\nOutput\n\n```text\n200\n```\n\n### Example 2\n\nInput\n\n```text\n9 2\n1 2 1 1 4 3 6 5\n1 3 7 8 4 1 8 2\n1 -7 -1 -6 3 8 -1 6\n```\n\nOutput\n\n```text\n120\n```\n\n### Clarification of the first example:\n\nSince $k=1$, it follows that the maximum hecticness of a run is equal to the maximum hecticness among the individual slopes. The slopes have hecticness values of 80, 44, 200, and119. The maximum hecticness is 200."
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 61440,
+    "reasoning_budget_tokens": 53248,
+    "cache_prompt": false,
+    "reasoning_budget_message": "Considering the limited time by the user, I have to give the solution based on the thinking directly now."
+  },
+  "call": {
+    "status": "error",
+    "error": {
+      "type": "APIConnectionError",
+      "message": "Connection error."
+    }
+  },
+  "generation": null,
+  "metrics": {
+    "response_elapsed_seconds": 933.2570889849994,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Missing, invalid or non-positive timings.predicted_ms",
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": "usage.prompt_tokens unavailable",
+    "completion_tokens_reason": "usage.completion_tokens unavailable",
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T08:30:42.357743+00:00",
+      "phase": "call_error",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "No matching server PID in nvidia-smi; WSL may not expose process memory or matching PIDs",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": null
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 431.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": null,
+  "judge": null
+}

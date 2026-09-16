@@ -1,0 +1,986 @@
+{
+  "run_id": "20260916_073130_865719Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_dzeparac",
+    "name": "dzeparac",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 4,
+    "difficulty_reason": "돈을 나누는 방법을 양의 정수의 순서 있는 분할로 해석해 2의 거듭제곱 형태를 도출하고, 전체 합을 등비수열로 정리한 뒤 큰 지수에 대해 모듈러 빠른 거듭제곱을 사용해야 한다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/dzeparac",
+    "statement_path": "data/coci/2025_2026/contest6/statements/dzeparac.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Džeparac"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nMother Antonija has earned $N$ euros and must spend all of it as soon as possible. She may keep a portion of the money for herself, but the remaining amount must be equally distributed to her two sons over several days.\n\nFirst, she chooses a non-negative integer $k$ ($0 \\le k \\le N$) to keep for herself. The remaining amount of $N-k$ euros is then distributed to the sons over $d$ days.\n\nMother Antonija may also choose not to distribute anything to her sons, which corresponds to the case when $N=k$ and $d=0$.\n\nIf the money is distributed, it is done so that each day both sons receive the same amount of money. If one son receives $x$ euros on a given day, the other son also receives $x$ euros, where $x$ must be a positive integer. In total, each son must receive the same total amount of money.\n\nTwo distributions are considered different if at least one of the following holds:\n\n- the chosen amount $k$ is different\n- the number of days $d$ is different\n- there exists at least one day on which the amounts received by the sons differ (i.e., the sequence of daily payments is not identical).\n\nYour task is to determine the number of different ways in which the mother can distribute the money. Since the number of ways can be very large, output the result modulo $10^9+7$.\n\n## Input\n\nThe first line contains a natural number $n$ ($1 \\le n \\le 10^{18}$), the number from the problem statement.\n\n## Output\n\nPrint a single number - the number of ways in which mother Antonija can distribute the money.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 2\n\nInput\n\n```text\n5\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 3\n\nInput\n\n```text\n793\n```\n\nOutput\n\n```text\n137435472\n```\n\n### Clarification of the first example:\n\nWe consider all possible values of the number $k$:\n\n$k=4 \\to$ the mother keeps all the money, so the only distribution is the one where the sons receive no money.\n\n$k=2 \\to$ 2 euros remain to be distributed to the sons. The only valid distribution is $d=1$, where each son receives 1 euro.\n\n$k=0 \\to$ 4 euros remain to be distributed to the sons. There are two valid distributions:\n\n- $d=1 \\to$ each son receives 2 euros\n- $d=2 \\to$ each day, each son receives 1 euro\n\n$k=1$ and $k=3 \\to$ there is no way to divide the remaining amount so that both sons receive the same positive integer amount each day.\n\nIn total, there are $1+1+2=4$ different ways of distribution."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_079456e8beddeead016aaa45d305f887d0b1f7cbc70c1f35c0",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 해결 방법\n\n남은 돈을 아들에게 나누어 주는 경우를 생각합니다.\n\n하루에 각 아들이 받는 금액을 \\(x_i\\)라 하면, 모든 \\(x_i\\)는 양의 정수이고 전체 금액은\n\n\\[\n2(x_1+x_2+\\cdots+x_d)\n\\]\n\n입니다. 따라서 남은 금액은 반드시 짝수여야 합니다.\n\n각 아들이 전체적으로 받는 금액을 \\(S\\)라고 하면:\n\n- 어머니가 가지는 금액은 \\(k=N-2S\\)\n- \\(S\\ge 1\\)\n- 하루별 지급액의 순서는 양의 정수 \\(S\\)를 여러 양의 정수의 합으로 나타내는 방법, 즉 \\(S\\)의 조합(composition)에 해당합니다.\n\n양의 정수 \\(S\\)의 조합 개수는 \\(2^{S-1}\\)개입니다.\n\n또한 아무것도 나누어 주지 않는 경우 \\(S=0\\)도 1가지 존재합니다. 따라서 \\(m=\\lfloor N/2\\rfloor\\)라 하면 전체 경우의 수는\n\n\\[\n1+\\sum_{S=1}^{m}2^{S-1}\n=1+(2^m-1)\n=2^m\n\\]\n\n입니다.\n\n따라서 정답은\n\n\\[\n2^{\\lfloor N/2\\rfloor}\\pmod{10^9+7}\n\\]\n\n입니다.\n\n### 복잡도\n\n- 시간 복잡도: \\(O(\\log N)\\)\n- 공간 복잡도: \\(O(1)\\)\n\n```python\nimport sys\n\nMOD = 10**9 + 7\nn = int(sys.stdin.buffer.readline())\n\nprint(pow(2, n // 2, MOD))\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 812,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 907,
+      "output_tokens_details": {
+        "reasoning_tokens": 516
+      },
+      "total_tokens": 1719
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 9.140579204002279,
+    "prompt_tokens": 812,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 907,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 516,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0012508,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 812,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 907
+      }
+    }
+  },
+  "extracted_code": "import sys\n\nMOD = 10**9 + 7\nn = int(sys.stdin.buffer.readline())\n\nprint(pow(2, n // 2, MOD))",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 104,
+    "total_cases": 104,
+    "max_case_seconds": 0.019362086000910494,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01312862899794709,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012764782997692237,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012717670997517416,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012265870998817263,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01383225699828472,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017019294999045087,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013805517999571748,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011258509999606758,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013200899000366917,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01253691300007631,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011115876000985736,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014281375999416923,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011249301001953427,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012902826998470118,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012194702001579572,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01145623299817089,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014006788002006942,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014269849998527206,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011718116998963524,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.019362086000910494,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015222897000057856,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012386941001750529,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012403253000229597,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01267685499988147,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010465671999554615,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012490412998886313,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01410913099971367,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010987386998749571,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015225154002109775,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013017731998843374,
+        "return_code": 0,
+        "stdout": "560523804\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012680649000685662,
+        "return_code": 0,
+        "stdout": "16777216\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010004924999520881,
+        "return_code": 0,
+        "stdout": "562080146\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012759070999891264,
+        "return_code": 0,
+        "stdout": "421709488\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012557928999740398,
+        "return_code": 0,
+        "stdout": "190350546\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014905959000316216,
+        "return_code": 0,
+        "stdout": "957494261\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011107152000477072,
+        "return_code": 0,
+        "stdout": "539480341\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013863765001588035,
+        "return_code": 0,
+        "stdout": "536870912\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011734761999832699,
+        "return_code": 0,
+        "stdout": "164688009\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011145111999212531,
+        "return_code": 0,
+        "stdout": "422922539\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01240235699879122,
+        "return_code": 0,
+        "stdout": "918957746\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012657989998842822,
+        "return_code": 0,
+        "stdout": "803796174\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015047613000206184,
+        "return_code": 0,
+        "stdout": "721477393\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01124977899962687,
+        "return_code": 0,
+        "stdout": "884119779\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011955621997913113,
+        "return_code": 0,
+        "stdout": "928968775\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011999188001937,
+        "return_code": 0,
+        "stdout": "941778035\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014503708000120241,
+        "return_code": 0,
+        "stdout": "433510734\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016441624997241888,
+        "return_code": 0,
+        "stdout": "8388608\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014078760999836959,
+        "return_code": 0,
+        "stdout": "685425692\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01779913999780547,
+        "return_code": 0,
+        "stdout": "850767097\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01572742099961033,
+        "return_code": 0,
+        "stdout": "372663667\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01630484300039825,
+        "return_code": 0,
+        "stdout": "494186807\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014060077999602072,
+        "return_code": 0,
+        "stdout": "755810045\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013552017000620253,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012098500999854878,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016193005001696292,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015389685999252833,
+        "return_code": 0,
+        "stdout": "354261260\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013383601999521488,
+        "return_code": 0,
+        "stdout": "84321226\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012259550996532198,
+        "return_code": 0,
+        "stdout": "328003509\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012386620001052506,
+        "return_code": 0,
+        "stdout": "508033869\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012179227000160608,
+        "return_code": 0,
+        "stdout": "533276192\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011432316001446452,
+        "return_code": 0,
+        "stdout": "61746838\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013781466001091758,
+        "return_code": 0,
+        "stdout": "809663752\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011693000000377651,
+        "return_code": 0,
+        "stdout": "685491149\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01148003699927358,
+        "return_code": 0,
+        "stdout": "650791348\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011909713000932243,
+        "return_code": 0,
+        "stdout": "230396504\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012711079998553032,
+        "return_code": 0,
+        "stdout": "949391\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011850708000565646,
+        "return_code": 0,
+        "stdout": "610583517\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012200080000184244,
+        "return_code": 0,
+        "stdout": "602191206\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01180445599675295,
+        "return_code": 0,
+        "stdout": "377039766\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01371204899987788,
+        "return_code": 0,
+        "stdout": "878340792\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01236107600198011,
+        "return_code": 0,
+        "stdout": "230396504\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01389002799987793,
+        "return_code": 0,
+        "stdout": "949391\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013565050001488999,
+        "return_code": 0,
+        "stdout": "610583517\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012574275999213569,
+        "return_code": 0,
+        "stdout": "134634018\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012574820000736509,
+        "return_code": 0,
+        "stdout": "778470901\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014033811999979662,
+        "return_code": 0,
+        "stdout": "411543888\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013852249998308253,
+        "return_code": 0,
+        "stdout": "164214333\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01348342299752403,
+        "return_code": 0,
+        "stdout": "743231571\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01433548099885229,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010901328001637012,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012976326001080452,
+        "return_code": 0,
+        "stdout": "137435472\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013696648999030003,
+        "return_code": 0,
+        "stdout": "17145937\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011367952000000514,
+        "return_code": 0,
+        "stdout": "785141416\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012065650000295136,
+        "return_code": 0,
+        "stdout": "148895240\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010888627999520395,
+        "return_code": 0,
+        "stdout": "790649499\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01015994400222553,
+        "return_code": 0,
+        "stdout": "595263919\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01597697900069761,
+        "return_code": 0,
+        "stdout": "598696141\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010544395001488738,
+        "return_code": 0,
+        "stdout": "905225583\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012662674002058338,
+        "return_code": 0,
+        "stdout": "298431581\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012000514998362632,
+        "return_code": 0,
+        "stdout": "314419793\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013797257997794077,
+        "return_code": 0,
+        "stdout": "543634523\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012064430000464199,
+        "return_code": 0,
+        "stdout": "944027743\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013045063999015838,
+        "return_code": 0,
+        "stdout": "251919394\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013972567998280283,
+        "return_code": 0,
+        "stdout": "658339092\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013643423000758048,
+        "return_code": 0,
+        "stdout": "881288095\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013827986000251258,
+        "return_code": 0,
+        "stdout": "804582781\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014456388998951297,
+        "return_code": 0,
+        "stdout": "242030990\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012969375999091426,
+        "return_code": 0,
+        "stdout": "173878525\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015974079000443453,
+        "return_code": 0,
+        "stdout": "528600580\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01266425400172011,
+        "return_code": 0,
+        "stdout": "501434488\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010724214000219945,
+        "return_code": 0,
+        "stdout": "806458284\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012550036997708958,
+        "return_code": 0,
+        "stdout": "82240201\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01411114000075031,
+        "return_code": 0,
+        "stdout": "53658989\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01433225999790011,
+        "return_code": 0,
+        "stdout": "88591109\n",
+        "stderr": "",
+        "test_case": "dzeparac.in.4z"
+      }
+    ]
+  },
+  "record_complete": true
+}

@@ -115,6 +115,8 @@ uv run python scripts/run_judge.py --problems all --models all --rounds all
 
 ## 결과 확인
 
+생성·채점 분리 후 새로 시작하기 위해 이전 benchmark 19건을 `results/pilot/pre_offline_judging_20260916_173157_900249/`로 보존했다. 기존 원본과 이동 검증 manifest는 유지하며 새 본 실험에서는 제외한다.
+
 로컬과 Cloud 모두 문제 → 모델 → 라운드 순서로 저장한다. 로컬은 `round_1`·`round_2`, Luna는 `round_1`만 사용한다. 제한 미제공 조건의 로컬 6회·Cloud 10회는 `results/pilot/pre_resource_limits_20260916_162603_416706/`에 원본 그대로 분리했고 새 집계에서 제외한다.
 
 

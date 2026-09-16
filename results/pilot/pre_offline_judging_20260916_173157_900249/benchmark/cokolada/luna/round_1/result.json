@@ -1,0 +1,754 @@
+{
+  "run_id": "20260916_073027_454898Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_cokolada",
+    "name": "cokolada",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 2,
+    "difficulty_reason": "인접한 두 행 또는 두 열 사이에 색이 다른 셀이 하나라도 존재하면 해당 경계를 반드시 잘라야 한다는 관찰로 환원된다. 전체 격자를 한 번 확인하면 해결할 수 있다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/cokolada",
+    "statement_path": "data/coci/2025_2026/contest6/statements/cokolada.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Čokolada"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nLuka loves chocolate. He is very excited to eat a large chocolate bar made of $n$ rows and $m$ columns he got for his birthday. The chocolate consists of black and white squares of chocolate. However, Luka doesn’t really like white chocolate and would only like to eat the black squares.\n\nBefore he starts eating, Luka will cut the chocolate. He will make a number of vertical and/or horizontal cuts in between the rows and the columns of the chocolate. A vertical cut goes from the top edge of the chocolate to the bottom edge, while a horizontal cut goes from the left edge to the right edge. After making the cuts, Luka will obtain several rectangular pieces of chocolate.\n\nSince Luka will only eat the black parts of the chocolate, he wants to completely seperate the black squares from the white squares. This means that every resulting piece must consist entirely of black chocolate or entirely of white chocolate.\n\nLuka would rather start eating as soon as possible instead of wasting time cutting so he asks you to help him determine the minimum number of cuts required to separate the black squares from the white squares.\n\n![Slika 1](images/cokolada-example-1.png)\n\nSlika 1: This is how the chocolate from the first example should be cut in order to separate the black parts from the white parts with minimum number of cuts\n\n## Input\n\nIn the first line, there are two natural numbers $n$ and $m$ ($1 \\le n,m \\le 200$), representing the number of rows and columns of the chocolate.\n\nEach of the following $n$ lines contains $m$ characters, each of which is either 0 or 1. The character 0 denotes a white square, and 1 denotes a black square.\n\n## Output\n\nIn the first and only line, output a single number - the minimum number of cuts required to separate the black squares from the white squares.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 7\n0000000\n0111000\n0111100\n0000000\n```\n\nOutput\n\n```text\n6\n```\n\n### Example 2\n\nInput\n\n```text\n4 5\n00000\n01100\n01100\n00000\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 3\n\nInput\n\n```text\n4 4\n0101\n1010\n0101\n1010\n```\n\nOutput\n\n```text\n6\n```\n\n### Clarification of the first example:\n\nExplained in the drawing.\n\n### Clarification of the second example:\n\nLuka should make a cut between the first and second row, third and fourth row, first and second column, and third and fourth column.\n\n### Clarification of the third example:\n\nLuka should make a cut between every two adjacent rows and columns - a total of 6 cuts."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_0714eef2fe33e0b8016aaa45939c7c87d0a14f8bf9bb6728c1",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 해결 방법\n\n인접한 두 행을 비교해 보겠습니다.\n\n- 두 행이 전체적으로 다르면, 두 행 사이에 반드시 수평 절단이 필요합니다.\n  - 어떤 열 `j`에서 값이 다르다고 하자.\n  - 두 행 사이를 자르지 않으면, 열 `j`를 포함하는 직사각형 조각 안에 서로 다른 색의 두 칸이 함께 들어가게 됩니다.\n- 따라서 서로 다른 인접 행 사이에는 반드시 절단해야 합니다.\n\n같은 이유로, 인접한 두 열이 전체적으로 다르면 그 사이에 반드시 수직 절단이 필요합니다.\n\n이제 다음 위치들에만 절단을 합니다.\n\n- 인접한 두 행이 다른 모든 위치\n- 인접한 두 열이 다른 모든 위치\n\n그러면 하나의 조각 안에 포함된 모든 행은 서로 동일하고, 모든 열도 서로 동일합니다. 따라서 조각 안의 모든 칸은 같은 값이 되어 조각 전체가 검은색 또는 흰색입니다.\n\n따라서 정답은 인접한 행 쌍 중 다른 쌍의 수와 인접한 열 쌍 중 다른 쌍의 수의 합입니다.\n\n### 정확성 증명\n\n서로 다른 인접 행 `i`, `i+1`이 있다고 하겠습니다. 어떤 열 `j`에서 두 행의 값이 다릅니다. 두 행 사이에 수평 절단이 없다면, 두 행은 같은 조각에 포함됩니다. 또한 열 `j`는 어떤 세로 조각에 포함되므로, 해당 조각에는 서로 다른 두 칸이 함께 들어갑니다. 따라서 조각을 단색으로 만들 수 없으므로 두 행 사이의 수평 절단은 반드시 필요합니다.\n\n인접 열에 대해서도 동일한 논리로, 서로 다른 인접 열 사이의 수직 절단은 반드시 필요합니다. 그러므로 이러한 절단들의 개수는 최솟값의 하한입니다.\n\n반대로 이 모든 위치에 절단을 하면, 각 조각에 포함된 행들은 모두 같은 행이고 열들도 모두 같은 열입니다. 따라서 조각 안의 임의의 두 칸은 같은 값을 가지며, 모든 조각은 단색입니다. 하한을 정확히 달성하므로 이 절단 개수가 최솟값입니다.\n\n### 복잡도\n\n- 시간 복잡도: `O(nm)`\n- 공간 복잡도: `O(nm)`\n\n```python\nimport sys\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n\n    n = int(data[0])\n    m = int(data[1])\n    grid = data[2:2 + n]\n\n    cuts = 0\n\n    # 서로 다른 인접 행 사이의 수평 절단\n    for i in range(n - 1):\n        if grid[i] != grid[i + 1]:\n            cuts += 1\n\n    # 서로 다른 인접 열 사이의 수직 절단\n    for j in range(m - 1):\n        for i in range(n):\n            if grid[i][j] != grid[i][j + 1]:\n                cuts += 1\n                break\n\n    print(cuts)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 773,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 6921,
+      "output_tokens_details": {
+        "reasoning_tokens": 6214
+      },
+      "total_tokens": 7694
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 62.217949321999185,
+    "prompt_tokens": 773,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 6921,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 6214,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0084598,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 773,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 6921
+      }
+    }
+  },
+  "extracted_code": "import sys\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n\n    n = int(data[0])\n    m = int(data[1])\n    grid = data[2:2 + n]\n\n    cuts = 0\n\n    # 서로 다른 인접 행 사이의 수평 절단\n    for i in range(n - 1):\n        if grid[i] != grid[i + 1]:\n            cuts += 1\n\n    # 서로 다른 인접 열 사이의 수직 절단\n    for j in range(m - 1):\n        for i in range(n):\n            if grid[i][j] != grid[i][j + 1]:\n                cuts += 1\n                break\n\n    print(cuts)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 75,
+    "total_cases": 75,
+    "max_case_seconds": 0.057366083998203976,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013796216000628192,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016079655000794446,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01504110299720196,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015715469999122433,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014470271002210211,
+        "return_code": 0,
+        "stdout": "199\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014406905997020658,
+        "return_code": 0,
+        "stdout": "199\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013248637998913182,
+        "return_code": 0,
+        "stdout": "5\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014057636002689833,
+        "return_code": 0,
+        "stdout": "397\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013439850001304876,
+        "return_code": 0,
+        "stdout": "141\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012533466000604676,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01582158200108097,
+        "return_code": 0,
+        "stdout": "309\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01277083500099252,
+        "return_code": 0,
+        "stdout": "166\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012617699001566507,
+        "return_code": 0,
+        "stdout": "6\n",
+        "stderr": "",
+        "test_case": "cokolada.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013179305999074131,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015484616000321694,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015712352000264218,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013239507999969646,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014346522999403533,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01065573899904848,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011522431999765104,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013049820998276118,
+        "return_code": 0,
+        "stdout": "10\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012810580999939702,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011952568998822244,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012122382999223191,
+        "return_code": 0,
+        "stdout": "17\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015867168000113452,
+        "return_code": 0,
+        "stdout": "11\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014335864998429315,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014918785000190837,
+        "return_code": 0,
+        "stdout": "25\n",
+        "stderr": "",
+        "test_case": "cokolada.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01568474599844194,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016744423999625724,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017297072998189833,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015775317999214167,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01405044399871258,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01381734700044035,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016497343000082765,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014567510999768274,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013955416998214787,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014941278997866903,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014356126001075609,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013375442998949438,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016381924000597792,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01553162100026384,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015387799001473468,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014063401002204046,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012494950002292171,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017074868999770842,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01629748499908601,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016667659001541324,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014225234001060016,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02264223600286641,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "cokolada.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017220928999449825,
+        "return_code": 0,
+        "stdout": "33\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015958718002366368,
+        "return_code": 0,
+        "stdout": "16\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013641830999404192,
+        "return_code": 0,
+        "stdout": "21\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013919136003096355,
+        "return_code": 0,
+        "stdout": "38\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01817019100053585,
+        "return_code": 0,
+        "stdout": "337\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01329193700075848,
+        "return_code": 0,
+        "stdout": "397\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0147863829988637,
+        "return_code": 0,
+        "stdout": "57\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012519236999651184,
+        "return_code": 0,
+        "stdout": "132\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013266270001622615,
+        "return_code": 0,
+        "stdout": "398\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013445792999846162,
+        "return_code": 0,
+        "stdout": "378\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012421731000358704,
+        "return_code": 0,
+        "stdout": "398\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015931222998915473,
+        "return_code": 0,
+        "stdout": "248\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014469991998339538,
+        "return_code": 0,
+        "stdout": "247\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011520223000843544,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016092555000795983,
+        "return_code": 0,
+        "stdout": "36\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01333558899932541,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012957106999238022,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012013425999612082,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014508822001516819,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013634926999657182,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01653591699869139,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.021911823001573794,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.057366083998203976,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017093540001951624,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0448007660015719,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01672356700146338,
+        "return_code": 0,
+        "stdout": "2\n",
+        "stderr": "",
+        "test_case": "cokolada.in.4z"
+      }
+    ]
+  },
+  "record_complete": true
+}

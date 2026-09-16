@@ -1,0 +1,1156 @@
+{
+  "run_id": "20260916_163803_370549",
+  "experiment": {
+    "type": "benchmark",
+    "round": 1
+  },
+  "model": {
+    "id": "qwen36",
+    "name": "qwen36",
+    "runtime": "llama.cpp"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_struktura",
+    "name": "struktura",
+    "title": "Struktura",
+    "difficulty": 5,
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token"
+  },
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nPetar and Ivana are bored during a long winter afternoon, so they decided to invent a game with numbers.\n\nPetar takes a sheet of paper and randomly writes down $n$ numbers. Each number is chosen **completely at random and independently** among the integers from $1$ to $k$. Using this procedure, Petar creates an array $a$ of $n$ numbers.\n\nIvana says that she especially likes some arrays because they have a “hidden balance”, and she calls them structures. An array is a structure if the following conditions are satisfied:\n\n- Every number from $1$ to $n$ appears in the array exactly once.\n- For every index $i$ ($1 \\le i \\le n$), it holds that $|a_i+i-n-1| \\le 1$.\n\nIvana is interested in the probability that Petar, choosing the numbers completely at random, constructs an array that is a structure.\n\nIt can be proven that the answer can always be represented as a fraction $\\frac{P}{Q}$, where $P$ is an integer and $Q$ is a positive integer not divisible by $10^9+7$. In that case, output $P \\cdot Q^{-1} \\pmod{10^9+7}$.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $k$ ($1 \\le n,k \\le 10^9$), the numbers from the problem statement.\n\n## Output\n\nOutput a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n2 1\n```\n\nOutput\n\n```text\n0\n```\n\n### Example 2\n\nInput\n\n```text\n2 2\n```\n\nOutput\n\n```text\n500000004\n```\n\n### Example 3\n\nInput\n\n```text\n7 94\n```\n\nOutput\n\n```text\n100976822\n```\n\n### Clarification of the second example:\n\nThe arrays $a$ that Petar can construct are: $(1,1)$, $(1,2)$, $(2,1)$, $(2,2)$. The arrays that are structures are $(1,2)$ and $(2,1)$. The probability that Petar completely at random obtains an array that is a structure is $\\frac{2}{4}$, i.e. $500000004 \\pmod{10^9+7}$."
+      }
+    ]
+  },
+  "generation_config": {
+    "temperature": 0,
+    "max_tokens": 61440,
+    "reasoning_budget_tokens": 53248,
+    "cache_prompt": false,
+    "reasoning_budget_message": "Considering the limited time by the user, I have to give the solution based on the thinking directly now."
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "finish_reason": "stop",
+    "content": "### 문제 해결 접근법\n\n1. **조건 분석**:\n   - 첫 번째 조건 `Every number from 1 to n appears exactly once` 은 배열 $a$ 가 $1$ 부터 $n$ 까지 의 수를 정확히 한 번씩 포함함을 의미합니다. 즉, $a$ 는 $1 \\sim n$ 의 순열이어야 합니다. 이 조건을 만족하려면 $k \\ge n$ 이어야 하며, $k < n$ 이면 가능한 배열이 존재하지 않으므로 확률은 `0` 입니다.\n   - 두 번째 조건 $|a_i + i - n - 1| \\le 1$ 을 정리하면 $|a_i - (n+1-i)| \\le 1$ 입니다. 인덱스를 거꾸로 매핑한 $c_j = a_{n+1-j}$ ($1 \\le j \\le n$) 라고 하면, 이 조건은 $|c_j - j| \\le 1$ 과 동일해집니다.\n   - $|c_j - j| \\le 1$ 을 만족하는 순열은 각 원소가 최대 1칸만 이동할 수 있는 경우로, 인접한 두 원소의 교환과 고정점의 조합으로만 구성됩니다. 이러한 순열의 개수 $f(n)$ 은 점화식 $f(n) = f(n-1) + f(n-2)$ 를 따르며, 초기값 $f(1)=1, f(2)=2$ 에서 $f(n) = F_{n+1}$ (피보나치 수열의 $n+1$ 번째 항) 임이 알려져 있습니다.\n\n2. **확률 계산**:\n   - 가능한 모든 배열의 개수: $k^n$\n   - 조건을 만족하는 구조의 개수: $F_{n+1}$\n   - 확률: $\\frac{F_{n+1}}{k^n}$\n   - 주어진 모듈로 $M = 10^9+7$ 에 대해 $\\frac{P}{Q} \\pmod M$ 은 $P \\cdot Q^{M-2} \\pmod M$ 으로 계산합니다.\n\n3. **알고리즘 구현**:\n   - $k < n$ 인 경우 즉시 `0` 출력.\n   - 피보나치 수 $F_{n+1}$ 은 행렬 거듭제곱법으로 $O(\\log n)$ 시간에 계산.\n   - $k^n \\pmod M$ 과 그 모듈로 역수는 이진 거듭제곱법으로 $O(\\log n)$ 시간에 계산.\n   - 최종적으로 곱셈과 모듈로 연산을 수행하여 정답 출력.\n\n### 시간 복잡도 및 공간 복잡도\n- **시간 복잡도**: 행렬 거듭제곱과 모듈로 거듭제곱 모두 $O(\\log n)$ 이므로 전체 시간 복잡도는 $O(\\log n)$ 입니다. $n \\le 10^9$ 에서 약 30~60 번의 연산으로 매우 빠르게 처리됩니다.\n- **공간 복잡도**: 상수 크기의 행렬과 변수만 사용하므로 $O(1)$ 입니다.\n\n```python\nimport sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    k = int(input_data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    MOD = 10**9 + 7\n    \n    def mat_mul(A, B):\n        return [\n            [(A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD,\n             (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD],\n            [(A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD,\n             (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD]\n        ]\n    \n    def mat_pow(A, p):\n        res = [[1, 0], [0, 1]]\n        while p > 0:\n            if p & 1:\n                res = mat_mul(res, A)\n            A = mat_mul(A, A)\n            p >>= 1\n        return res\n    \n    # F_{n+1} is the top-left element of [[1,1],[1,0]]^n\n    base_mat = [[1, 1], [1, 0]]\n    fib_n_plus_1 = mat_pow(base_mat, n)[0][0]\n    \n    denom = pow(k, n, MOD)\n    inv_denom = pow(denom, MOD - 2, MOD)\n    \n    ans = (fib_n_plus_1 * inv_denom) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()\n```",
+    "reasoning_content": "Here's a thinking process:\n\n1.  **Understand the Problem:**\n   - We have an array $a$ of length $n$.\n   - Each element $a_i$ is chosen independently and uniformly at random from $\\{1, 2, \\dots, k\\}$.\n   - Total number of possible arrays: $k^n$.\n   - An array is a \"structure\" if:\n     a. Every number from $1$ to $n$ appears exactly once. (This means $a$ is a permutation of $1, \\dots, n$).\n     b. For every $i$ ($1 \\le i \\le n$), $|a_i + i - n - 1| \\le 1$.\n   - We need to find the probability that a randomly chosen array is a structure, modulo $10^9+7$.\n   - Probability = (Number of valid structures) / $k^n$.\n   - Output: $P \\cdot Q^{-1} \\pmod{10^9+7}$, where $P/Q$ is the probability.\n\n2.  **Analyze Condition (a):**\n   - \"Every number from $1$ to $n$ appears exactly once.\"\n   - This implies $a$ must be a permutation of $\\{1, 2, \\dots, n\\}$.\n   - For this to be possible, we must have $k \\ge n$. If $k < n$, it's impossible to have all numbers from $1$ to $n$ in the array, so the number of valid structures is 0. Probability = 0.\n   - So, if $k < n$, output 0.\n\n3.  **Analyze Condition (b):**\n   - $|a_i + i - n - 1| \\le 1$ for all $1 \\le i \\le n$.\n   - This inequality means: $-1 \\le a_i + i - n - 1 \\le 1$.\n   - Rearranging: $n - i \\le a_i \\le n - i + 2$.\n   - So for each position $i$, $a_i$ can only take values in $\\{n-i, n-i+1, n-i+2\\}$.\n   - Also, from condition (a), $a$ is a permutation of $1, \\dots, n$.\n   - Let's check the possible values for each $i$:\n     - $i=1$: $a_1 \\in \\{n-1, n, n+1\\}$. But $a_1 \\le n$, so $a_1 \\in \\{n-1, n\\}$.\n     - $i=2$: $a_2 \\in \\{n-2, n-1, n\\}$.\n     - ...\n     - $i=n-1$: $a_{n-1} \\in \\{1, 2, 3\\}$.\n     - $i=n$: $a_n \\in \\{0, 1, 2\\}$. But $a_n \\ge 1$, so $a_n \\in \\{1, 2\\}$.\n   - Wait, let's list the constraints more carefully. $a_i \\in \\{n-i, n-i+1, n-i+2\\} \\cap \\{1, \\dots, n\\}$.\n   - Let's define $b_i = a_i$. The condition is $|b_i - (n+1-i)| \\le 1$.\n   - This means $b_i$ is close to $n+1-i$.\n   - Let's reverse the array to make it look like a standard permutation problem. Let $c_i = a_{n+1-i}$. Then $i$ goes from $1$ to $n$.\n   - The condition becomes $|c_{n+1-i} + i - n - 1| \\le 1 \\Rightarrow |c_j + (n+1-j) - n - 1| \\le 1 \\Rightarrow |c_j - j| \\le 1$.\n   - So if we reverse the array, the condition is $|c_j - j| \\le 1$ for all $j=1,\\dots,n$.\n   - This means $c_j \\in \\{j-1, j, j+1\\}$.\n   - Also, $c$ is a permutation of $1,\\dots,n$.\n   - This is a classic problem: Count the number of permutations $c$ of $\\{1,\\dots,n\\}$ such that $|c_j - j| \\le 1$ for all $j$.\n   - Let's find the number of such permutations. Let $f(n)$ be this count.\n   - For $n=1$: $c_1 \\in \\{0,1,2\\} \\cap \\{1\\} = \\{1\\}$. Count = 1.\n   - For $n=2$: $c_1 \\in \\{1,2\\}$, $c_2 \\in \\{1,2,3\\} \\cap \\{1,2\\} = \\{1,2\\}$. Permutations: (1,2), (2,1). Both satisfy $|c_j-j|\\le 1$. Count = 2.\n   - For $n=3$: $c_1 \\in \\{1,2\\}$, $c_2 \\in \\{1,2,3\\}$, $c_3 \\in \\{2,3\\}$.\n     Let's list them:\n     (1,2,3) -> $|1-1|=0, |2-2|=0, |3-3|=0$ OK.\n     (1,3,2) -> $|1-1|=0, |3-2|=1, |2-3|=1$ OK.\n     (2,1,3) -> $|2-1|=1, |1-2|=1, |3-3|=0$ OK.\n     (2,3,1) -> $|2-1|=1, |3-2|=1, |1-3|=2$ NO.\n     (3,1,2) -> $|3-1|=2$ NO.\n     (3,2,1) -> $|3-1|=2$ NO.\n     Count = 3.\n   - For $n=4$: Let's try to find a recurrence.\n     Consider position $n$. $c_n \\in \\{n-1, n\\}$.\n     Case 1: $c_n = n$. Then the remaining $n-1$ elements form a valid permutation of $1,\\dots,n-1$. Count = $f(n-1)$.\n     Case 2: $c_n = n-1$. Then $c_{n-1}$ must be $n$ (since $n-1$ is taken, and $c_{n-1} \\in \\{n-2, n-1, n\\}$, but $n-1$ is used, so $c_{n-1}$ can be $n-2$ or $n$. If $c_{n-1}=n-2$, then $|c_{n-1}-(n-1)| = 1$, OK. But wait, if $c_n=n-1$, then $n$ must be placed somewhere. The only position that can take $n$ is $n-1$ or $n$. Since $c_n \\ne n$, $c_{n-1}$ must be $n$. Let's check: $|c_{n-1}-(n-1)| = |n-(n-1)| = 1 \\le 1$. OK. So if $c_n = n-1$, then $c_{n-1} = n$. The remaining $n-2$ elements form a valid permutation. Count = $f(n-2)$.\n     So $f(n) = f(n-1) + f(n-2)$.\n     Base cases: $f(1)=1, f(2)=2$.\n     This is exactly the Fibonacci sequence! $f(n) = F_{n+1}$ where $F_1=1, F_2=1, F_3=2, \\dots$\n     Let's verify: $f(1)=1=F_2$, $f(2)=2=F_3$, $f(3)=3=F_4$. Yes.\n     So the number of valid structures is $F_{n+1}$, where $F_1=1, F_2=1$.\n     Wait, let's double check $f(0)$. If $n=0$, count=1. $F_1=1$. Matches.\n     So number of valid arrays = $F_{n+1}$.\n\n   - Let's re-verify the condition $|a_i + i - n - 1| \\le 1$.\n     For $n=2$, $a_1 \\in \\{1,2\\}$, $a_2 \\in \\{1,2\\}$. Permutations: (1,2), (2,1). Both valid. $f(2)=2$. Correct.\n     For $n=3$, $a_1 \\in \\{2,3\\}$, $a_2 \\in \\{1,2,3\\}$, $a_3 \\in \\{1,2\\}$.\n     Permutations:\n     (2,1,3): $|2+1-4|=1, |1+2-4|=1, |3+3-4|=2$ -> Wait, $|a_3+3-4| = |3+3-4| = 2 > 1$. So (2,1,3) is INVALID.\n     Let's check my reversed array logic again.\n     Original condition: $|a_i + i - n - 1| \\le 1$.\n     Let $j = n+1-i$. Then $i = n+1-j$.\n     $|a_{n+1-j} + (n+1-j) - n - 1| \\le 1 \\Rightarrow |a_{n+1-j} - j| \\le 1$.\n     Let $c_j = a_{n+1-j}$. Then $|c_j - j| \\le 1$.\n     So $c$ is a permutation of $1,\\dots,n$ with $|c_j - j| \\le 1$.\n     For $n=3$, $c$ permutations:\n     (1,2,3) -> $a = (3,2,1)$. Check original: $|3+1-4|=0, |2+2-4|=0, |1+3-4|=0$. OK.\n     (1,3,2) -> $a = (2,3,1)$. Check: $|2+1-4|=1, |3+2-4|=1, |1+3-4|=0$. OK.\n     (2,1,3) -> $a = (3,1,2)$. Check: $|3+1-4|=0, |1+2-4|=1, |2+3-4|=1$. OK.\n     (2,3,1) -> $a = (1,3,2)$. Check: $|1+1-4|=2$ NO.\n     (3,1,2) -> $a = (2,1,3)$. Check: $|2+1-4|=1, |1+2-4|=1, |3+3-4|=2$ NO.\n     (3,2,1) -> $a = (1,2,3)$. Check: $|1+1-4|=2$ NO.\n     So valid $a$ are (3,2,1), (2,3,1), (3,1,2). Count = 3. Matches $f(3)=3$.\n     My manual check earlier was flawed because I misapplied the condition to $a$ directly without reversing. The reversal logic is correct.\n     So number of valid structures = $F_{n+1}$.\n\n4.  **Calculate Probability:**\n   - Total possible arrays: $k^n$.\n   - Valid arrays: $F_{n+1}$.\n   - Probability: $F_{n+1} / k^n$.\n   - We need to compute $F_{n+1} \\cdot (k^n)^{-1} \\pmod{10^9+7}$.\n   - Constraints: $n, k \\le 10^9$. Modulo $M = 10^9+7$.\n   - We need fast computation of Fibonacci numbers modulo $M$ and modular exponentiation.\n   - Fibonacci can be computed in $O(\\log n)$ using matrix exponentiation or doubling formulas.\n   - $k^n \\pmod M$ can be computed in $O(\\log n)$ using modular exponentiation.\n   - Modular inverse using Fermat's Little Theorem: $x^{M-2} \\pmod M$.\n\n5.  **Edge Cases:**\n   - If $k < n$, probability is 0. Output 0.\n   - If $n=1$, $F_2 = 1$. Prob = $1/k$.\n   - $k=1, n>1$: $k < n \\Rightarrow 0$. Correct.\n   - $k=1, n=1$: $1/1 = 1$. Correct.\n   - Modulo arithmetic: $M = 10^9+7$.\n\n6.  **Algorithm Design:**\n   - Read $n, k$.\n   - If $k < n$: print 0.\n   - Else:\n     - Compute $F_{n+1} \\pmod M$.\n     - Compute $k^n \\pmod M$.\n     - Compute modular inverse of $k^n$.\n     - Result = $F_{n+1} \\cdot \\text{inv}(k^n) \\pmod M$.\n     - Print result.\n   - Fibonacci computation: Use matrix exponentiation.\n     $\\begin{pmatrix} F_{m+1} \\\\ F_m \\end{pmatrix} = \\begin{pmatrix} 1 & 1 \\\\ 1 & 0 \\end{pmatrix}^m \\begin{pmatrix} F_1 \\\\ F_0 \\end{pmatrix} = \\begin{pmatrix} 1 & 1 \\\\ 1 & 0 \\end{pmatrix}^m \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$.\n     We need $F_{n+1}$. So compute $M^n$ where $M = \\begin{pmatrix} 1 & 1 \\\\ 1 & 0 \\end{pmatrix}$. The top-left element of $M^n$ is $F_{n+1}$.\n     Wait, let's verify:\n     $n=1$: $M^1 = \\begin{pmatrix} 1 & 1 \\\\ 1 & 0 \\end{pmatrix}$. Top-left = 1 = $F_2$. Correct.\n     $n=2$: $M^2 = \\begin{pmatrix} 2 & 1 \\\\ 1 & 1 \\end{pmatrix}$. Top-left = 2 = $F_3$. Correct.\n     So $F_{n+1} = (M^n)_{0,0}$.\n   - Matrix multiplication modulo $M$.\n   - Modular exponentiation for $k^n$ and inverse.\n\n   Complexity:\n   - Time: $O(\\log n)$ for matrix exponentiation and modular exponentiation.\n   - Space: $O(1)$.\n   - This easily fits within 1 second and 512 MiB.\n\n7.  **Implementation Details:**\n   - Modulo $MOD = 10^9+7$.\n   - Matrix mult function.\n   - Matrix pow function.\n   - Modular inverse function.\n   - Handle $k < n$ case.\n   - Python handles large integers automatically, so intermediate products in matrix mult won't overflow before modulo.\n   - Code structure:\n     ```python\n     import sys\n\n     def solve():\n         input_data = sys.stdin.read().split()\n         if not input_data:\n             return\n         n = int(input_data[0])\n         k = int(input_data[1])\n\n         if k < n:\n             print(0)\n             return\n\n         MOD = 10**9 + 7\n\n         # Matrix multiplication\n         def mat_mul(A, B):\n             C = [[0, 0], [0, 0]]\n             for i in range(2):\n                 for j in range(2):\n                     for l in range(2):\n                         C[i][j] = (C[i][j] + A[i][l] * B[l][j]) % MOD\n             return C\n\n         # Matrix exponentiation\n         def mat_pow(A, p):\n             res = [[1, 0], [0, 1]]\n             while p > 0:\n                 if p % 2 == 1:\n                     res = mat_mul(res, A)\n                 A = mat_mul(A, A)\n                 p //= 2\n             return res\n\n         # Compute F_{n+1}\n         # Base matrix\n         M = [[1, 1], [1, 0]]\n         Mn = mat_pow(M, n)\n         fib_n_plus_1 = Mn[0][0]\n\n         # Compute k^n mod MOD\n         k_pow_n = pow(k, n, MOD)\n\n         # Modular inverse\n         inv_k_pow_n = pow(k_pow_n, MOD - 2, MOD)\n\n         ans = (fib_n_plus_1 * inv_k_pow_n) % MOD\n         print(ans)\n\n     if __name__ == '__main__':\n         solve()\n     ```\n\n   Let's double check logic.\n   - $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5$.\n   - $n=1 \\Rightarrow F_2=1$. $k \\ge 1$. Ans = $1/k$. Correct.\n   - $n=2 \\Rightarrow F_3=2$. $k \\ge 2$. Ans = $2/k^2$. Example 2: $n=2, k=2 \\Rightarrow 2/4 = 1/2 \\equiv 500000004$. Correct.\n   - Example 1: $n=2, k=1 \\Rightarrow k < n \\Rightarrow 0$. Correct.\n   - Example 3: $n=7, k=94$.\n     $F_8 = 21$.\n     $94^7 \\pmod{10^9+7}$.\n     Let's compute manually or trust the code. The logic is sound.\n     Wait, $F_8 = 21$? $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5, F_6=8, F_7=13, F_8=21$. Yes.\n     Probability = $21 / 94^7$.\n     Let's quickly verify with Python mentally or just trust the formula. The recurrence $f(n) = f(n-1) + f(n-2)$ is standard for permutations with $|p_i - i| \\le 1$. It's known as the number of permutations with displacement at most 1, which is indeed Fibonacci.\n     Actually, the condition $|c_j - j| \\le 1$ means each element can only move at most 1 position. These are permutations composed of disjoint adjacent transpositions and fixed points. The number of such permutations is exactly $F_{n+1}$. This is a well-known combinatorial result.\n     So the count is correct.\n\n   One minor point: $k^n \\pmod M$ could be 0 if $k$ is a multiple of $M$. But $k \\le 10^9 < M$, so $k \\not\\equiv 0 \\pmod M$. So inverse exists.\n   Also, $k < n$ check handles cases where probability is 0.\n   What if $k \\ge n$ but $k \\equiv 0 \\pmod M$? Not possible since $k \\le 10^9 < 10^9+7$.\n   So modular inverse is always valid.\n\n   Let's consider time complexity again. Matrix exponentiation is $O(\\log n)$. Modular exponentiation is $O(\\log n)$. Total $O(\\log n)$. With $n=10^9$, $\\log n \\approx 30$. Very fast.\n   Space complexity $O(1)$.\n\n   Check constraints: $n, k \\le 10^9$. Python handles this easily.\n   Input reading: `sys.stdin.read().split()` is fine.\n   Output: single integer.\n\n   One thing: The problem says $1 \\le n, k \\le 10^9$.\n   If $n=1$, $F_2=1$. Code gives $1 \\cdot k^{-1}$. Correct.\n   If $k=1, n=1$, $k \\ge n$, gives $1 \\cdot 1^{-1} = 1$. Correct.\n   If $k=1, n=2$, $k < n$, gives 0. Correct.\n\n   All good.\n\n   Let's write out the code carefully.\n   I'll make sure to use fast I/O and standard modular arithmetic.\n   I'll wrap it in the required format.\n\n   One detail: `pow(k, n, MOD)` is built-in and efficient.\n   Matrix multiplication can be unrolled for speed, but not necessary for $2 \\times 2$.\n   I'll stick to the clean implementation.\n\n   Final check of the problem statement: \"Every number from 1 to n appears in the array exactly once.\" -> Permutation.\n   \"|a_i + i - n - 1| <= 1\" -> $|a_i - (n+1-i)| \\le 1$.\n   This matches my derivation.\n   Probability = $F_{n+1} / k^n$.\n   Output modulo $10^9+7$.\n\n   Code structure:\n   ```python\n   import sys\n\n   def solve():\n       data = sys.stdin.read().split()\n       if not data:\n           return\n       n = int(data[0])\n       k = int(data[1])\n\n       if k < n:\n           print(0)\n           return\n\n       MOD = 10**9 + 7\n\n       def mat_mul(A, B):\n           return [\n               [(A[0][0]*B[0][0] + A[0][1]*B[1][0]) % MOD, (A[0][0]*B[0][1] + A[0][1]*B[1][1]) % MOD],\n               [(A[1][0]*B[0][0] + A[1][1]*B[1][0]) % MOD, (A[1][0]*B[0][1] + A[1][1]*B[1][1]) % MOD]\n           ]\n\n       def mat_pow(A, p):\n           res = [[1, 0], [0, 1]]\n           while p > 0:\n               if p & 1:\n                   res = mat_mul(res, A)\n               A = mat_mul(A, A)\n               p >>= 1\n           return res\n\n       # F_{n+1} is the top-left element of [[1,1],[1,0]]^n\n       M = [[1, 1], [1, 0]]\n       fib = mat_pow(M, n)[0][0]\n\n       denom = pow(k, n, MOD)\n       inv_denom = pow(denom, MOD - 2, MOD)\n\n       print((fib * inv_denom) % MOD)\n\n   if __name__ == '__main__':\n       solve()\n   ```\n\n   Wait, is $F_{n+1}$ correctly computed as `mat_pow(M, n)[0][0]`?\n   Let's verify for $n=1$: `mat_pow(M, 1)` is `[[1,1],[1,0]]`. `[0][0]` is 1. $F_2=1$. Correct.\n   $n=2$: `mat_pow(M, 2)` is `[[2,1],[1,1]]`. `[0][0]` is 2. $F_3=2$. Correct.\n   $n=3$: `mat_pow(M, 3)` is `[[3,2],[2,1]]`. `[0][0]` is 3. $F_4=3$. Correct.\n   So yes.\n\n   One minor point: `sys.setrecursionlimit` is not needed.\n   The code looks solid.\n\n   Let's consider if $k \\ge n$ but $k$ is large. `pow(k, n, MOD)` handles it.\n   All constraints satisfied.\n   Time complexity: $O(\\log n)$.\n   Space complexity: $O(1)$.\n   Output format matches.\n   I will produce the final answer.\n\n   One thing to double check: The problem says \"Every number from 1 to n appears in the array exactly once.\" This implies $a$ is a permutation of $1..n$. This requires $k \\ge n$. If $k < n$, it's impossible, so 0. My code handles this.\n   What if $n=0$? Constraints say $1 \\le n$. So no issue.\n   The modulo is $10^9+7$.\n   Everything is consistent.\n\n   I will write the explanation and the code as requested.\n   Structure of response:\n   - Problem solving approach\n   - Time & Space complexity\n   - Python 3 code block\n   - Ensure only one code block.\n   - Check formatting.\n\n   Approach explanation:\n   1. The condition \"every number from 1 to n appears exactly once\" means the array must be a permutation of $1, \\dots, n$. This is only possible if $k \\ge n$. If $k < n$, the probability is 0.\n   2. The condition $|a_i + i - n - 1| \\le 1$ can be rewritten as $|a_i - (n+1-i)| \\le 1$. By reversing the array indices ($j = n+1-i$), this becomes $|a_{n+1-j} - j| \\le 1$. Let $c_j = a_{n+1-j}$. Then $c$ is a permutation of $1, \\dots, n$ satisfying $|c_j - j| \\le 1$ for all $j$.\n   3. Permutations satisfying $|c_j - j| \\le 1$ are composed of disjoint adjacent swaps and fixed points. The number of such permutations of length $n$ follows the Fibonacci sequence: $f(n) = f(n-1) + f(n-2)$, with $f(1)=1, f(2)=2$. Thus, $f(n) = F_{n+1}$, where $F_1=1, F_2=1$.\n   4. The total number of possible arrays is $k^n$. The probability is $F_{n+1} / k^n$.\n   5. We compute $F_{n+1} \\pmod{10^9+7}$ using matrix exponentiation in $O(\\log n)$, and $k^n \\pmod{10^9+7}$ using modular exponentiation. The result is $F_{n+1} \\cdot (k^n)^{-1} \\pmod{10^9+7}$.\n\n   Complexity:\n   - Time: $O(\\log n)$ due to matrix and modular exponentiation.\n   - Space: $O(1)$ as we only store constant-size matrices and variables.\n\n   Code matches the logic.\n   All good.\n   Proceed. \n   One minor check: `pow(k, n, MOD)` when $k \\ge MOD$? $k \\le 10^9 < 10^9+7$, so $k \\pmod{MOD} = k$. It's fine.\n   The code is ready.\n   I will generate the response. \n   Self-Correction/Verification during thought:\n   Wait, is $F_{n+1}$ definitely the count? Let's re-verify $n=3$. $F_4=3$. Valid permutations for $|c_j-j|\\le 1$: (1,2,3), (1,3,2), (2,1,3). Count=3. Correct.\n   $n=4$: $F_5=5$. Valid: (1,2,3,4), (1,2,4,3), (1,3,2,4), (2,1,3,4), (2,1,4,3). Count=5. Correct.\n   The recurrence is solid.\n   The matrix exponentiation correctly computes $F_{n+1}$.\n   All steps verified.\n   Output matches examples.\n   Example 2: n=2, k=2. $F_3=2$. $2^2=4$. $2/4 = 1/2 \\equiv 500000004$. Matches.\n   Example 1: n=2, k=1. $k<n \\Rightarrow 0$. Matches.\n   Example 3: n=7, k=94. $F_8=21$. $94^7 \\pmod{10^9+7}$. I'll trust the code.\n   Everything is correct.\n   Final code generation. \n   I will make sure the code block contains only the solution.\n   I'll add comments for clarity but keep it concise.\n   Ready. \n   Output matches requirements.✅\n   Proceeds. \n   [Output Generation] -> *Self-Correction/Refinement during generation prep*: \n   I should ensure the matrix multiplication function is efficient and correct. The unrolled version is fine.\n   I'll use `sys.stdin.read().split()` for fast I/O.\n   The code is robust.\n   All set. \n   Output matches the prompt exactly. \n   Proceeds. \n   [Final Check of the Prompt]: \"최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\" \"최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\"\n   I will follow this strictly.\n   The explanation will be in Korean as requested.\n   All good. \n   Generating response. \n   *(Done.)*\n",
+    "usage": {
+      "completion_tokens": 8010,
+      "prompt_tokens": 729,
+      "total_tokens": 8739,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 729,
+      "prompt_ms": 1661.472,
+      "prompt_per_token_ms": 2.279111111111111,
+      "prompt_per_second": 438.7675507020281,
+      "predicted_n": 8010,
+      "predicted_ms": 210049.085,
+      "predicted_per_token_ms": 26.22663066550131,
+      "predicted_per_second": 38.12918299548889
+    }
+  },
+  "metrics": {
+    "response_elapsed_seconds": 211.7777217949988,
+    "prompt_tokens": 729,
+    "completion_tokens": 8010,
+    "generation_tokens_per_second": 38.12918299548889,
+    "generation_tokens_per_second_reason": null,
+    "generation_tokens_per_second_source": "llama.cpp timings.predicted_per_second",
+    "prompt_tokens_reason": null,
+    "completion_tokens_reason": null,
+    "model_load_seconds": null,
+    "model_load_reason": "Persistent llama.cpp does not expose per-request model load duration.",
+    "memory": {
+      "observed_at": "2026-09-16T07:41:35.153226+00:00",
+      "phase": "response_received",
+      "source": "nvidia-smi",
+      "process": {
+        "value": null,
+        "reason": "Process query unavailable; no device-memory substitution (ValueError)",
+        "unit": "MiB",
+        "scope": "server_process",
+        "pid": 399163
+      },
+      "devices": {
+        "value": [
+          {
+            "uuid": "GPU-0eacd458-1035-87ab-ad06-2728504166f4",
+            "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+            "used_mib": 7757.0,
+            "total_mib": 8151.0
+          }
+        ],
+        "reason": null,
+        "unit": "MiB",
+        "scope": "whole_device"
+      }
+    }
+  },
+  "extracted_code": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    n = int(input_data[0])\n    k = int(input_data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    MOD = 10**9 + 7\n    \n    def mat_mul(A, B):\n        return [\n            [(A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD,\n             (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD],\n            [(A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD,\n             (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD]\n        ]\n    \n    def mat_pow(A, p):\n        res = [[1, 0], [0, 1]]\n        while p > 0:\n            if p & 1:\n                res = mat_mul(res, A)\n            A = mat_mul(A, A)\n            p >>= 1\n        return res\n    \n    # F_{n+1} is the top-left element of [[1,1],[1,0]]^n\n    base_mat = [[1, 1], [1, 0]]\n    fib_n_plus_1 = mat_pow(base_mat, n)[0][0]\n    \n    denom = pow(k, n, MOD)\n    inv_denom = pow(denom, MOD - 2, MOD)\n    \n    ans = (fib_n_plus_1 * inv_denom) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 130,
+    "total_cases": 130,
+    "max_case_seconds": 0.03573686299932888,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009979892001865664,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008912224999221507,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009109439000894781,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009314570001151878,
+        "return_code": 0,
+        "stdout": "142857144\n",
+        "stderr": "",
+        "test_case": "struktura.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009163317001366522,
+        "return_code": 0,
+        "stdout": "726080252\n",
+        "stderr": "",
+        "test_case": "struktura.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009522844997263746,
+        "return_code": 0,
+        "stdout": "856000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009335519000160275,
+        "return_code": 0,
+        "stdout": "856000006\n",
+        "stderr": "",
+        "test_case": "struktura.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00970262899863883,
+        "return_code": 0,
+        "stdout": "250000002\n",
+        "stderr": "",
+        "test_case": "struktura.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009775395999895409,
+        "return_code": 0,
+        "stdout": "563550244\n",
+        "stderr": "",
+        "test_case": "struktura.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00944816199989873,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009660716001235414,
+        "return_code": 0,
+        "stdout": "576426493\n",
+        "stderr": "",
+        "test_case": "struktura.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009218115999829024,
+        "return_code": 0,
+        "stdout": "222222224\n",
+        "stderr": "",
+        "test_case": "struktura.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009151370999461506,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00977803999921889,
+        "return_code": 0,
+        "stdout": "503183201\n",
+        "stderr": "",
+        "test_case": "struktura.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009199045001878403,
+        "return_code": 0,
+        "stdout": "400000003\n",
+        "stderr": "",
+        "test_case": "struktura.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009097558999201283,
+        "return_code": 0,
+        "stdout": "560000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009442851998755941,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009399125003255904,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00986950600054115,
+        "return_code": 0,
+        "stdout": "13888889\n",
+        "stderr": "",
+        "test_case": "struktura.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010239680999802658,
+        "return_code": 0,
+        "stdout": "503183201\n",
+        "stderr": "",
+        "test_case": "struktura.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009171218996925745,
+        "return_code": 0,
+        "stdout": "897959190\n",
+        "stderr": "",
+        "test_case": "struktura.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027124611999170156,
+        "return_code": 0,
+        "stdout": "926954739\n",
+        "stderr": "",
+        "test_case": "struktura.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.008690639999258565,
+        "return_code": 0,
+        "stdout": "222222224\n",
+        "stderr": "",
+        "test_case": "struktura.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009254444998077815,
+        "return_code": 0,
+        "stdout": "166666668\n",
+        "stderr": "",
+        "test_case": "struktura.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01005277099829982,
+        "return_code": 0,
+        "stdout": "897959190\n",
+        "stderr": "",
+        "test_case": "struktura.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010635344999172958,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00994030199944973,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009872177000943338,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00953590599965537,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010499551000975771,
+        "return_code": 0,
+        "stdout": "411979550\n",
+        "stderr": "",
+        "test_case": "struktura.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010207141000137199,
+        "return_code": 0,
+        "stdout": "227146816\n",
+        "stderr": "",
+        "test_case": "struktura.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009531454001262318,
+        "return_code": 0,
+        "stdout": "63238957\n",
+        "stderr": "",
+        "test_case": "struktura.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009742032001668122,
+        "return_code": 0,
+        "stdout": "46497163\n",
+        "stderr": "",
+        "test_case": "struktura.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009802861000935081,
+        "return_code": 0,
+        "stdout": "658536590\n",
+        "stderr": "",
+        "test_case": "struktura.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009211855998728424,
+        "return_code": 0,
+        "stdout": "960306233\n",
+        "stderr": "",
+        "test_case": "struktura.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010365801001171349,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01011399700291804,
+        "return_code": 0,
+        "stdout": "669689472\n",
+        "stderr": "",
+        "test_case": "struktura.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010173058999498608,
+        "return_code": 0,
+        "stdout": "111111112\n",
+        "stderr": "",
+        "test_case": "struktura.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01039540700003272,
+        "return_code": 0,
+        "stdout": "428571003\n",
+        "stderr": "",
+        "test_case": "struktura.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009767648996785283,
+        "return_code": 0,
+        "stdout": "589592528\n",
+        "stderr": "",
+        "test_case": "struktura.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009895295999740483,
+        "return_code": 0,
+        "stdout": "202531647\n",
+        "stderr": "",
+        "test_case": "struktura.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01087394000205677,
+        "return_code": 0,
+        "stdout": "20793951\n",
+        "stderr": "",
+        "test_case": "struktura.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009597551001206739,
+        "return_code": 0,
+        "stdout": "858974365\n",
+        "stderr": "",
+        "test_case": "struktura.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01273196799957077,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01133885399758583,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01035013199725654,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.020869893000053708,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03573686299932888,
+        "return_code": 0,
+        "stdout": "202902447\n",
+        "stderr": "",
+        "test_case": "struktura.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010160493999137543,
+        "return_code": 0,
+        "stdout": "295707821\n",
+        "stderr": "",
+        "test_case": "struktura.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01273030800075503,
+        "return_code": 0,
+        "stdout": "728608992\n",
+        "stderr": "",
+        "test_case": "struktura.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015617234999808716,
+        "return_code": 0,
+        "stdout": "417230334\n",
+        "stderr": "",
+        "test_case": "struktura.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023711899000772974,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015279531002306612,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009504279001703253,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010025126997788902,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010308655000699218,
+        "return_code": 0,
+        "stdout": "285000002\n",
+        "stderr": "",
+        "test_case": "struktura.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009842734998528613,
+        "return_code": 0,
+        "stdout": "629111293\n",
+        "stderr": "",
+        "test_case": "struktura.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01111298200339661,
+        "return_code": 0,
+        "stdout": "488991434\n",
+        "stderr": "",
+        "test_case": "struktura.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01561911199678434,
+        "return_code": 0,
+        "stdout": "928251810\n",
+        "stderr": "",
+        "test_case": "struktura.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011480338998808293,
+        "return_code": 0,
+        "stdout": "394575695\n",
+        "stderr": "",
+        "test_case": "struktura.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011020380999980262,
+        "return_code": 0,
+        "stdout": "30769231\n",
+        "stderr": "",
+        "test_case": "struktura.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010535312998399604,
+        "return_code": 0,
+        "stdout": "488266617\n",
+        "stderr": "",
+        "test_case": "struktura.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011668537998048123,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01050527200277429,
+        "return_code": 0,
+        "stdout": "696275199\n",
+        "stderr": "",
+        "test_case": "struktura.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011061124001571443,
+        "return_code": 0,
+        "stdout": "775524559\n",
+        "stderr": "",
+        "test_case": "struktura.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010424500000226544,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010592143000394572,
+        "return_code": 0,
+        "stdout": "337211958\n",
+        "stderr": "",
+        "test_case": "struktura.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011361133001628332,
+        "return_code": 0,
+        "stdout": "256841698\n",
+        "stderr": "",
+        "test_case": "struktura.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011991048999334453,
+        "return_code": 0,
+        "stdout": "190406074\n",
+        "stderr": "",
+        "test_case": "struktura.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014653153000836028,
+        "return_code": 0,
+        "stdout": "575237810\n",
+        "stderr": "",
+        "test_case": "struktura.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010140570997464238,
+        "return_code": 0,
+        "stdout": "775524559\n",
+        "stderr": "",
+        "test_case": "struktura.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00992009599940502,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011108334998425562,
+        "return_code": 0,
+        "stdout": "337211958\n",
+        "stderr": "",
+        "test_case": "struktura.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010780880998936482,
+        "return_code": 0,
+        "stdout": "204545456\n",
+        "stderr": "",
+        "test_case": "struktura.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010508922001463361,
+        "return_code": 0,
+        "stdout": "677751921\n",
+        "stderr": "",
+        "test_case": "struktura.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01671530800012988,
+        "return_code": 0,
+        "stdout": "433429058\n",
+        "stderr": "",
+        "test_case": "struktura.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011308703000395326,
+        "return_code": 0,
+        "stdout": "963477373\n",
+        "stderr": "",
+        "test_case": "struktura.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02988267999899108,
+        "return_code": 0,
+        "stdout": "266726083\n",
+        "stderr": "",
+        "test_case": "struktura.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02274787499845843,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010697249999793712,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009530507999443216,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010616906998620834,
+        "return_code": 0,
+        "stdout": "650565059\n",
+        "stderr": "",
+        "test_case": "struktura.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015132078999158693,
+        "return_code": 0,
+        "stdout": "85612406\n",
+        "stderr": "",
+        "test_case": "struktura.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011948958999710158,
+        "return_code": 0,
+        "stdout": "14901260\n",
+        "stderr": "",
+        "test_case": "struktura.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010973176002153195,
+        "return_code": 0,
+        "stdout": "679705936\n",
+        "stderr": "",
+        "test_case": "struktura.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012180227000499144,
+        "return_code": 0,
+        "stdout": "324080400\n",
+        "stderr": "",
+        "test_case": "struktura.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012636067000130424,
+        "return_code": 0,
+        "stdout": "812900522\n",
+        "stderr": "",
+        "test_case": "struktura.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02393409200158203,
+        "return_code": 0,
+        "stdout": "268609584\n",
+        "stderr": "",
+        "test_case": "struktura.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01014699399820529,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010741813999629812,
+        "return_code": 0,
+        "stdout": "225285849\n",
+        "stderr": "",
+        "test_case": "struktura.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011135609998746077,
+        "return_code": 0,
+        "stdout": "110472661\n",
+        "stderr": "",
+        "test_case": "struktura.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01050516599934781,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010606507999909809,
+        "return_code": 0,
+        "stdout": "932619170\n",
+        "stderr": "",
+        "test_case": "struktura.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015972329998476198,
+        "return_code": 0,
+        "stdout": "753601618\n",
+        "stderr": "",
+        "test_case": "struktura.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009886289000860415,
+        "return_code": 0,
+        "stdout": "286596448\n",
+        "stderr": "",
+        "test_case": "struktura.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010670452000340447,
+        "return_code": 0,
+        "stdout": "697421048\n",
+        "stderr": "",
+        "test_case": "struktura.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00999685599890654,
+        "return_code": 0,
+        "stdout": "70092844\n",
+        "stderr": "",
+        "test_case": "struktura.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010176853000302799,
+        "return_code": 0,
+        "stdout": "242251921\n",
+        "stderr": "",
+        "test_case": "struktura.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01111995199971716,
+        "return_code": 0,
+        "stdout": "828620009\n",
+        "stderr": "",
+        "test_case": "struktura.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010808682000060799,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011775588001910364,
+        "return_code": 0,
+        "stdout": "519981728\n",
+        "stderr": "",
+        "test_case": "struktura.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.019611176998296287,
+        "return_code": 0,
+        "stdout": "32171485\n",
+        "stderr": "",
+        "test_case": "struktura.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009583745999407256,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009664052999141859,
+        "return_code": 0,
+        "stdout": "238072889\n",
+        "stderr": "",
+        "test_case": "struktura.in.4z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012539876999653643,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028402579999237787,
+        "return_code": 0,
+        "stdout": "500000004\n",
+        "stderr": "",
+        "test_case": "struktura.in.5b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012112611999327783,
+        "return_code": 0,
+        "stdout": "100976822\n",
+        "stderr": "",
+        "test_case": "struktura.in.5c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010463176000484964,
+        "return_code": 0,
+        "stdout": "373965201\n",
+        "stderr": "",
+        "test_case": "struktura.in.5d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011461863003205508,
+        "return_code": 0,
+        "stdout": "989496909\n",
+        "stderr": "",
+        "test_case": "struktura.in.5e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010201893997873412,
+        "return_code": 0,
+        "stdout": "901679584\n",
+        "stderr": "",
+        "test_case": "struktura.in.5f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011057018000428798,
+        "return_code": 0,
+        "stdout": "520271879\n",
+        "stderr": "",
+        "test_case": "struktura.in.5g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010157299999264069,
+        "return_code": 0,
+        "stdout": "196906688\n",
+        "stderr": "",
+        "test_case": "struktura.in.5h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01160191999952076,
+        "return_code": 0,
+        "stdout": "153508212\n",
+        "stderr": "",
+        "test_case": "struktura.in.5i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017160845000034897,
+        "return_code": 0,
+        "stdout": "139897898\n",
+        "stderr": "",
+        "test_case": "struktura.in.5j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009529782000754494,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009996377000788925,
+        "return_code": 0,
+        "stdout": "344527698\n",
+        "stderr": "",
+        "test_case": "struktura.in.5l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009967940997739788,
+        "return_code": 0,
+        "stdout": "269918516\n",
+        "stderr": "",
+        "test_case": "struktura.in.5m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009653870001784526,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010551621999184135,
+        "return_code": 0,
+        "stdout": "866730610\n",
+        "stderr": "",
+        "test_case": "struktura.in.5o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011497889001475414,
+        "return_code": 0,
+        "stdout": "620031996\n",
+        "stderr": "",
+        "test_case": "struktura.in.5p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009558769001159817,
+        "return_code": 0,
+        "stdout": "515490448\n",
+        "stderr": "",
+        "test_case": "struktura.in.5q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009783411001990316,
+        "return_code": 0,
+        "stdout": "253243461\n",
+        "stderr": "",
+        "test_case": "struktura.in.5r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010512384000321617,
+        "return_code": 0,
+        "stdout": "682202721\n",
+        "stderr": "",
+        "test_case": "struktura.in.5s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010962295000354061,
+        "return_code": 0,
+        "stdout": "333473393\n",
+        "stderr": "",
+        "test_case": "struktura.in.5t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010377127000538167,
+        "return_code": 0,
+        "stdout": "55260547\n",
+        "stderr": "",
+        "test_case": "struktura.in.5u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009577769000316039,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010105801000463543,
+        "return_code": 0,
+        "stdout": "8662146\n",
+        "stderr": "",
+        "test_case": "struktura.in.5w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.00928745999772218,
+        "return_code": 0,
+        "stdout": "171933772\n",
+        "stderr": "",
+        "test_case": "struktura.in.5x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010960788000375032,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "struktura.in.5y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.009870587000477826,
+        "return_code": 0,
+        "stdout": "549993707\n",
+        "stderr": "",
+        "test_case": "struktura.in.5z"
+      }
+    ]
+  }
+}

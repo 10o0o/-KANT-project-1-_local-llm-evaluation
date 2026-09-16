@@ -1,0 +1,882 @@
+{
+  "run_id": "20260916_074738_012543Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_ucionica",
+    "name": "ucionica",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 7,
+    "difficulty_reason": "각 좌석에서 앞 학생들의 최대 키를 계산한 뒤 친구 키와의 매칭 가능성을 판정해야 하며, 모든 길이 k 구간을 직접 정렬하지 않고 sliding window 형태로 효율적으로 유지하는 최적화가 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/ucionica",
+    "statement_path": "data/coci/2025_2026/contest6/statements/ucionica.md",
+    "time_limit_seconds": 1.5,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Učionica"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1.5초\n- 메모리 제한: 512 MiB\n\n문제:\n\nA group of $k$ friends enters a classroom. The height $h_i$ of each friend is known, and the heights of all other students already in the classroom are also known.\n\nThe classroom can be represented as an $n \\times m$ grid $a$, where each cell corresponds to a seat. The seat in the $i$-th row and $j$-th column is denoted by $a_{i,j}$. For every seat, we know whether it is already occupied by a student (along with their height) or if it is empty.\n\nThe $k$ friends want to take seats in the classroom. Each friend occupies exactly one empty seat, and no two friends can sit in the same seat. Additionally, they want to sit next to each other in the same row. More precisely, they choose a row index $i$ such that $1 \\le i \\le n$ and a column index $j$ such that $1 \\le j \\le m-k+1$, and sit in the seats $a_{i,j},a_{i,j+1},\\ldots,a_{i,j+k-1}$. The friends can sit in these seats in any order; they do not have to sit in the order in which their heights were given.\n\nA friend considers a seat suitable only if all students sitting in front of them (i.e., in rows with a smaller index in the same column) are strictly shorter than them, ensuring they have a clear view. The group considers a set of $k$ consecutive seats in the same row suitable if they can arrange themselves so that each friend has a clear view.\n\nConsidering these conditions, how many suitable sets of seats for the group are there in the classroom?\n\n## Input\n\nThe first line contains three natural numbers $n$, $m$, and $k$ ($1 \\le n,m \\le 2000$, $1 \\le k \\le m$) - the number of rows and columns of the classroom and the number of friends.\n\nThe second line contains $k$ natural numbers $h_1,h_2,\\ldots,h_k$ - the heights of the friends.\n\nThe next $n$ lines each contain $m$ natural numbers: if $a_{i,j}=0$, the seat is empty, and if $a_{i,j} \\ge 1$, the seat is occupied by a student of height $a_{i,j}$ ($1 \\le a_{i,j} \\le 10^9$).\n\n## Output\n\nIn the first and only line, output a single number - the number of suitable sets of $k$ consecutive seats in the same row where the friends can be arranged so that each has a clear view.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n3 4 2\n2 6\n0 0 3 1\n8 0 0 0\n0 0 1 0\n```\n\nOutput\n\n```text\n3\n```\n\n### Example 2\n\nInput\n\n```text\n2 4 4\n5 2 4 3\n1 2 3 4\n0 0 0 0\n```\n\nOutput\n\n```text\n1\n```\n\n### Example 3\n\nInput\n\n```text\n5 5 3\n17 3 17\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n```\n\nOutput\n\n```text\n15\n```\n\n### Clarification of the first example:\n\nThe two friends can sit in the first and second seats in the first row, in the second and third seats in the second row, or in the third and fourth seats in the second row. So, they can sit in a total of 3 different sets of seats.\n\n### Clarification of the second example:\n\nThe four friends can sit in the only four available seats if they arrange themselves from shortest to tallest.\n\n### Clarification of the third example:\n\nThe three friends can sit in any three consecutive seats in the same row since there are no other students in the classroom resulting in a total of 15 valid sitting arrangements."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_0617385317f7247e016aaa499a9e3887d08ef5abf8fc71e450",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 해결 방법\n\n각 열에 대해 현재 행보다 앞선 행들 중 가장 큰 학생 키를 유지합니다.\n\n- `front[j]`: 현재 행의 `j`열 앞에 있는 학생들 중 최대 키\n- 친구들의 키를 정렬한 배열을 `H`라 할 때, `r[j] = bisect_right(H, front[j])`\n  - `r[j]`는 해당 좌석에 앉을 수 없는 친구 수입니다.\n  - 즉, 해당 좌석에는 정렬된 친구 배열에서 인덱스 `r[j]` 이상인 친구만 앉을 수 있습니다.\n\n어떤 연속한 `k`개의 좌석에 대한 `r`값들을 정렬해서 `R`이라 하면, 친구들을 배치할 수 있는 조건은 모든 `t`에 대해 `R[t] <= t`입니다.\n\n이를 다음과 같이 바꿀 수 있습니다.\n\n- `C_x`: 현재 구간에서 `r >= x`인 좌석 수\n- 조건은 모든 `x`에 대해 `x + C_x <= k`\n\n좌석 하나의 `r`값이 추가되면 `C_1, C_2, ..., C_r`가 모두 1 증가합니다. 따라서 구간을 한 칸 이동할 때 세그먼트 트리에서 prefix 구간에 `+1` 또는 `-1`을 수행하면 됩니다.\n\n세그먼트 트리는 `x + C_x`의 최댓값을 저장합니다. 최댓값이 `k` 이하이면 해당 구간은 배치 가능합니다.\n\n또한 다음 좌석은 애초에 사용할 수 없습니다.\n\n- 현재 행의 좌석이 비어 있지 않은 경우\n- `r[j] == k`인 경우: 모든 친구가 해당 학생보다 작거나 같으므로 아무도 앉을 수 없음\n\n따라서 이런 좌석들을 기준으로 연속 구간을 나누고, 길이가 `k` 이상인 구간만 슬라이딩 윈도우로 처리합니다.\n\n### 복잡도\n\n- 각 칸의 앞쪽 최대 키 갱신 및 이분 탐색: 최악 `O(nm log k)`\n- 각 윈도우 이동 시 세그먼트 트리 연산: `O(log k)`\n- 전체 시간 복잡도: `O(nm log k)`\n- 공간 복잡도: `O(m + k log k)`\n  - 격자 전체를 저장하지 않고 한 행씩 처리합니다.\n\n```python\nimport sys\nfrom bisect import bisect_right\n\n\ndef solve():\n    rd = sys.stdin.buffer.readline\n\n    first = rd().split()\n    if not first:\n        return\n\n    n, m, k = map(int, first)\n    friends = list(map(int, rd().split()))\n    friends.sort()\n\n    front = [0] * m\n    rank = [0] * m\n\n    # k = 1인 경우\n    if k == 1:\n        answer = 0\n        friend_height = friends[0]\n\n        for _ in range(n):\n            values = list(map(int, rd().split()))\n\n            for j, value in enumerate(values):\n                current_rank = rank[j]\n\n                if value == 0:\n                    if current_rank == 0:\n                        answer += 1\n                elif value > front[j]:\n                    front[j] = value\n                    rank[j] = 1 if value >= friend_height else 0\n\n        print(answer)\n        return\n\n    # 세그먼트 트리는 x = 1 .. k-1을 관리한다.\n    # rank == k인 좌석은 사용할 수 없으므로 연속 구간에서 제외한다.\n    limit = k - 1\n\n    size = 1\n    while size < limit:\n        size <<= 1\n\n    # 각 q에 대해 [1, q] prefix를 이루는 canonical node들과\n    # 갱신 후 다시 계산해야 하는 조상들을 미리 저장한다.\n    covers = [None] * (limit + 1)\n    ancestors = [None] * (limit + 1)\n\n    for q in range(1, limit + 1):\n        if q == size:\n            covers[q] = (1,)\n            ancestors[q] = ()\n            continue\n\n        node = 1\n        lo = 1\n        hi = size\n        nodes = []\n\n        while lo < hi:\n            mid = (lo + hi) >> 1\n\n            if q <= mid:\n                node <<= 1\n                hi = mid\n            else:\n                nodes.append(node << 1)\n                node = (node << 1) | 1\n                lo = mid + 1\n\n        nodes.append(node)\n        covers[q] = tuple(nodes)\n\n        path = []\n        node >>= 1\n        while node:\n            path.append(node)\n            node >>= 1\n        ancestors[q] = tuple(path)\n\n    answer = 0\n    negative_infinity = -10**9\n\n    # 연속된 완전 빈 행은 앞쪽 학생 정보가 변하지 않으므로\n    # 같은 결과를 재사용할 수 있다.\n    previous_row_was_all_empty = False\n    previous_row_count = 0\n\n    for _ in range(n):\n        values = list(map(int, rd().split()))\n\n        # 현재 행에서 사용할 rank는 행 처리 전의 값이어야 한다.\n        required = rank.copy()\n        usable = bytearray(m)\n        all_empty = True\n\n        for j, value in enumerate(values):\n            q = required[j]\n\n            if value == 0:\n                if q < k:\n                    usable[j] = 1\n            else:\n                all_empty = False\n\n                # 현재 행의 학생은 현재 행의 친구들 앞에 있지 않으므로,\n                # 다음 행부터 front에 반영한다.\n                if value > front[j]:\n                    front[j] = value\n                    rank[j] = bisect_right(friends, value)\n\n        if all_empty and previous_row_was_all_empty:\n            answer += previous_row_count\n            continue\n\n        row_count = 0\n\n        start = usable.find(b\"\\x01\")\n\n        while start != -1:\n            end = usable.find(b\"\\x00\", start)\n            if end == -1:\n                end = m\n\n            run_length = end - start\n\n            if run_length >= k:\n                # 첫 번째 윈도우의 rank 빈도 계산\n                frequency = [0] * k\n\n                for pos in range(start, start + k):\n                    frequency[required[pos]] += 1\n\n                tree = [negative_infinity] * (size << 1)\n                lazy = [0] * (size << 1)\n\n                # tree[x] = x + 현재 윈도우에서 rank >= x인 좌석 수\n                suffix_count = 0\n                for x in range(limit, 0, -1):\n                    suffix_count += frequency[x]\n                    tree[size + x - 1] = x + suffix_count\n\n                for node in range(size - 1, 0, -1):\n                    left = tree[node << 1]\n                    right = tree[(node << 1) | 1]\n                    tree[node] = left if left > right else right\n\n                valid = tree[1] <= k\n                if valid:\n                    row_count += 1\n\n                pos = start + k\n\n                while pos < end:\n                    outgoing = required[pos - k]\n                    incoming = required[pos]\n\n                    if outgoing != incoming:\n                        if outgoing:\n                            for node in covers[outgoing]:\n                                tree[node] -= 1\n                                lazy[node] -= 1\n\n                            for node in ancestors[outgoing]:\n                                child = node << 1\n                                left = tree[child]\n                                right = tree[child | 1]\n                                tree[node] = lazy[node] + (\n                                    left if left > right else right\n                                )\n\n                        if incoming:\n                            for node in covers[incoming]:\n                                tree[node] += 1\n                                lazy[node] += 1\n\n                            for node in ancestors[incoming]:\n                                child = node << 1\n                                left = tree[child]\n                                right = tree[child | 1]\n                                tree[node] = lazy[node] + (\n                                    left if left > right else right\n                                )\n\n                        valid = tree[1] <= k\n\n                    if valid:\n                        row_count += 1\n\n                    pos += 1\n\n            start = usable.find(b\"\\x01\", end)\n\n        answer += row_count\n        previous_row_count = row_count\n        previous_row_was_all_empty = all_empty\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    solve()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 1076,
+      "input_tokens_details": {
+        "cache_write_tokens": 1073,
+        "cached_tokens": 0
+      },
+      "output_tokens": 55186,
+      "output_tokens_details": {
+        "reasoning_tokens": 53352
+      },
+      "total_tokens": 56262
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 637.6043939110023,
+    "prompt_tokens": 1076,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 55186,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 53352,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 1073,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.06649205,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 3,
+        "cache_read": 0,
+        "cache_write": 1073,
+        "output": 55186
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom bisect import bisect_right\n\n\ndef solve():\n    rd = sys.stdin.buffer.readline\n\n    first = rd().split()\n    if not first:\n        return\n\n    n, m, k = map(int, first)\n    friends = list(map(int, rd().split()))\n    friends.sort()\n\n    front = [0] * m\n    rank = [0] * m\n\n    # k = 1인 경우\n    if k == 1:\n        answer = 0\n        friend_height = friends[0]\n\n        for _ in range(n):\n            values = list(map(int, rd().split()))\n\n            for j, value in enumerate(values):\n                current_rank = rank[j]\n\n                if value == 0:\n                    if current_rank == 0:\n                        answer += 1\n                elif value > front[j]:\n                    front[j] = value\n                    rank[j] = 1 if value >= friend_height else 0\n\n        print(answer)\n        return\n\n    # 세그먼트 트리는 x = 1 .. k-1을 관리한다.\n    # rank == k인 좌석은 사용할 수 없으므로 연속 구간에서 제외한다.\n    limit = k - 1\n\n    size = 1\n    while size < limit:\n        size <<= 1\n\n    # 각 q에 대해 [1, q] prefix를 이루는 canonical node들과\n    # 갱신 후 다시 계산해야 하는 조상들을 미리 저장한다.\n    covers = [None] * (limit + 1)\n    ancestors = [None] * (limit + 1)\n\n    for q in range(1, limit + 1):\n        if q == size:\n            covers[q] = (1,)\n            ancestors[q] = ()\n            continue\n\n        node = 1\n        lo = 1\n        hi = size\n        nodes = []\n\n        while lo < hi:\n            mid = (lo + hi) >> 1\n\n            if q <= mid:\n                node <<= 1\n                hi = mid\n            else:\n                nodes.append(node << 1)\n                node = (node << 1) | 1\n                lo = mid + 1\n\n        nodes.append(node)\n        covers[q] = tuple(nodes)\n\n        path = []\n        node >>= 1\n        while node:\n            path.append(node)\n            node >>= 1\n        ancestors[q] = tuple(path)\n\n    answer = 0\n    negative_infinity = -10**9\n\n    # 연속된 완전 빈 행은 앞쪽 학생 정보가 변하지 않으므로\n    # 같은 결과를 재사용할 수 있다.\n    previous_row_was_all_empty = False\n    previous_row_count = 0\n\n    for _ in range(n):\n        values = list(map(int, rd().split()))\n\n        # 현재 행에서 사용할 rank는 행 처리 전의 값이어야 한다.\n        required = rank.copy()\n        usable = bytearray(m)\n        all_empty = True\n\n        for j, value in enumerate(values):\n            q = required[j]\n\n            if value == 0:\n                if q < k:\n                    usable[j] = 1\n            else:\n                all_empty = False\n\n                # 현재 행의 학생은 현재 행의 친구들 앞에 있지 않으므로,\n                # 다음 행부터 front에 반영한다.\n                if value > front[j]:\n                    front[j] = value\n                    rank[j] = bisect_right(friends, value)\n\n        if all_empty and previous_row_was_all_empty:\n            answer += previous_row_count\n            continue\n\n        row_count = 0\n\n        start = usable.find(b\"\\x01\")\n\n        while start != -1:\n            end = usable.find(b\"\\x00\", start)\n            if end == -1:\n                end = m\n\n            run_length = end - start\n\n            if run_length >= k:\n                # 첫 번째 윈도우의 rank 빈도 계산\n                frequency = [0] * k\n\n                for pos in range(start, start + k):\n                    frequency[required[pos]] += 1\n\n                tree = [negative_infinity] * (size << 1)\n                lazy = [0] * (size << 1)\n\n                # tree[x] = x + 현재 윈도우에서 rank >= x인 좌석 수\n                suffix_count = 0\n                for x in range(limit, 0, -1):\n                    suffix_count += frequency[x]\n                    tree[size + x - 1] = x + suffix_count\n\n                for node in range(size - 1, 0, -1):\n                    left = tree[node << 1]\n                    right = tree[(node << 1) | 1]\n                    tree[node] = left if left > right else right\n\n                valid = tree[1] <= k\n                if valid:\n                    row_count += 1\n\n                pos = start + k\n\n                while pos < end:\n                    outgoing = required[pos - k]\n                    incoming = required[pos]\n\n                    if outgoing != incoming:\n                        if outgoing:\n                            for node in covers[outgoing]:\n                                tree[node] -= 1\n                                lazy[node] -= 1\n\n                            for node in ancestors[outgoing]:\n                                child = node << 1\n                                left = tree[child]\n                                right = tree[child | 1]\n                                tree[node] = lazy[node] + (\n                                    left if left > right else right\n                                )\n\n                        if incoming:\n                            for node in covers[incoming]:\n                                tree[node] += 1\n                                lazy[node] += 1\n\n                            for node in ancestors[incoming]:\n                                child = node << 1\n                                left = tree[child]\n                                right = tree[child | 1]\n                                tree[node] = lazy[node] + (\n                                    left if left > right else right\n                                )\n\n                        valid = tree[1] <= k\n\n                    if valid:\n                        row_count += 1\n\n                    pos += 1\n\n            start = usable.find(b\"\\x01\", end)\n\n        answer += row_count\n        previous_row_count = row_count\n        previous_row_was_all_empty = all_empty\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    solve()",
+  "judge": {
+    "status": "TLE",
+    "passed_cases": 90,
+    "total_cases": 91,
+    "max_case_seconds": 1.5052126009977655,
+    "time_limit_seconds": 1.5,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01563435199932428,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2826776760011853,
+        "return_code": 0,
+        "stdout": "4000000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2882064219993481,
+        "return_code": 0,
+        "stdout": "3998000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2923740269980044,
+        "return_code": 0,
+        "stdout": "113000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.27033618399946135,
+        "return_code": 0,
+        "stdout": "1464759\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3519541539972124,
+        "return_code": 0,
+        "stdout": "330901\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.24222088700116728,
+        "return_code": 0,
+        "stdout": "318976\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.25699354500102345,
+        "return_code": 0,
+        "stdout": "916056\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3054157469996426,
+        "return_code": 0,
+        "stdout": "1908505\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2760604819995933,
+        "return_code": 0,
+        "stdout": "57244\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.29312200100321206,
+        "return_code": 0,
+        "stdout": "70240\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027242947999184253,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018179386002884712,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01749978600128088,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013351215999136912,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01421573600237025,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012534217999927932,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.016805502000352135,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015099348998774076,
+        "return_code": 0,
+        "stdout": "15\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017926129999978002,
+        "return_code": 0,
+        "stdout": "25182\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02391477800119901,
+        "return_code": 0,
+        "stdout": "4741\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017756907000148203,
+        "return_code": 0,
+        "stdout": "30065\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0286544970003888,
+        "return_code": 0,
+        "stdout": "3919\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018426245002046926,
+        "return_code": 0,
+        "stdout": "1754\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01875029399889172,
+        "return_code": 0,
+        "stdout": "7587\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02943003700056579,
+        "return_code": 0,
+        "stdout": "5535\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02027215099951718,
+        "return_code": 0,
+        "stdout": "3475\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023925014000269584,
+        "return_code": 0,
+        "stdout": "2707\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01593783399948734,
+        "return_code": 0,
+        "stdout": "124\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017230375000508502,
+        "return_code": 0,
+        "stdout": "37008\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023048266000841977,
+        "return_code": 0,
+        "stdout": "31801\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023409606001223437,
+        "return_code": 0,
+        "stdout": "20789\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018282662000274286,
+        "return_code": 0,
+        "stdout": "24631\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.017572102002304746,
+        "return_code": 0,
+        "stdout": "22246\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014887223002006067,
+        "return_code": 0,
+        "stdout": "200\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015943914997478714,
+        "return_code": 0,
+        "stdout": "40000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013230355998530285,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.020775414999661734,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012377119001030223,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014616423999541439,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011759068998799194,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015173618998232996,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012108775998058263,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012435762997483835,
+        "return_code": 0,
+        "stdout": "15\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.04144292699857033,
+        "return_code": 0,
+        "stdout": "12975\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.0504948380003043,
+        "return_code": 0,
+        "stdout": "214030\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.042043951001687674,
+        "return_code": 0,
+        "stdout": "4113\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.038331515999743715,
+        "return_code": 0,
+        "stdout": "7789\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03769817699867417,
+        "return_code": 0,
+        "stdout": "2034\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03816203200040036,
+        "return_code": 0,
+        "stdout": "1734\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.046841287999995984,
+        "return_code": 0,
+        "stdout": "211080\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.06629028499810374,
+        "return_code": 0,
+        "stdout": "41376\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.06695838799714693,
+        "return_code": 0,
+        "stdout": "9792\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.043257731002086075,
+        "return_code": 0,
+        "stdout": "4665\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029665213001862867,
+        "return_code": 0,
+        "stdout": "198018\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.05569410799944308,
+        "return_code": 0,
+        "stdout": "180749\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.036436729998968076,
+        "return_code": 0,
+        "stdout": "212953\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.054963482998573454,
+        "return_code": 0,
+        "stdout": "141549\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.06147099299778347,
+        "return_code": 0,
+        "stdout": "191917\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03556150499935029,
+        "return_code": 0,
+        "stdout": "500\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029800583000906045,
+        "return_code": 0,
+        "stdout": "250000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014865955999994185,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01926399600051809,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013131386000168277,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014428618997044396,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01348330900145811,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014552183998603141,
+        "return_code": 0,
+        "stdout": "3\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014186589996825205,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014399092997336993,
+        "return_code": 0,
+        "stdout": "15\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2595442780002486,
+        "return_code": 0,
+        "stdout": "118298\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4803542169975117,
+        "return_code": 0,
+        "stdout": "109598\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4884987129989895,
+        "return_code": 0,
+        "stdout": "38228\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.42593233899970073,
+        "return_code": 0,
+        "stdout": "93408\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4628137150029943,
+        "return_code": 0,
+        "stdout": "3548378\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4h"
+      },
+      {
+        "status": "TLE",
+        "elapsed_seconds": 1.5052126009977655,
+        "return_code": null,
+        "stdout": "",
+        "stderr": "",
+        "test_case": "ucionica.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4154638680010976,
+        "return_code": 0,
+        "stdout": "16843\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5314146450000408,
+        "return_code": 0,
+        "stdout": "141605\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4073539630007872,
+        "return_code": 0,
+        "stdout": "29076\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.3161548290008795,
+        "return_code": 0,
+        "stdout": "175554\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2739367440008209,
+        "return_code": 0,
+        "stdout": "3730694\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3171175890020095,
+        "return_code": 0,
+        "stdout": "3823397\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.7754000050008472,
+        "return_code": 0,
+        "stdout": "2338227\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4237728859989147,
+        "return_code": 0,
+        "stdout": "2214636\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 1.127253196998936,
+        "return_code": 0,
+        "stdout": "2122716\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.29374391400051536,
+        "return_code": 0,
+        "stdout": "2000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2803769360034494,
+        "return_code": 0,
+        "stdout": "4000000\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02213606800069101,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011543691998667782,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.018715529000473907,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012346440998953767,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01487863600050332,
+        "return_code": 0,
+        "stdout": "1\n",
+        "stderr": "",
+        "test_case": "ucionica.in.4y"
+      }
+    ]
+  },
+  "record_complete": true
+}

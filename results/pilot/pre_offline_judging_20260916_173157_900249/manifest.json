@@ -1,0 +1,336 @@
+{
+  "archived_at": "2026-09-16T17:31:57.900249+09:00",
+  "reason": "Fresh generation run after separating generation and offline batch judging; preserve original attempts and embedded judgments without rewriting.",
+  "source_root": "results/benchmark",
+  "destination_root": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark",
+  "excluded_from_benchmark": true,
+  "file_count": 54,
+  "total_bytes": 3421076,
+  "verified_before_after": true,
+  "files": [
+    {
+      "source": "results/benchmark/cokolada/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/luna/round_1/candidate.py",
+      "size_bytes": 581,
+      "sha256": "213459d1ef376d80f03b9c26e8789f3984e247294e43c9134cc87530eb84c509"
+    },
+    {
+      "source": "results/benchmark/cokolada/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/luna/round_1/response.json",
+      "size_bytes": 58589,
+      "sha256": "adb346f08c1069626399c716a534cbe230f0d871c44285b6dbf50618500f0134"
+    },
+    {
+      "source": "results/benchmark/cokolada/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/luna/round_1/result.json",
+      "size_bytes": 26194,
+      "sha256": "2887d3f610a30810f002b9a6676669e183b496f0ad3047d7fbc3ce71ee7e5445"
+    },
+    {
+      "source": "results/benchmark/cokolada/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/qwen36/round_1/candidate.py",
+      "size_bytes": 800,
+      "sha256": "31b173739ee636d47d29a7732280effa682cd75f54b0c7186a29b491b2aebb74"
+    },
+    {
+      "source": "results/benchmark/cokolada/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/qwen36/round_1/response.json",
+      "size_bytes": 22660,
+      "sha256": "33ef02f0e2638dd9ee811590f9d51de0e65d10df6f63713c5dad5d6891cc574b"
+    },
+    {
+      "source": "results/benchmark/cokolada/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/cokolada/qwen36/round_1/result.json",
+      "size_bytes": 43823,
+      "sha256": "bbee4a5014925454bb222673d3e328dad71dc16f9f81ca1804d86e0be6ad18e3"
+    },
+    {
+      "source": "results/benchmark/dzeparac/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/luna/round_1/candidate.py",
+      "size_bytes": 92,
+      "sha256": "59c9d2ebfbe464b6f076f871e4d70e405eb4ffdc7bbc08d6049c54c5828931ef"
+    },
+    {
+      "source": "results/benchmark/dzeparac/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/luna/round_1/response.json",
+      "size_bytes": 7215,
+      "sha256": "a13cde810488fbfcf05283fd026d48f90c8364453269d1e7380bb9bca3f9ad96"
+    },
+    {
+      "source": "results/benchmark/dzeparac/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/luna/round_1/result.json",
+      "size_bytes": 30424,
+      "sha256": "4864c95246f0064f5ebac122825f3dbf20071949dff639658ad9f1f9bd65d34e"
+    },
+    {
+      "source": "results/benchmark/dzeparac/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/qwen36/round_1/candidate.py",
+      "size_bytes": 137,
+      "sha256": "da1251caf3bb1474b53ad21b2f05dad4c181b1548756e5cc2b88f4023c054437"
+    },
+    {
+      "source": "results/benchmark/dzeparac/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/qwen36/round_1/response.json",
+      "size_bytes": 15137,
+      "sha256": "bfbaf45b0c7ed0085044fd38af7ce445c9dc64405239fdac51c7b591164407fa"
+    },
+    {
+      "source": "results/benchmark/dzeparac/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/dzeparac/qwen36/round_1/result.json",
+      "size_bytes": 41940,
+      "sha256": "787aaf2c793676e1102b8de029fb2ce0a9109631b62fa4cc0fe00b72c74e3b14"
+    },
+    {
+      "source": "results/benchmark/pet/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/luna/round_1/candidate.py",
+      "size_bytes": 3039,
+      "sha256": "1909bd5e5e356d817b7dfe92d7a9eee1b3b50c0208f8744b090f34827ff4ed2c"
+    },
+    {
+      "source": "results/benchmark/pet/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/luna/round_1/response.json",
+      "size_bytes": 381748,
+      "sha256": "3921a417f40fef2460fee43177768f4500a361fe9feee392f758202d1dfd3db2"
+    },
+    {
+      "source": "results/benchmark/pet/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/luna/round_1/result.json",
+      "size_bytes": 37166,
+      "sha256": "cdf5c2085ec23ff2b71ef725e89d85f58424a12d2990fd811417be9583ca6194"
+    },
+    {
+      "source": "results/benchmark/pet/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/qwen36/round_1/candidate.py",
+      "size_bytes": 2103,
+      "sha256": "98ef218f1b62286782a396863f80bfbe0972117e11089df8ae68f13c5e1c1336"
+    },
+    {
+      "source": "results/benchmark/pet/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/qwen36/round_1/response.json",
+      "size_bytes": 69310,
+      "sha256": "1381162e52a4562f1a407606d033fa01d58c251b21fe5a1b337f124cda93f396"
+    },
+    {
+      "source": "results/benchmark/pet/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/pet/qwen36/round_1/result.json",
+      "size_bytes": 96835,
+      "sha256": "0433858be549d86ad579c31020aec979899eaf74aa375ce242f0327f1455406d"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/luna/round_1/candidate.py",
+      "size_bytes": 3691,
+      "sha256": "e2861fef35fc3f165b597f9bf3bef116ba9fd96f9ab8f0019f45d3b7ea93140e"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/luna/round_1/response.json",
+      "size_bytes": 107877,
+      "sha256": "4011eb13292d181355b45dc0add49a9d534d5845dc7edcb374dff06fc0783331"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/luna/round_1/result.json",
+      "size_bytes": 43792,
+      "sha256": "692aee34bee0ebb0c5658fa41ebd65116106b382647b4a8fc66acd75de5be479"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/qwen36/round_1/candidate.py",
+      "size_bytes": 1662,
+      "sha256": "57ec15114b72f499b8c921ff9f58bd41a28ea4695266ca34be1f71d7dffba993"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/qwen36/round_1/response.json",
+      "size_bytes": 39477,
+      "sha256": "9b2b025cd062af4c1beb6ac3b288e3761a1b2832ed6a683b7cec09a0ed3ed243"
+    },
+    {
+      "source": "results/benchmark/prepisivanje/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/prepisivanje/qwen36/round_1/result.json",
+      "size_bytes": 72786,
+      "sha256": "d7b65e6c95f7273b20ef394eae5d5dec1dd83da910e62f8a1fcd464fae964014"
+    },
+    {
+      "source": "results/benchmark/skare/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skare/luna/round_1/candidate.py",
+      "size_bytes": 363,
+      "sha256": "45df7b86764edef149fdf0e02a93546234d21c9c96638315c736d9fe18100cfe"
+    },
+    {
+      "source": "results/benchmark/skare/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skare/luna/round_1/response.json",
+      "size_bytes": 14099,
+      "sha256": "df28f992724a6e9844c671436e3912292587ca1c4dd2d219dfb12f1900b24f28"
+    },
+    {
+      "source": "results/benchmark/skare/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skare/luna/round_1/result.json",
+      "size_bytes": 17735,
+      "sha256": "f66b871a07c2c983002475567a51158b99463ea766b35a9c3b37db7ff110dbe4"
+    },
+    {
+      "source": "results/benchmark/skijanje/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skijanje/luna/round_1/response.json",
+      "size_bytes": 1057172,
+      "sha256": "786c29330ce9521497f17aa398bdacb2ce262d7f97308586f3c18aba72b7e669"
+    },
+    {
+      "source": "results/benchmark/skijanje/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skijanje/luna/round_1/result.json",
+      "size_bytes": 7963,
+      "sha256": "25a4def29f4bd967d8f1ebb34626146b24649a049185e27e4b5f182ea9d600cb"
+    },
+    {
+      "source": "results/benchmark/skijanje/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/skijanje/qwen36/round_1/result.json",
+      "size_bytes": 5932,
+      "sha256": "52b255b539b7e3c7528a26301f3c77be1520bb124bcc5025a63e4f4097098cd8"
+    },
+    {
+      "source": "results/benchmark/struktura/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/luna/round_1/candidate.py",
+      "size_bytes": 494,
+      "sha256": "b988a0e5fb417793e9a70ffa8c5ddffa86cabaf0a38d946887e9c438237546b1"
+    },
+    {
+      "source": "results/benchmark/struktura/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/luna/round_1/response.json",
+      "size_bytes": 36772,
+      "sha256": "bb29024f6c0022f34d58f782983cf18e099afaf3192d7798cbc3f99f4dd697f0"
+    },
+    {
+      "source": "results/benchmark/struktura/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/luna/round_1/result.json",
+      "size_bytes": 36583,
+      "sha256": "2e704fbf101172e80a8f43dd7a82d8d82d33a6c4856067e22afbfda6f3fc9124"
+    },
+    {
+      "source": "results/benchmark/struktura/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/qwen36/round_1/candidate.py",
+      "size_bytes": 1064,
+      "sha256": "511e6cc749c0f88e39c715d8a30ea40aef0403d213fe16508e0a136f1f997839"
+    },
+    {
+      "source": "results/benchmark/struktura/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/qwen36/round_1/response.json",
+      "size_bytes": 22520,
+      "sha256": "d3cb74e77fcdf4ae510cc911adf33f2fbf377cde0ecdfd9051cfca0c020ba07d"
+    },
+    {
+      "source": "results/benchmark/struktura/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/struktura/qwen36/round_1/result.json",
+      "size_bytes": 55241,
+      "sha256": "f97b6304c037119c99660134fd87bf0934182ce27caa17d3cb4fc16456a266b4"
+    },
+    {
+      "source": "results/benchmark/tezina/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/luna/round_1/candidate.py",
+      "size_bytes": 1407,
+      "sha256": "516306323463d20c0d70fcd5df173fe84ef9f72beb1a2c538b7873ad49889fb8"
+    },
+    {
+      "source": "results/benchmark/tezina/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/luna/round_1/response.json",
+      "size_bytes": 23478,
+      "sha256": "e9f8f7b1e749907382521b2faf6d39c09260a7c0483083cc20c1cb64e0fd18a1"
+    },
+    {
+      "source": "results/benchmark/tezina/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/luna/round_1/result.json",
+      "size_bytes": 28315,
+      "sha256": "37e0da78ee238c801646231cbab71cfbe0bc7b8f71633f60ba85e88c1165d6dd"
+    },
+    {
+      "source": "results/benchmark/tezina/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/qwen36/round_1/candidate.py",
+      "size_bytes": 809,
+      "sha256": "5feb7eaeac7897ca23412b9a748078793441e562eba168f0bd8ba8c872174ac9"
+    },
+    {
+      "source": "results/benchmark/tezina/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/qwen36/round_1/response.json",
+      "size_bytes": 34713,
+      "sha256": "e5dd6c321576e0838a6b422ee560ed4cfe64981170fec2fcd2303cf35df4789e"
+    },
+    {
+      "source": "results/benchmark/tezina/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tezina/qwen36/round_1/result.json",
+      "size_bytes": 56332,
+      "sha256": "f7f68a31117ea3ed5116a8ba5ec3a8675d7c9c0ef29176edd74806941f0c0c00"
+    },
+    {
+      "source": "results/benchmark/tomahawk/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/luna/round_1/candidate.py",
+      "size_bytes": 1519,
+      "sha256": "3c9b522789fb36e748c0ba427bd7238080525a0b0f5b3e59949a550f6ffe8f5a"
+    },
+    {
+      "source": "results/benchmark/tomahawk/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/luna/round_1/response.json",
+      "size_bytes": 85393,
+      "sha256": "8c77687530fe85acbfc5a12a2821af463c7130b1119d13c3dcdcc587f8c07877"
+    },
+    {
+      "source": "results/benchmark/tomahawk/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/luna/round_1/result.json",
+      "size_bytes": 42009,
+      "sha256": "9f3a15b46863a3ededba3ada3b3668544a3a881185aef78e973a45dbf2a95919"
+    },
+    {
+      "source": "results/benchmark/tomahawk/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/qwen36/round_1/candidate.py",
+      "size_bytes": 2053,
+      "sha256": "fb8597b52042b30362d0cac4173a2f6a2392f270fd5ee2a25d095fc5de4c080a"
+    },
+    {
+      "source": "results/benchmark/tomahawk/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/qwen36/round_1/response.json",
+      "size_bytes": 33897,
+      "sha256": "5a082cdf416b1cef99812a234e016030a0b9c7486f54dac89cd0edffa37e274d"
+    },
+    {
+      "source": "results/benchmark/tomahawk/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/tomahawk/qwen36/round_1/result.json",
+      "size_bytes": 69542,
+      "sha256": "ef5d41dbdea905770b20320ad4da70a9ef51797cefd7594b989ed1d65287d433"
+    },
+    {
+      "source": "results/benchmark/ucionica/luna/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/luna/round_1/candidate.py",
+      "size_bytes": 5899,
+      "sha256": "eeee9ce8f9b6bf02a1e748ddde5b77791cad84500270eea39307ac13f3a548fd"
+    },
+    {
+      "source": "results/benchmark/ucionica/luna/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/luna/round_1/response.json",
+      "size_bytes": 426389,
+      "sha256": "645f9aedafbe99501a4202c80be1fb2f212186e818961505957be0561ccef229"
+    },
+    {
+      "source": "results/benchmark/ucionica/luna/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/luna/round_1/result.json",
+      "size_bytes": 40938,
+      "sha256": "bba72dfd4579cc749cd92fb11085834aa384fc69de9515ade2aff87c4ba646f3"
+    },
+    {
+      "source": "results/benchmark/ucionica/qwen36/round_1/candidate.py",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/qwen36/round_1/candidate.py",
+      "size_bytes": 2534,
+      "sha256": "5161c4bd656bd889cd64232a3c970922862a4a822c1a0e647ee7d58857348721"
+    },
+    {
+      "source": "results/benchmark/ucionica/qwen36/round_1/response.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/qwen36/round_1/response.json",
+      "size_bytes": 55768,
+      "sha256": "ed1f7425fcd596737a04b649fa597b78e85ffd1d38e11ac6a44cd7fcd1dc303a"
+    },
+    {
+      "source": "results/benchmark/ucionica/qwen36/round_1/result.json",
+      "destination": "results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/ucionica/qwen36/round_1/result.json",
+      "size_bytes": 147065,
+      "sha256": "5db302c30ca31de1b4d627ae73430022553de19b19300c641e0662a5d85d32bd"
+    }
+  ]
+}

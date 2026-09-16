@@ -1,0 +1,986 @@
+{
+  "run_id": "20260916_073801_020246Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_pet",
+    "name": "pet",
+    "season": "2025_2026",
+    "contest": 5,
+    "difficulty": 7,
+    "difficulty_reason": "행·열을 번갈아 이동하는 길이 5 경로를 DP로 세고, 동일 수련잎 재방문으로 생기는 직사각형 경로를 별도로 제거해야 한다. 큰 격자에서 직사각형 수를 세기 위해 bitset 최적화도 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest5/testdata/pet",
+    "statement_path": "data/coci/2025_2026/contest5/statements/pet.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Pet"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nFrog Maša is in a lake represented by a matrix with $n$ rows and $m$ columns. The cells of the matrix are marked with $0$ (water) or $1$ (water lily). From one water lily, Maša can jump to any other water lily in the same row or column. If in the previous jump Maša changed the column she was in, then in the next jump she must change the row she is in. If in the previous jump Maša changed the row she was in, then in the next jump she must change the column she is in. After Maša jumps from the water lily she is currently on, it sinks and can no longer be jumped on.\n\nMaša likes to have fun and wants to visit a total of 5 water lilies along her path (including the starting water lily).\n\nHelp her and calculate in how many ways she can do this if she can choose any water lily as her starting point. Two paths are considered different if the positions of their first, second, third, fourth, or fifth water lilies differ.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $m$ ($1 \\le n,m \\le 2000$), as described in the problem statement.\n\nIn each of the following $n$ lines there are $m$ characters, which are either $0$ or $1$ and represent the cells of the lake.\n\n## Output\n\nPrint a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n2 3\n111\n110\n```\n\nOutput\n\n```text\n4\n```\n\n### Example 2\n\nInput\n\n```text\n4 4\n1111\n1111\n1111\n1111\n```\n\nOutput\n\n```text\n2304\n```\n\n### Example 3\n\nInput\n\n```text\n2 5\n11110\n01111\n```\n\nOutput\n\n```text\n48\n```\n\n### Clarification of the first example:\n\nThe 4 possible jump paths on water lilies are:\n\n$[1,1] \\to [2,1] \\to [2,2] \\to [1,2] \\to [1,3]$\n\n$[1,2] \\to [2,2] \\to [2,1] \\to [1,1] \\to [1,3]$\n\n$[1,3] \\to [1,2] \\to [2,2] \\to [2,1] \\to [1,1]$\n\n$[1,3] \\to [1,1] \\to [2,1] \\to [2,2] \\to [1,2]$"
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_001eae8af83c8440016aaa4759944c87d0ada77cf6138f86c5",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 풀이 방법\n\n점프 방향을 다음과 같이 정의합니다.\n\n- `H`: 같은 행에서 열을 바꾸는 점프\n- `V`: 같은 열에서 행을 바꾸는 점프\n\n첫 점프가 `H`라면 전체 방향은 반드시 `H-V-H-V`가 됩니다.  \n첫 점프가 `V`인 경우는 `V-H-V-H`이고, 경로를 거꾸로 읽으면 `H-V-H-V`와 일대일 대응하므로 두 경우의 개수는 같습니다.\n\n따라서 `H-V-H-V` 경로만 세고 마지막에 2를 곱합니다.\n\n#### 1. 행과 열의 백합 개수\n\n- \\(R_i\\): \\(i\\)번 행의 백합 개수\n- \\(C_j\\): \\(j\\)번 열의 백합 개수\n\n다음 값을 정의합니다.\n\n- \\(A_j = \\sum_{(i,j)=1}(R_i-1)\\)\n- \\(U_i = \\sum_{(i,j)=1}(C_j-1)\\)\n- \\(W_i = \\sum_{(i,j)=1}A_j\\)\n\n두 번째 백합이 \\((i,j)\\)라고 합시다.\n\n- 첫 번째 백합 선택 방법: \\(R_i-1\\)\n- 세 번째 백합은 열 \\(j\\)에서 다른 행을 선택\n- 세 번째 백합이 \\((x,j)\\)일 때, 네 번째와 다섯 번째 백합을 고르는 방법은 \\(U_x-(C_j-1)\\)\n\n이를 모두 합치면, 시작과 끝의 백합이 같을 수도 있는 `H-V-H-V` 경로 수 \\(P\\)는 다음과 같이 정리됩니다.\n\n\\[\nP=\n\\sum_i U_i\\left(W_i-(R_i-1)^2\\right)\n-\\sum_j A_j C_j(C_j-1)\n\\]\n\n#### 2. 시작 백합으로 돌아오는 경로 제거\n\n방향이 `H-V-H-V`일 때 방문 순서를 좌표로 쓰면 다음과 같습니다.\n\n\\[\n(r_0,c_0),\n(r_0,c_1),\n(r_1,c_1),\n(r_1,c_2),\n(r_2,c_2)\n\\]\n\n인접한 점프에서 행 또는 열을 반드시 바꾸므로, 시작 백합과 마지막 백합 외에는 중복이 발생할 수 없습니다.\n\n시작과 마지막 백합이 같다면 네 개의 백합이 모두 존재하는 직사각형, 즉 올바른 \\(2\\times2\\) 부분행렬을 이룹니다.\n\n직사각형 하나마다 `H-V-H-V` 방향의 닫힌 경로가 4개 있으므로, 직사각형 개수를 \\(Q\\)라 하면 유효한 전체 답은\n\n\\[\n2(P-4Q)\n\\]\n\n입니다.\n\n#### 3. 직사각형 개수\n\n각 행을 비트마스크로 표현합니다.\n\n두 행의 공통 백합 열 개수가 \\(k\\)라면, 그 두 행으로 만들 수 있는 직사각형 수는\n\n\\[\n\\binom{k}{2}\n\\]\n\n입니다. 따라서 모든 행 쌍에 대해 비트 AND와 `bit_count()`를 사용해 \\(Q\\)를 계산합니다.\n\n### 복잡도\n\n비트 집합의 한 번의 AND와 popcount가 \\(m\\)비트에 대해 \\(O(m/B)\\)이라고 하면,\n\n- 전처리 및 경로 계산: \\(O(nm)\\)\n- 직사각형 계산: \\(O(n^2m/B)\\)\n- 공간 복잡도: \\(O(nm/B+n+m)\\)\n\n여기서 \\(B\\)는 한 머신 워드의 비트 수입니다.\n\n```python\nimport sys\n\n\ndef main():\n    rd = sys.stdin.buffer.readline\n    n, m = map(int, rd().split())\n\n    row_masks = [0] * n\n    row_deg = [0] * n\n    col_deg = [0] * m\n\n    # A_j = sum of (R_i - 1) over all lilies in column j\n    col_a = [0] * m\n\n    for i in range(n):\n        line = rd().strip()\n\n        # Make bit j correspond to the original column j.\n        mask = int(line[::-1], 2)\n        row_masks[i] = mask\n\n        r = mask.bit_count()\n        row_deg[i] = r\n        add = r - 1\n\n        for j, ch in enumerate(line):\n            if ch == 49:  # ord('1')\n                col_deg[j] += 1\n                col_a[j] += add\n\n    # sum_j A_j * C_j * (C_j - 1)\n    constant = 0\n    for j in range(m):\n        c = col_deg[j]\n        constant += col_a[j] * c * (c - 1)\n\n    # Pack (C_j - 1) and A_j into one integer.\n    # The low bits store U_i, and the high bits store W_i.\n    # U_i <= m * (n - 1), so this field is sufficiently wide.\n    shift = (m * (n - 1)).bit_length() + 1\n    low_mask = (1 << shift) - 1\n\n    packed_weight = [0] * m\n    for j, c in enumerate(col_deg):\n        if c != 0:\n            # Empty columns never occur in a row mask.\n            packed_weight[j] = (c - 1) + (col_a[j] << shift)\n\n    # Lookup table for every 8-column pattern.\n    block_count = (m + 7) // 8\n    lookup = []\n\n    for start in range(0, m, 8):\n        values = packed_weight[start:start + 8]\n        if len(values) < 8:\n            values += [0] * (8 - len(values))\n\n        table = [0] * 256\n        for pattern in range(1, 256):\n            bit = pattern & -pattern\n            table[pattern] = (\n                table[pattern ^ bit] + values[bit.bit_length() - 1]\n            )\n        lookup.append(table)\n\n    # Count all H-V-H-V walks, before removing paths returning to start.\n    raw_h = -constant\n\n    for i, mask in enumerate(row_masks):\n        packed = 0\n        row_bytes = mask.to_bytes(block_count, \"little\")\n\n        for k, value in enumerate(row_bytes):\n            packed += lookup[k][value]\n\n        u = packed & low_mask       # U_i\n        w = packed >> shift         # W_i\n\n        q = row_deg[i] - 1\n        raw_h += u * (w - q * q)\n\n    # Count all-ones rectangles.\n    # Grouping identical row masks reduces work on repetitive grids.\n    frequency = {}\n    for mask, r in zip(row_masks, row_deg):\n        if r >= 2:\n            frequency[mask] = frequency.get(mask, 0) + 1\n\n    items = list(frequency.items())\n    rectangles = 0\n\n    # Pairs of identical rows\n    for mask, count in items:\n        if count >= 2:\n            common = mask.bit_count()\n            rectangles += (\n                (count * (count - 1) // 2)\n                * (common * (common - 1) // 2)\n            )\n\n    # Pairs of different row masks\n    for i in range(1, len(items)):\n        x, fx = items[i]\n        for y, fy in items[:i]:\n            common = (x & y).bit_count()\n            rectangles += fx * fy * (common * (common - 1) // 2)\n\n    answer = 2 * (raw_h - 4 * rectangles)\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 758,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 51434,
+      "output_tokens_details": {
+        "reasoning_tokens": 49726
+      },
+      "total_tokens": 52192
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 565.0597613310019,
+    "prompt_tokens": 758,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 51434,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 49726,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0618724,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 758,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 51434
+      }
+    }
+  },
+  "extracted_code": "import sys\n\n\ndef main():\n    rd = sys.stdin.buffer.readline\n    n, m = map(int, rd().split())\n\n    row_masks = [0] * n\n    row_deg = [0] * n\n    col_deg = [0] * m\n\n    # A_j = sum of (R_i - 1) over all lilies in column j\n    col_a = [0] * m\n\n    for i in range(n):\n        line = rd().strip()\n\n        # Make bit j correspond to the original column j.\n        mask = int(line[::-1], 2)\n        row_masks[i] = mask\n\n        r = mask.bit_count()\n        row_deg[i] = r\n        add = r - 1\n\n        for j, ch in enumerate(line):\n            if ch == 49:  # ord('1')\n                col_deg[j] += 1\n                col_a[j] += add\n\n    # sum_j A_j * C_j * (C_j - 1)\n    constant = 0\n    for j in range(m):\n        c = col_deg[j]\n        constant += col_a[j] * c * (c - 1)\n\n    # Pack (C_j - 1) and A_j into one integer.\n    # The low bits store U_i, and the high bits store W_i.\n    # U_i <= m * (n - 1), so this field is sufficiently wide.\n    shift = (m * (n - 1)).bit_length() + 1\n    low_mask = (1 << shift) - 1\n\n    packed_weight = [0] * m\n    for j, c in enumerate(col_deg):\n        if c != 0:\n            # Empty columns never occur in a row mask.\n            packed_weight[j] = (c - 1) + (col_a[j] << shift)\n\n    # Lookup table for every 8-column pattern.\n    block_count = (m + 7) // 8\n    lookup = []\n\n    for start in range(0, m, 8):\n        values = packed_weight[start:start + 8]\n        if len(values) < 8:\n            values += [0] * (8 - len(values))\n\n        table = [0] * 256\n        for pattern in range(1, 256):\n            bit = pattern & -pattern\n            table[pattern] = (\n                table[pattern ^ bit] + values[bit.bit_length() - 1]\n            )\n        lookup.append(table)\n\n    # Count all H-V-H-V walks, before removing paths returning to start.\n    raw_h = -constant\n\n    for i, mask in enumerate(row_masks):\n        packed = 0\n        row_bytes = mask.to_bytes(block_count, \"little\")\n\n        for k, value in enumerate(row_bytes):\n            packed += lookup[k][value]\n\n        u = packed & low_mask       # U_i\n        w = packed >> shift         # W_i\n\n        q = row_deg[i] - 1\n        raw_h += u * (w - q * q)\n\n    # Count all-ones rectangles.\n    # Grouping identical row masks reduces work on repetitive grids.\n    frequency = {}\n    for mask, r in zip(row_masks, row_deg):\n        if r >= 2:\n            frequency[mask] = frequency.get(mask, 0) + 1\n\n    items = list(frequency.items())\n    rectangles = 0\n\n    # Pairs of identical rows\n    for mask, count in items:\n        if count >= 2:\n            common = mask.bit_count()\n            rectangles += (\n                (count * (count - 1) // 2)\n                * (common * (common - 1) // 2)\n            )\n\n    # Pairs of different row masks\n    for i in range(1, len(items)):\n        x, fx = items[i]\n        for y, fy in items[:i]:\n            common = (x & y).bit_count()\n            rectangles += fx * fy * (common * (common - 1) // 2)\n\n    answer = 2 * (raw_h - 4 * rectangles)\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": {
+    "status": "AC",
+    "passed_cases": 104,
+    "total_cases": 104,
+    "max_case_seconds": 0.5250935840012971,
+    "time_limit_seconds": 1.0,
+    "test_results": [
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014132917996903416,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.1a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010836588997335639,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013273862001369707,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012362550998659572,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011113951000879752,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.1e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013079338001261931,
+        "return_code": 0,
+        "stdout": "12\n",
+        "stderr": "",
+        "test_case": "pet.in.1f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012287192999792751,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01082030600082362,
+        "return_code": 0,
+        "stdout": "32\n",
+        "stderr": "",
+        "test_case": "pet.in.1h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011163867999130161,
+        "return_code": 0,
+        "stdout": "208\n",
+        "stderr": "",
+        "test_case": "pet.in.1i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011008485998900142,
+        "return_code": 0,
+        "stdout": "1104\n",
+        "stderr": "",
+        "test_case": "pet.in.1j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010932279998087324,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01412880699717789,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012161832997662714,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011228696999751264,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.1n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012405388999468414,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012202586000057636,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010092272001202218,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011507923998578917,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012973761000466766,
+        "return_code": 0,
+        "stdout": "1584\n",
+        "stderr": "",
+        "test_case": "pet.in.1s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011499528998683672,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011621199999353848,
+        "return_code": 0,
+        "stdout": "8\n",
+        "stderr": "",
+        "test_case": "pet.in.1u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013351532001252053,
+        "return_code": 0,
+        "stdout": "44\n",
+        "stderr": "",
+        "test_case": "pet.in.1v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.015519789998506894,
+        "return_code": 0,
+        "stdout": "668\n",
+        "stderr": "",
+        "test_case": "pet.in.1w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012072730998625048,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012761474998114863,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.010986048000631854,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.1z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012381103999359766,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.2a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012157234999904176,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.2b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012714042997686192,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.2c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011740473000827478,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.2d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012701231000392,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.2e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011625857001490658,
+        "return_code": 0,
+        "stdout": "648\n",
+        "stderr": "",
+        "test_case": "pet.in.2f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012045520001265686,
+        "return_code": 0,
+        "stdout": "5134\n",
+        "stderr": "",
+        "test_case": "pet.in.2g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011645799000689294,
+        "return_code": 0,
+        "stdout": "5432\n",
+        "stderr": "",
+        "test_case": "pet.in.2h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011532574997545453,
+        "return_code": 0,
+        "stdout": "27986\n",
+        "stderr": "",
+        "test_case": "pet.in.2i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012633571997866966,
+        "return_code": 0,
+        "stdout": "75852\n",
+        "stderr": "",
+        "test_case": "pet.in.2j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012456063999707112,
+        "return_code": 0,
+        "stdout": "253672\n",
+        "stderr": "",
+        "test_case": "pet.in.2k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012328122000326402,
+        "return_code": 0,
+        "stdout": "499002\n",
+        "stderr": "",
+        "test_case": "pet.in.2l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012517838000349002,
+        "return_code": 0,
+        "stdout": "719940\n",
+        "stderr": "",
+        "test_case": "pet.in.2m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014735141001438024,
+        "return_code": 0,
+        "stdout": "1296000\n",
+        "stderr": "",
+        "test_case": "pet.in.2n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012387662998662563,
+        "return_code": 0,
+        "stdout": "829132\n",
+        "stderr": "",
+        "test_case": "pet.in.2o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014334684001369169,
+        "return_code": 0,
+        "stdout": "719012\n",
+        "stderr": "",
+        "test_case": "pet.in.2p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011566594999749213,
+        "return_code": 0,
+        "stdout": "938000\n",
+        "stderr": "",
+        "test_case": "pet.in.2q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011090346000855789,
+        "return_code": 0,
+        "stdout": "933840\n",
+        "stderr": "",
+        "test_case": "pet.in.2r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01411843000096269,
+        "return_code": 0,
+        "stdout": "1296000\n",
+        "stderr": "",
+        "test_case": "pet.in.2s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012419024998962414,
+        "return_code": 0,
+        "stdout": "1106964\n",
+        "stderr": "",
+        "test_case": "pet.in.2t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.014757998000277439,
+        "return_code": 0,
+        "stdout": "1051856\n",
+        "stderr": "",
+        "test_case": "pet.in.2u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013807581999571994,
+        "return_code": 0,
+        "stdout": "147780\n",
+        "stderr": "",
+        "test_case": "pet.in.2v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011722498999006348,
+        "return_code": 0,
+        "stdout": "7114\n",
+        "stderr": "",
+        "test_case": "pet.in.2w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012049034998199204,
+        "return_code": 0,
+        "stdout": "555628\n",
+        "stderr": "",
+        "test_case": "pet.in.2x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01367419400048675,
+        "return_code": 0,
+        "stdout": "1231200\n",
+        "stderr": "",
+        "test_case": "pet.in.2y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012075692000507843,
+        "return_code": 0,
+        "stdout": "547752\n",
+        "stderr": "",
+        "test_case": "pet.in.2z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011885887000971707,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.3a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012987609003175749,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.3b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.013046607000433141,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.3c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01854540500062285,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.3d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023860979999881238,
+        "return_code": 0,
+        "stdout": "77337685958\n",
+        "stderr": "",
+        "test_case": "pet.in.3e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.023602632998517947,
+        "return_code": 0,
+        "stdout": "2551076616424\n",
+        "stderr": "",
+        "test_case": "pet.in.3f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.026488024999707704,
+        "return_code": 0,
+        "stdout": "19842446095270\n",
+        "stderr": "",
+        "test_case": "pet.in.3g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.029062614998110803,
+        "return_code": 0,
+        "stdout": "81707444460494\n",
+        "stderr": "",
+        "test_case": "pet.in.3h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02746525600014138,
+        "return_code": 0,
+        "stdout": "245571417088108\n",
+        "stderr": "",
+        "test_case": "pet.in.3i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03880670500075212,
+        "return_code": 0,
+        "stdout": "630366572241420\n",
+        "stderr": "",
+        "test_case": "pet.in.3j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03783976100021391,
+        "return_code": 0,
+        "stdout": "1363424411467686\n",
+        "stderr": "",
+        "test_case": "pet.in.3k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.034214360999612836,
+        "return_code": 0,
+        "stdout": "2665881222905520\n",
+        "stderr": "",
+        "test_case": "pet.in.3l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028646562997892033,
+        "return_code": 0,
+        "stdout": "4766852885198650\n",
+        "stderr": "",
+        "test_case": "pet.in.3m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.021457072001794586,
+        "return_code": 0,
+        "stdout": "8110335744000000\n",
+        "stderr": "",
+        "test_case": "pet.in.3n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.03056649800055311,
+        "return_code": 0,
+        "stdout": "5053914348484026\n",
+        "stderr": "",
+        "test_case": "pet.in.3o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.033565932000783505,
+        "return_code": 0,
+        "stdout": "5347267857791490\n",
+        "stderr": "",
+        "test_case": "pet.in.3p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.026999013000022387,
+        "return_code": 0,
+        "stdout": "5595592364080718\n",
+        "stderr": "",
+        "test_case": "pet.in.3q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028833136999310227,
+        "return_code": 0,
+        "stdout": "5975199226190092\n",
+        "stderr": "",
+        "test_case": "pet.in.3r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02944802999991225,
+        "return_code": 0,
+        "stdout": "6264137439141672\n",
+        "stderr": "",
+        "test_case": "pet.in.3s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02539587399951415,
+        "return_code": 0,
+        "stdout": "2194679716801508\n",
+        "stderr": "",
+        "test_case": "pet.in.3t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028920675998961087,
+        "return_code": 0,
+        "stdout": "1008556671367794\n",
+        "stderr": "",
+        "test_case": "pet.in.3u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02925621299800696,
+        "return_code": 0,
+        "stdout": "4311070118514\n",
+        "stderr": "",
+        "test_case": "pet.in.3v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.028666160000284435,
+        "return_code": 0,
+        "stdout": "2830062485141234\n",
+        "stderr": "",
+        "test_case": "pet.in.3w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.02418202300032135,
+        "return_code": 0,
+        "stdout": "6492866026248\n",
+        "stderr": "",
+        "test_case": "pet.in.3x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027494316000229446,
+        "return_code": 0,
+        "stdout": "7711894319560858\n",
+        "stderr": "",
+        "test_case": "pet.in.3y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.027268645997537533,
+        "return_code": 0,
+        "stdout": "7318861318711898\n",
+        "stderr": "",
+        "test_case": "pet.in.3z"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.012049299999489449,
+        "return_code": 0,
+        "stdout": "4\n",
+        "stderr": "",
+        "test_case": "pet.in.4a"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.011186245999851963,
+        "return_code": 0,
+        "stdout": "2304\n",
+        "stderr": "",
+        "test_case": "pet.in.4b"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.01397901800010004,
+        "return_code": 0,
+        "stdout": "48\n",
+        "stderr": "",
+        "test_case": "pet.in.4c"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.08639346900235978,
+        "return_code": 0,
+        "stdout": "0\n",
+        "stderr": "",
+        "test_case": "pet.in.4d"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.37492836599994916,
+        "return_code": 0,
+        "stdout": "1256197903989410\n",
+        "stderr": "",
+        "test_case": "pet.in.4e"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3981731919993763,
+        "return_code": 0,
+        "stdout": "41138207321759970\n",
+        "stderr": "",
+        "test_case": "pet.in.4f"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.39718922700194526,
+        "return_code": 0,
+        "stdout": "310176416526461972\n",
+        "stderr": "",
+        "test_case": "pet.in.4g"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4560939960028918,
+        "return_code": 0,
+        "stdout": "1310151413600151092\n",
+        "stderr": "",
+        "test_case": "pet.in.4h"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.47136754899838706,
+        "return_code": 0,
+        "stdout": "3983946295348778214\n",
+        "stderr": "",
+        "test_case": "pet.in.4i"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4614590170021984,
+        "return_code": 0,
+        "stdout": "9934371923929720502\n",
+        "stderr": "",
+        "test_case": "pet.in.4j"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.48419886700139614,
+        "return_code": 0,
+        "stdout": "21485518480340274116\n",
+        "stderr": "",
+        "test_case": "pet.in.4k"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5028710080005112,
+        "return_code": 0,
+        "stdout": "41797016603246621026\n",
+        "stderr": "",
+        "test_case": "pet.in.4l"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4835301069979323,
+        "return_code": 0,
+        "stdout": "75501642976058457556\n",
+        "stderr": "",
+        "test_case": "pet.in.4m"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.2414075340020645,
+        "return_code": 0,
+        "stdout": "127744159968000000000\n",
+        "stderr": "",
+        "test_case": "pet.in.4n"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5007825669999875,
+        "return_code": 0,
+        "stdout": "79744984633826261782\n",
+        "stderr": "",
+        "test_case": "pet.in.4o"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4899117699969793,
+        "return_code": 0,
+        "stdout": "84261844888826081908\n",
+        "stderr": "",
+        "test_case": "pet.in.4p"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5040488640006515,
+        "return_code": 0,
+        "stdout": "88808387695313236988\n",
+        "stderr": "",
+        "test_case": "pet.in.4q"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4995138570011477,
+        "return_code": 0,
+        "stdout": "93708864255557809892\n",
+        "stderr": "",
+        "test_case": "pet.in.4r"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.49535137100247084,
+        "return_code": 0,
+        "stdout": "98810935820521868462\n",
+        "stderr": "",
+        "test_case": "pet.in.4s"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.4987472020002315,
+        "return_code": 0,
+        "stdout": "67348440396837376800\n",
+        "stderr": "",
+        "test_case": "pet.in.4t"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5063296080006694,
+        "return_code": 0,
+        "stdout": "121462503616111957086\n",
+        "stderr": "",
+        "test_case": "pet.in.4u"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.3665414660026727,
+        "return_code": 0,
+        "stdout": "23902353107793798\n",
+        "stderr": "",
+        "test_case": "pet.in.4v"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.382808816000761,
+        "return_code": 0,
+        "stdout": "65901743573479412\n",
+        "stderr": "",
+        "test_case": "pet.in.4w"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5157876960001886,
+        "return_code": 0,
+        "stdout": "53332226327876143346\n",
+        "stderr": "",
+        "test_case": "pet.in.4x"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5002152710003429,
+        "return_code": 0,
+        "stdout": "41899021028456253616\n",
+        "stderr": "",
+        "test_case": "pet.in.4y"
+      },
+      {
+        "status": "AC",
+        "elapsed_seconds": 0.5250935840012971,
+        "return_code": 0,
+        "stdout": "30271027690636305868\n",
+        "stderr": "",
+        "test_case": "pet.in.4z"
+      }
+    ]
+  },
+  "record_complete": true
+}

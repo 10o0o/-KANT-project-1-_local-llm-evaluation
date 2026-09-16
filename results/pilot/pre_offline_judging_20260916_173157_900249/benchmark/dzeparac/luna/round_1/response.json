@@ -1,0 +1,106 @@
+{
+  "id": "resp_079456e8beddeead016aaa45d305f887d0b1f7cbc70c1f35c0",
+  "created_at": 1789543891.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "gpt-5.6-luna",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_079456e8beddeead016aaa45d3becc87d096138269ac1a0dcf",
+      "summary": [],
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqqkXbElR6jw0qsp7yHYlRjH9eT3vVvfW01YECKgfFDJag5bDVXs1tnhvTslfbCSAifHLZWdYNFgP7TMTMpfc-liycljRB5KWy1A4ze-bwrbnuIXXaDRpBDNveaDysZK6Vamyu0em_5KJ_JI0JCaZ35D5NtEmJIwgOvTC7RgAPZHe0gaK5cTPgmnVFHesR7uBLkOvgrm26OjdiF99C1fn3xN8cuutFokeMpiVc8u0Lr3P_ueDJSVC5BZalMUNg2c3QKzm2s8h26fLXvFgobtnWb-tjPg-yDhBwyVsj6R_PoXY4Ckf-kWq72L8IV6EhnE9q2aHLBuwgJGrgQaGV-L8VC30_s8rJzLAoJ7nPPu6UZMg8qd70hWMy59MUzQfA4fQWtdnGjiPXqCYH9bs3yXhIN87ANGrFc78105lThr5oPOJzRC_KY7btIkKnnI4SRzIJAq5cWASGtb2lmLji093ov9Tki6o8oTWZFbqOXJACrRJD__3kSsxeXYwTWDhcwOfvUbXQsN6KEHW9mX7A8izJjmwx-wfI07EDnG1Hw9mzy8j7zIL7JdY_1sdQHoxmQffP2xlzx9SIMOFHo3r33f3xT832Cwo4ieywozVQyeQ4HMefjWMBorOOAa9RmH2QIJfCy8S-voQ_BKKyIpGuFWIPSUAwxuhlRn2Cuhgu4LZJMmlmH6Oa4u84xfAaThfF25sS3XNimdQfqf_2toS0w2EwhB6aG0BI2wBHKzWR1FPQY2KlQt1VIfKRREODyRshbiUm85mW8rqAfcUll1Yy-eCs_MckmZFCdj8kNaFEOsV65n2pcv5dZI5YL30AO2wYIyXBUsB2r5f1aWO8pGpQ91s0_22765NYP5LZWsCffowMQDrgKSgx6WEfgJB-l1P34nvENBtYXTlaSPpXv7MDeiv5q8YKhpI50BdRosIrUNUwhMms1hQnu4A-Mw3QQrH7_1_c0Hj4Qd01UGBZzIbOLA0yvBxSWOhW7x4W06Czguur1Oidb-8uMlmB2r5Uq4_-Wa4uCAnboDW5rmCf9Tg2S3QGv376FacnEX7xq14Zjp3UXuVaxKt64t7zb83O1z_a9zM9Rnkfo8CdWEQzqdpVSR5-3MrPCM7L__lms8JD1caXcYfzBSGhBbP7F836aKO4tq_X0wlxrSFFxuUeitmow1SY8H3dZFqBdQC6ZewvIzFzeUETlop8xZC5H4gzqjwfJ--xmuhgBKQEIp64O7-RyvWwQyqKwmTN5-rvG6gpGvj8X5NIkyccTaTXgW12hFo9AUWx31dEChU1p1kq_kqYZNpmAASLbnLSd1Y7fWA-vyONa6BrubbdXmJfy8LHOLVPGW8EUFGtE-8D4b0aXihE2MSTRh6JE0sjqzQg9Ggyi_xMQWQENi2odrdEqp109SJ3g95qd1dxVUk9Usmdp9Ku1xt8Xj_jxS-VRNlev-VkHAYFDz5F9kD2vmWjlVafrK2WM_kWyrLiUDouyHbbOyEiLO6SpnuOPQd1sxjG0yux_vroasugHNdvh3ICL_X9SOYgGFQB2RI4VuvcIyzBIqPfnyDuXFtsIezhMJ4D4zbrctDGZup1fe6Yenk0LPRl9r_HslVfJsvDoydRh08RmVe3CxrAr1cm9QkBVau8fUph-A0E0TKmM0-9pqBbKkpNb5DEffpJlHoIoSV2IaytO_lIG5ZyN1RMPeynLJzl_Kq1Qaj6vFTR94ZPTE8laxZUQTuBci_mqalD2-QNq1wTucI2pUHg7LsHdCWfv1Q57S_0AP9I9FCgE038nGiLfOsMCkl664HwtJSh1zGGOeR-tEbYutFlP3ZryRmQ_hwW2FmDvXYeAVrCSf95xaRFIfX3_VromeieYR5P8HFRpnvSFg1BNPhxnqr3DyjL_V1rcm95CX0kCcMTrf2TDO6qg4pkoMxh2wAVsdW_BhBgp8spBtR1vITh7wJwY_imOU8NqqG8k03nqJUdUeVG_eI7cgtz4SqIUH3ye5zmF2VQGmcdj2TgsYW-5zbW51V_8u5xGgYwIoob-iLk21s8-w8H6mGKgQbNi0hBuHgO3QYWoN1yhwTVhdG22wnwlxwNmL5bdfO4MBirGDOzRKhoNPnaAH-PgoNrltvoTZc99f2cyIGJvbBG39aHG4PSX8zopayiCJO7AwMPoFu3F6VvPFb-nq2qGeIwd_4qhsuBmkSdDKtJEANn2U-qoKGvJLmof5dyLAz6IgFw_sY0A8hH2VaAJrZWxrz8zqsfJOkqtr7cRQma_sP_h4iVcBkQWl3A_msPt1B41ml65P8EtVq7dqrUyi2yST7orbfYY2X0Ukl4y7s1NN9nfru_-JEI58NONk-qyAZY_xIlo0RwQyg4wMDPoyiJBcZzf12MKMCC4yKTKUKs8AbEb4RTD6OZJnEUnlopYsSKOda2rKNb9j4CaB_v1ci9qzhnzgK45MBakzG_z-X9LjLijFd2mRgBu0GCe5ccbBoAB-I1KaH2Neesh9jGYh8CoCvWXU4_-xvvICPKyYCVlaE-YDdEFk6WwQCLDMmf80lQ15tQy-CUYa5PFbFg5xSxOAaEDuDps2wHQ0J6-dxTL9Y1NOxeQhSQezsQOwUfgohYxiPDO2tb9hTLWPxOZZgCtLEl7cGW8BUdVM5lyCb2tSq0vQbqT-G3sb-f0VUnl7tKeqXXgdyB3fhyFUAkGChOF_erii7gtCEPca7s6flEzEtoXK1m4ILyVPV_rVZpaA9xZ4kca6uBNZW9fwTJ-TfbsSIArPznKuY-Rt8dqmtsDxBmRBUWshMAHrjxAHojE15qMytvVdoN_TOnY7hvUCr1AKJJgZcbPqgzyKUX3TJTLDEgrANQb6HfphOWMlqQPN20bnjz7BmPwE5sjOVPwRer26S625yonUzsE58CW_Tppgdj0ib_0za8OZy8OzcSC6ScmA-FAuQj985x5XiWEaj8knfiptPflDEV5MlqB_WrFNu-sNwG1LeHdMbw5xKCD16dRc0i-KzjmWyn9ZDWDgLL7kROa0yesJoiScdIsOa2I4Ob3ZgN7y5m_NfyWtDz3u_FYO3KgOfesufAcaFqk8nmVOnuBenEwvn3clzvIvmBpc7Yj9DtV9ShO1cwaqv62knhfrfbJES0Dkzy94IjjnAmVWo9IO9FfQgMFm0zpnqhLdKEBF8XqU6NGWn-nRkkG-flnQ92XgUu992fpHa5fRzQlJcVlyS0vKL-tU09Y6Xmm-uWFPOhiEPnmVFn_1kcVvwFug4dyj8jUhuHsKNF41amkI4dn-RZS4ODXvYfOsVNvOrWLhwwau6sG4OjNAlsgbWn4KQUlT3LRUWwI454N-JTtBkacuyX1yWvoYmAnyBbKyNBlEaSxnbfxxIShj97NT9zp7Y1R-hSe7hP2vuDkClwAbaYyx8JSiYKWn_yVspvoUUfcr6Usgh8yAUgMFdUqisJcyZqSCQhQqeyyD08b0WpdH1z_H97cekuHNIA3jHCs_fM_3ayLBt0qx-7qK75MkXX8EgdyG70iR__HWokXA_hCqwaZ_-43F1v1_uC42MWo1lvZFitsYgNlOQKV7xlyuvAdD8BkI6NmqyQK4R_Q1991Xgovcoye_M52HEpQA280qVdhdQiHquUYF62zBfj4JXHfs9fc9Ia0XE=",
+      "status": null
+    },
+    {
+      "id": "msg_079456e8beddeead016aaa45d876b487d093971c4de9704169",
+      "content": [
+        {
+          "annotations": [],
+          "text": "### 해결 방법\n\n남은 돈을 아들에게 나누어 주는 경우를 생각합니다.\n\n하루에 각 아들이 받는 금액을 \\(x_i\\)라 하면, 모든 \\(x_i\\)는 양의 정수이고 전체 금액은\n\n\\[\n2(x_1+x_2+\\cdots+x_d)\n\\]\n\n입니다. 따라서 남은 금액은 반드시 짝수여야 합니다.\n\n각 아들이 전체적으로 받는 금액을 \\(S\\)라고 하면:\n\n- 어머니가 가지는 금액은 \\(k=N-2S\\)\n- \\(S\\ge 1\\)\n- 하루별 지급액의 순서는 양의 정수 \\(S\\)를 여러 양의 정수의 합으로 나타내는 방법, 즉 \\(S\\)의 조합(composition)에 해당합니다.\n\n양의 정수 \\(S\\)의 조합 개수는 \\(2^{S-1}\\)개입니다.\n\n또한 아무것도 나누어 주지 않는 경우 \\(S=0\\)도 1가지 존재합니다. 따라서 \\(m=\\lfloor N/2\\rfloor\\)라 하면 전체 경우의 수는\n\n\\[\n1+\\sum_{S=1}^{m}2^{S-1}\n=1+(2^m-1)\n=2^m\n\\]\n\n입니다.\n\n따라서 정답은\n\n\\[\n2^{\\lfloor N/2\\rfloor}\\pmod{10^9+7}\n\\]\n\n입니다.\n\n### 복잡도\n\n- 시간 복잡도: \\(O(\\log N)\\)\n- 공간 복잡도: \\(O(1)\\)\n\n```python\nimport sys\n\nMOD = 10**9 + 7\nn = int(sys.stdin.buffer.readline())\n\nprint(pow(2, n // 2, MOD))\n```",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message",
+      "phase": "final_answer"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "none",
+  "tools": [],
+  "top_p": 0.98,
+  "background": false,
+  "completed_at": 1789543899.0,
+  "conversation": null,
+  "max_output_tokens": 128000,
+  "max_tool_calls": null,
+  "moderation": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "prompt_cache_key": null,
+  "prompt_cache_options": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "max",
+    "generate_summary": null,
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "top_logprobs": 0,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 812,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 907,
+    "output_tokens_details": {
+      "reasoning_tokens": 516
+    },
+    "total_tokens": 1719
+  },
+  "user": null,
+  "billing": {
+    "payer": "developer"
+  },
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "store": false,
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  }
+}
