@@ -61,8 +61,8 @@ bash configs/llama.cpp/gemma4.sh
 | 서버 설정 | Qwen | Gemma |
 | --- | --- | --- |
 | API 모델 이름 | `qwen36` | `gemma4` |
-| Context | 12288 | 12288 |
-| 기본 출력 / reasoning / temperature | 8192 / 2048 / 0 | 8192 / 2048 / 0 |
+| Context | 16384 | 16384 |
+| 기본 출력 / reasoning / temperature | 12288 / 6144 / 0 | 12288 / 6144 / 0 |
 | Parallel / Flash Attention | 1 / on | 1 / on |
 | GPU layers | all | auto |
 | CPU MoE layers | 32 | 미지정 |
@@ -109,7 +109,7 @@ results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
 
 기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다.
 
-종료 메시지 추가 전 본 실험 설정을 서버 Context 12288, 공통 요청 max_tokens 8192 / reasoning 2048 / temperature 0 / cache_prompt false로 동결했다. 종료 메시지 추가 후 조건의 최종 동결은 아직 미완료다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
+현재 설정은 서버 Context 16384, 기본 출력 12288·reasoning 6144, 공통 본 실험 요청 max_tokens 12288 / reasoning_budget_tokens 6144 / temperature 0 / cache_prompt false다. 기존 reasoning_budget_message 본문은 유지한다. 이전 Context 12288·출력 8192·reasoning 2048의 진단 기록과 구분하며 새 설정의 실제 적용·VRAM 적합성은 서버 재시작 후 확인해야 한다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
 
 본 실험은 요청·응답·실패·전체 응답 시간·토큰·생성 속도·채점 결과를 계속 저장한다. 환경 세션 파일과의 연결 및 서버 시작 계측은 제거했다. 요청별 로딩 시간은 llama.cpp 응답에 없어 null과 사유를 남긴다.
 

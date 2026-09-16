@@ -5,6 +5,7 @@
 | 항목 | 현재 동작 |
 | --- | --- |
 | 본 실험 응답·실패 | 원본 응답, 실제 messages, 요청 설정, 성공·오류와 전체 응답 시간을 저장한다. 실패를 성공 결과로 대체하지 않는다. |
+| 현재 생성 설정 | 서버 Context 16384·기본 출력 12288·reasoning 6144, benchmark 요청 max_tokens 12288·reasoning_budget_tokens 6144. 실제 서버 적용·VRAM 적합성은 재시작 후 확인한다. |
 | Reasoning 종료 정책 | 현재 작업 트리의 공통 요청에 [종료 메시지](reasoning-budget-diagnostic.md)를 추가했다. benchmark 성공·실패 기록에는 해당 필드가 아직 저장되지 않아 후속 코드 보완이 필요하다. |
 | 생성 속도 | raw timings를 보존하고 서버의 predicted_per_second를 사용한다. 필드 누락·비정상 값·생성 시간 0 이하는 null과 사유를 기록한다. |
 | VRAM | 응답 원본 저장 후 또는 호출 실패 직후 nvidia-smi로 조회한다. 포트·실행 파일·모델 별칭으로 PID를 탐색한다. 프로세스와 전체 장치 메모리를 구분하고 미지원·식별 불가는 null과 사유로 남긴다. 최대값이 아니다. |

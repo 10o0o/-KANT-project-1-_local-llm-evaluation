@@ -4,6 +4,8 @@
 
 **2026-09-16: 워밍업 무저장·자동 환경 기록 제거 방침을 유지하고, 확인한 장비·실행 근거를 문서화했다. 이후 reasoning 종료 메시지를 추가하고 Tomahawk 재진단의 답변·코드 생성을 확인했다. 원본 판정은 RE이며 본 실험에서 제외한다. 전체 실험과 조건 최종 동결은 미완료다.**
 
+현재 설정을 서버 Context 16384·기본 출력 12288·reasoning 6144, 본 실험 요청 max_tokens 12288·reasoning_budget_tokens 6144로 변경했다. 기존 reasoning_budget_message·temperature 0·cache_prompt false를 유지한다. 서버 재시작·모델 호출은 하지 않았으며 새 설정의 실제 적용·VRAM 적합성은 미확인이다. 워밍업과 과거 calibration의 짧은 요청·당시 설정은 유지한다. 아래 12288·8192·2048 수치는 변경 전 이력이다.
+
 llama.cpp 전환은 튜터에게 허락받았다. 독립 반복과 원본 유효 정답률 60%, 최소 수정 보조 평가, 설명 2/1/0 기준은 유지한다.
 
 기존에는 서버 Context 12288, 요청 출력 8192·reasoning 2048·temperature 0·cache_prompt false로 설정을 동결했다. 이후 공통 요청에 [reasoning 종료 메시지](docs/reasoning-budget-diagnostic.md)를 추가했다. 현재 작업 트리 기준 변경이며 결과 JSON 기록 보완과 새 조건의 최종 동결이 남아 있다. Gemma GPU auto와 Qwen 기존 적재·스레드 튜닝을 유지한다.
