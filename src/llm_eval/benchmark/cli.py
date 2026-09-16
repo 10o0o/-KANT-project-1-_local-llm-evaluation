@@ -7,7 +7,9 @@ from llm_eval.problems import load_problems, select_problems
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run selected local-LLM benchmark problems.")
+    parser = argparse.ArgumentParser(
+        description="Run selected local-LLM benchmark problems."
+    )
 
     parser.add_argument(
         "--model",
@@ -32,7 +34,6 @@ def parse_args():
     )
 
     return parser.parse_args()
-
 
 
 def main(project_root: Path):

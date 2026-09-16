@@ -73,14 +73,22 @@ def run_problem(
     print("문제 요청...")
 
     response_start = perf_counter()
-    response = chat(
-        client,
-        model,
-        prompt,
-        temperature=TEMPERATURE,
-        max_tokens=MAX_TOKENS,
-        reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
-    )
+
+    try:
+        response = chat(
+            client,
+            model,
+            prompt,
+            temperature=TEMPERATURE,
+            max_tokens=MAX_TOKENS,
+            reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
+        )
+    except Exception as exc:
+        response_elapsed = perf_counter() - response_start
+        print("호출 실패:", type(exc).__name__)
+        print("실패까지 걸린 시간:", response_elapsed)
+        raise
+
     response_elapsed = perf_counter() - response_start
 
     response_data = response.model_dump()
@@ -165,6 +173,7 @@ def run_problem(
             "timings": timings,
         },
         "metrics": {
+            "response_elapsed_seconds": response_elapsed,
             "prompt_tokens": usage.get("prompt_tokens"),
             "completion_tokens": usage.get("completion_tokens"),
             "generation_tokens_per_second": timings.get("predicted_per_second"),
