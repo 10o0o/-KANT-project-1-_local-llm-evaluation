@@ -83,7 +83,7 @@ class RunnerTests(unittest.TestCase):
             "statement_path": "statement.md", "problem_dir": "testdata",
             "time_limit_seconds": 1, "memory_limit_mib": 512,
         }
-        self.output = self.root / "results/cloud/test_problem/luna"
+        self.output = self.root / "results/benchmark/test_problem/luna/round_1"
         self.sdk = Mock()
         self.stdout = contextlib.redirect_stdout(io.StringIO())
         self.stdout.__enter__()
@@ -124,7 +124,7 @@ class RunnerTests(unittest.TestCase):
             "model": "gpt-5.6-luna", "reasoning": {"effort": "max"},
             "max_output_tokens": 128000, "tools": [], "tool_choice": "none",
             "store": False, "service_tier": "default",
-            "input": [{"role": "user", "content": build_round1_prompt("same statement")}],
+            "input": [{"role": "user", "content": build_round1_prompt("same statement", time_limit_seconds=1, memory_limit_mib=512)}],
         })
         record = self.record()
         self.assertEqual(record["judge"]["status"], "AC")
@@ -135,7 +135,19 @@ class RunnerTests(unittest.TestCase):
         self.run_problem()
         self.sdk.responses.create.assert_called_once()
         judge.assert_called_once()
-        self.assertFalse((self.root / "results/benchmark").exists())
+        self.assertFalse((self.root / "results/cloud").exists())
+
+    def test_changed_limits_abort_without_second_call(self):
+        self.response(content="no code")
+        self.run_problem()
+        for field, value in (("time_limit_seconds", 2), ("memory_limit_mib", 256)):
+            with self.subTest(field=field):
+                original = self.problem[field]
+                self.problem[field] = value
+                with self.assertRaisesRegex(SystemExit, "입력·설정"):
+                    self.run_problem()
+                self.problem[field] = original
+        self.sdk.responses.create.assert_called_once()
 
     @patch("llm_eval.cloud.runner.judge_problem")
     def test_refusal_no_code_and_missing_usage(self, judge):

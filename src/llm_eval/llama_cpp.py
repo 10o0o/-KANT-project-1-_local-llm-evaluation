@@ -1,5 +1,10 @@
 from openai import OpenAI
 
+REASONING_BUDGET_MESSAGE = (
+    "Considering the limited time by the user, "
+    "I have to give the solution based on the thinking directly now."
+)
+
 
 def create_client(base_url: str = "http://127.0.0.1:8080/v1"):
     return OpenAI(
@@ -16,8 +21,8 @@ def chat(
     prompt: str,
     *,
     temperature: float = 0,
-    max_tokens: int = 30720,
-    reasoning_budget_tokens: int = 26624,
+    max_tokens: int = 61440,
+    reasoning_budget_tokens: int = 53248,
 ):
     return client.chat.completions.create(
         model=model,
@@ -32,9 +37,6 @@ def chat(
         extra_body={
             "reasoning_budget_tokens": reasoning_budget_tokens,
             "cache_prompt": False,
-            "reasoning_budget_message": (
-                "Considering the limited time by the user, "
-                "I have to give the solution based on the thinking directly now."
-            ),
+            "reasoning_budget_message": REASONING_BUDGET_MESSAGE,
         },
     )

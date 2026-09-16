@@ -4,7 +4,7 @@
 
 [Notion 발제 STEP 5·7](https://app.notion.com/p/3ddde5bf9074809787d7f6a5a5a263e7)과 [수행 평가표](https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820)의 원래 기준은 Cloud 1개·공통 5문항·각 1회다. 이번에는 직접 정한 확장으로 **기존 10문항 전체를 각각 1회** 실행한다. 발제 원문은 변경하지 않는다. 이번 수행 범위는 10문항×1회이며 별도의 5문항 추가 실행이나 5문항 분모를 만들지 않는다. 일부 로컬 결과를 확인한 뒤 전체 10문항 적용을 결정한 경과를 밝히며 결과를 보기 전 5개를 선정했다고 소급하지 않는다.
 
-모델별 로컬 20회와 Cloud 10회는 반복 수가 다르다. 동일한 문제문·지시문·코드 추출기·Judge를 쓰며, 로컬의 좋은 회차만 고르지 않는다. 실패·NO_CODE도 유효 정답률의 분모에 포함하고 미실행은 별도로 표시한다. 로컬의 12/20(60%) 통과선을 Cloud에 적용하거나 최종 로컬 후보 선정에 Cloud를 합치지 않는다. 10문항 실행 완료 시 Cloud 유효 정답률은 유효 정답 수/10, 일반 AC 비율은 AC 수/10이다. 유효 정답은 로컬과 동일하게 AC이며 적용 시간 제한 미만인 결과다. 호출 성공 수/실제 시도 수도 따로 표시하며, 10회 완료 전에는 시도 수를 10으로 꾸미지 않는다. 설명·시간·토큰·비용 평균은 해당 근거가 있는 응답의 n을 각각 표시한다. 설명 채점·비교 집계·최종 선정은 후속 작업이다.
+모델별 로컬 20회와 Cloud 10회는 반복 수가 다르다. 동일한 문제문·지시문·공식 시간/메모리 제한·코드 추출기·Judge를 쓰며, 로컬의 좋은 회차만 고르지 않는다. 실패·NO_CODE도 유효 정답률의 분모에 포함하고 미실행은 별도로 표시한다. 로컬의 12/20(60%) 통과선을 Cloud에 적용하거나 최종 로컬 후보 선정에 Cloud를 합치지 않는다. 10문항 실행 완료 시 Cloud 유효 정답률은 유효 정답 수/10, 일반 AC 비율은 AC 수/10이다. 유효 정답은 로컬과 동일하게 AC이며 적용 시간 제한 미만인 결과다. 호출 성공 수/실제 시도 수도 따로 표시하며, 10회 완료 전에는 시도 수를 10으로 꾸미지 않는다. 설명·시간·토큰·비용 평균은 해당 근거가 있는 응답의 n을 각각 표시한다. 설명 채점·비교 집계·최종 선정은 후속 작업이다.
 
 ## 확정한 Cloud 조건
 
@@ -19,9 +19,9 @@
 | store / service_tier | false / default |
 | Timeout / 자동 재시도 | 3600초 / 0회 |
 | temperature | 보내지 않음, 서비스 기본값 적용 |
-| 입력 | 로컬과 동일한 단일 user prompt, 이전 답변·정답·채점 데이터 미전달 |
+| 입력 | 로컬과 동일한 실행 제한·문제문을 포함한 단일 user prompt, 이전 답변·정답·채점 데이터 미전달 |
 
-[Luna 공식 문서](https://developers.openai.com/api/docs/models/gpt-5.6-luna)와 [Responses API](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)를 확인했다. Cloud는 로컬 Context 32768·출력 30720·reasoning 26624와 동일 예산이 아니다. Cloud의 effort=max를 로컬 reasoning 토큰 수로 환산하지 않는다. llama.cpp 전용 종료 메시지·cache_prompt·Context 설정은 보내지 않는다. 캐시는 서비스 동작을 따르며 응답의 캐시 읽기·쓰기 토큰을 기록한다. `store=False`를 캐시 비활성화나 모든 서비스 로그 미보존으로 해석하지 않는다.
+[Luna 공식 문서](https://developers.openai.com/api/docs/models/gpt-5.6-luna)와 [Responses API](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)를 확인했다. Cloud는 로컬 Context 65536·출력 61440·reasoning 53248와 동일 예산이 아니다. Cloud의 effort=max를 로컬 reasoning 토큰 수로 환산하지 않는다. llama.cpp 전용 종료 메시지·cache_prompt·Context 설정은 보내지 않는다. 캐시는 서비스 동작을 따르며 응답의 캐시 읽기·쓰기 토큰을 기록한다. `store=False`를 캐시 비활성화나 모든 서비스 로그 미보존으로 해석하지 않는다.
 
 ## 실행
 
@@ -43,7 +43,7 @@ uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchma
 
 ## 결과와 실패 보존
 
-`results/cloud/<문제 이름>/luna/` 아래에 API 원본 `response.json`, 코드가 있으면 `candidate.py`, 정리된 `result.json`을 저장한다. 원본 응답은 채점보다 먼저 저장한다. 요청 모델과 반환 모델·response ID·전체 입력·실제 전송 설정·usage·호출 상태·API 상태·판정을 구분한다.
+`results/benchmark/<문제 이름>/luna/round_1/` 아래에 API 원본 `response.json`, 코드가 있으면 `candidate.py`, 정리된 `result.json`을 저장한다. 원본 응답은 채점보다 먼저 저장한다. 요청 모델과 반환 모델·response ID·전체 입력·실제 전송 설정·usage·호출 상태·API 상태·판정을 구분한다.
 
 - `call.status=success`는 completed 또는 incomplete 응답을 받았다는 뜻이다. 정답이나 생성 완료를 뜻하지 않는다. API 완료 여부는 `generation.status`와 `incomplete_details`로 확인한다.
 - incomplete도 코드가 있으면 채점하고 없으면 NO_CODE다. 거절의 원문은 response.json에 보존하며 코드가 없으면 NO_CODE로 남긴다. failed 등 비정상 API 상태는 저장 후 중단한다.
@@ -63,4 +63,6 @@ uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchma
 
 ## 검증과 남은 작업
 
-AI의 모의 검증 결과를 참고했다. 실제 Cloud 호출·로컬 모델 호출·생성 코드 채점은 이번 구현 작업에서 하지 않았다. 실제 실행·설명 평가·모델별 성공 수/시도 수·지표별 n·평균·비교표는 아직 미완료다. 이후 보고에서는 품질·비용·시간 실측과 보안·인프라·운영·커스터마이징의 정성 분석을 구분한다.
+AI의 모의 검증 결과를 참고했다. 실제 Cloud 호출·로컬 모델 호출·생성 코드 채점은 이번 구현 작업에서 하지 않았다. 이전 프롬프트의 실제 Cloud 10건은 원본 그대로 pilot으로 분리했다. 새 프롬프트 실행·설명 평가·모델별 성공 수/시도 수·지표별 n·평균·비교표는 미완료다. 이후 보고에서는 품질·비용·시간 실측과 보안·인프라·운영·커스터마이징의 정성 분석을 구분한다.
+
+Luna도 통합 benchmark 경로의 `round_1`에 저장하지만 로컬의 두 회차와 합산하지 않는다. 메모리 제한은 모델에 제공하는 조건이며 Judge가 측정·강제하지 않는다. AC에 메모리 준수 검증은 포함되지 않는다.

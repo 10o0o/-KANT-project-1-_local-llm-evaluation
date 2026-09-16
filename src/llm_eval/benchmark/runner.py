@@ -13,14 +13,14 @@ from llm_eval.benchmark.utils import (
 )
 from llm_eval.code_extract import extract_python_code
 from llm_eval.judge import judge_problem
-from llm_eval.llama_cpp import chat
+from llm_eval.llama_cpp import REASONING_BUDGET_MESSAGE, chat
 from llm_eval.runtime import measured_metrics, safe_memory
 
 # Final frozen benchmark generation config.
 TEMPERATURE = 0
 
-MAX_TOKENS = 30720
-REASONING_BUDGET_TOKENS = 26624
+MAX_TOKENS = 61440
+REASONING_BUDGET_TOKENS = 53248
 
 
 def run_problem(
@@ -38,11 +38,38 @@ def run_problem(
         result_dir,
     ) = prepare_problem_context(project_root, problem, model, round_number)
 
+    statement = statement_path.read_text(encoding="utf-8")
+    prompt = build_round1_prompt(
+        statement,
+        time_limit_seconds=time_limit_seconds,
+        memory_limit_mib=problem["memory_limit_mib"],
+    )
+    expected_request = {"messages": [{"role": "user", "content": prompt}]}
+    expected_config = {
+        "temperature": TEMPERATURE,
+        "max_tokens": MAX_TOKENS,
+        "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
+        "cache_prompt": False,
+        "reasoning_budget_message": REASONING_BUDGET_MESSAGE,
+    }
+
     if result_dir.exists():
         result_path = result_dir / "result.json"
         try:
             saved = json.loads(result_path.read_text(encoding="utf-8"))
 
+            if not isinstance(saved, dict):
+                raise ValueError("Invalid result record")
+            if (
+                saved.get("request") != expected_request
+                or saved.get("generation_config") != expected_config
+                or saved.get("model", {}).get("id") != model
+                or saved.get("problem", {}).get("id") != problem["id"]
+                or saved.get("experiment") != {"type": "benchmark", "round": round_number}
+            ):
+                raise SystemExit(
+                    f"ABORT: 기존 요청과 현재 입력·설정이 다릅니다: {result_path}"
+                )
             call_status = saved.get("call", {}).get("status")
 
             if call_status == "error":
@@ -51,7 +78,7 @@ def run_problem(
             else:
                 status = saved["judge"]["status"]
                 completed = status in {"AC", "WA", "TLE", "RE", "NO_CODE"}
-        except (OSError, ValueError, KeyError, TypeError):
+        except (OSError, ValueError, KeyError, TypeError, AttributeError):
             completed = False
 
         if completed:
@@ -66,9 +93,6 @@ def run_problem(
             f"path: {result_dir}\n"
         )
 
-    statement = statement_path.read_text(encoding="utf-8")
-
-    prompt = build_round1_prompt(statement)
     print_benchmark_run(
         round_number, model, problem, TEMPERATURE, MAX_TOKENS, REASONING_BUDGET_TOKENS
     )

@@ -19,7 +19,9 @@ def completed_record(path, problem, request):
         if not isinstance(record, dict):
             return False
         if record.get("request") != request:
-            raise SystemExit(f"ABORT: 기존 Cloud 요청과 현재 입력·설정이 다릅니다: {path}")
+            raise SystemExit(
+                f"ABORT: 기존 Cloud 요청과 현재 입력·설정이 다릅니다: {path}"
+            )
         return (
             record["record_complete"] is True
             and record["experiment"]["type"] == "cloud"
@@ -32,11 +34,16 @@ def completed_record(path, problem, request):
 
 
 def run_problem(project_root, problem, client, selected_problem_ids=None):
-    result_dir = project_root / "results" / "cloud" / problem["name"] / "luna"
+    result_dir = project_root / "results" / "benchmark" / problem["name"] / "luna" / "round_1"
     result_path = result_dir / "result.json"
     statement = (project_root / problem["statement_path"]).read_text(encoding="utf-8")
-    prompt = build_round1_prompt(statement)
+    prompt = build_round1_prompt(
+        statement,
+        time_limit_seconds=problem["time_limit_seconds"],
+        memory_limit_mib=problem["memory_limit_mib"],
+    )
     request = {**request_options(), "input": [{"role": "user", "content": prompt}]}
+
     if result_dir.exists():
         if completed_record(result_path, problem, request):
             print(f"SKIP: cloud problem={problem['id']} (이미 기록한 시도)")
@@ -47,7 +54,12 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
         "experiment": {"type": "cloud", "round": 1, "planned_attempts": 10},
         "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
-        "model": {"id": MODEL, "name": "luna", "runtime": "openai_responses", "response_model": None},
+        "model": {
+            "id": MODEL,
+            "name": "luna",
+            "runtime": "openai_responses",
+            "response_model": None,
+        },
         "problem": dict(problem),
         "request": request,
         "generation_config": {
@@ -83,7 +95,9 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         record["record_complete"] = True
         write_json(result_path, record)
         # Do not print exception messages, headers or chained traceback containing credentials.
-        raise SystemExit(f"Cloud 호출 실패: {type(exc).__name__}; 실패 기록 후 중단") from None
+        raise SystemExit(
+            f"Cloud 호출 실패: {type(exc).__name__}; 실패 기록 후 중단"
+        ) from None
     elapsed = perf_counter() - start
     record["metrics"] = measured_metrics(elapsed, {})
     try:
@@ -94,7 +108,9 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         record["model"]["response_model"] = data.get("model")
         record["call"] = {
             "status": "success" if status in {"completed", "incomplete"} else "error",
-            "error": None if status in {"completed", "incomplete"} else {"type": "ResponseNotCompleted"},
+            "error": None
+            if status in {"completed", "incomplete"}
+            else {"type": "ResponseNotCompleted"},
         }
         record["generation"] = {
             "response_id": data.get("id"),
@@ -115,8 +131,11 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         if status in {"completed", "incomplete"}:
             if code is None:
                 record["judge"] = {
-                    "status": "NO_CODE", "passed_cases": 0, "total_cases": None,
-                    "max_case_seconds": None, "time_limit_seconds": problem["time_limit_seconds"],
+                    "status": "NO_CODE",
+                    "passed_cases": 0,
+                    "total_cases": None,
+                    "max_case_seconds": None,
+                    "time_limit_seconds": problem["time_limit_seconds"],
                     "test_results": [],
                 }
             else:
@@ -130,7 +149,9 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
                 except Exception as exc:
                     record["judge_error"] = {"type": type(exc).__name__}
                     write_json(result_path, record)
-                    raise SystemExit("Cloud 응답은 보존했습니다. 채점 실패 기록을 확인하세요.") from None
+                    raise SystemExit(
+                        "Cloud 응답은 보존했습니다. 채점 실패 기록을 확인하세요."
+                    ) from None
     except Exception as exc:
         record["processing_error"] = {"type": type(exc).__name__}
         record["record_complete"] = False
@@ -138,9 +159,13 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
             write_json(result_path, record)
         except OSError:
             pass  # The reserved directory still blocks another paid request.
-        raise SystemExit("Cloud 응답 후처리에 실패했습니다. 보존 파일을 확인하세요.") from None
+        raise SystemExit(
+            "Cloud 응답 후처리에 실패했습니다. 보존 파일을 확인하세요."
+        ) from None
     record["record_complete"] = True
     write_json(result_path, record)
     if record["call"]["status"] == "error":
         raise SystemExit("Cloud 응답의 비정상 상태를 저장하고 중단했습니다.")
-    print(f"Cloud 완료: {problem['id']} / {status} / {record['judge']['status']} / {elapsed:.2f}s")
+    print(
+        f"Cloud 완료: {problem['id']} / {status} / {record['judge']['status']} / {elapsed:.2f}s"
+    )

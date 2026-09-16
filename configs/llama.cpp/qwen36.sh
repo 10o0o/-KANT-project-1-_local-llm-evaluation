@@ -9,8 +9,8 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --alias qwen36 \
   --host 127.0.0.1 \
   --port 8080 \
-  --ctx-size 32768 \
-  --n-predict 30720 \
+  --ctx-size 65536 \
+  --n-predict 61440 \
   --parallel 1 \
   --gpu-layers all \
   --n-cpu-moe 32 \
@@ -18,7 +18,7 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --flash-attn on \
   --temp 0 \
   --reasoning on \
-  --reasoning-budget 26624 \
+  --reasoning-budget 53248 \
   --threads 16 \
   --threads-batch 24 \
   --cache-ram 0 \

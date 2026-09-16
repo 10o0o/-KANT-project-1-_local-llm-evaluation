@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from llm_eval.llama_cpp import REASONING_BUDGET_MESSAGE
+
 
 def prepare_problem_context(
     project_root: Path, problem: dict, model: str, round_number: int
@@ -14,9 +16,9 @@ def prepare_problem_context(
         project_root
         / "results"
         / "benchmark"
-        / f"round_{round_number}"
         / problem_name
         / model
+        / f"round_{round_number}"
     )
 
     return (
@@ -89,6 +91,7 @@ def build_failure_record(
             "max_tokens": max_tokens,
             "reasoning_budget_tokens": reasoning_budget_tokens,
             "cache_prompt": False,
+            "reasoning_budget_message": REASONING_BUDGET_MESSAGE,
         },
         "call": {
             "status": "error",
@@ -162,6 +165,7 @@ def build_success_record(
             "max_tokens": max_tokens,
             "reasoning_budget_tokens": reasoning_budget_tokens,
             "cache_prompt": False,
+            "reasoning_budget_message": REASONING_BUDGET_MESSAGE,
         },
         "call": {
             "status": "success",

@@ -33,13 +33,13 @@
 
 파일명·크기만으로 파일 내용의 동일성을 확정하지 않는다. 과거 Ollama digest를 현재 GGUF 식별값으로 재사용하지 않는다.
 
-## 현재 확정 설정: Context 32768·출력 30720·reasoning 26624
+## 현재 확정 설정: Context 65536·출력 61440·reasoning 53248
 
-두 모델의 서버 셸을 `--ctx-size 32768`, `--n-predict 30720`, `--reasoning-budget 26624`로 맞췄다. benchmark와 공통 `chat()` 기본값은 `max_tokens=30720`, `reasoning_budget_tokens=26624`이며 [기존 종료 메시지](reasoning-budget-diagnostic.md)는 그대로 유지한다. temperature 0·cache_prompt false와 각 모델의 GPU·MoE·스레드 설정도 유지한다.
+Qwen에서 변경한 64k·60k·52k(k=1024)를 Gemma 셸과 공통 Python 기본값에도 맞췄다. 두 서버는 `--ctx-size 65536`, `--n-predict 61440`, `--reasoning-budget 53248`, 본 실험 요청은 `max_tokens=61440`, `reasoning_budget_tokens=53248`이다. temperature 0·cache_prompt false·기존 종료 메시지와 모델별 GPU·MoE·스레드 설정은 유지한다. 워밍업은 출력 128·reasoning 64다.
 
-이는 파일 설정 변경이다. 서버 재시작·모델 호출은 하지 않았으므로 새 Context의 실제 적용·적재 상태·VRAM 적합성은 미확인이다. 아래 Context 12288·reasoning 2048의 프로세스·로그·결과는 변경 전 관측으로 보존한다. 워밍업은 짧은 호출용 출력 128·reasoning 64, 과거 calibration은 당시 명시값을 유지한다.
+이전 32k·30k·26k 설정 이력은 Git에 보존한다. 제한 미제공 프롬프트의 Qwen 6건에는 이미 요청 출력 61440·reasoning 53248이 기록돼 있었다. 이 사실만으로 실제 서버 Context나 Gemma의 VRAM 적합성을 확정하지 않는다. 이번 통합에서는 서버 재시작·모델 호출을 하지 않았다. 새 프롬프트의 실험과 두 서버의 실제 적용·VRAM 확인은 직접 진행한다.
 
-토큰 표기의 k는 1024 기준으로 확정했다: Context 32k = 32768, 출력 30k = 30720, reasoning 26k = 26624. 설정 확정과 실제 실행 검증은 구분한다.
+시간·메모리 제한은 문제 바로 위에 제공한다. Judge는 시간 제한만 적용하며 코드 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않는다. 기존 응답 후 모델 VRAM 관측은 별개로 유지한다.
 
 ## 변경 전 설정값과 실제 적용 근거
 
@@ -79,7 +79,7 @@
 
 12:22에 확인한 Skare 요청은 temperature 0, max_tokens 8192, reasoning_budget_tokens 2048, cache_prompt false다. 환경 세션 연결이 없으므로 현재 프로세스 관측을 해당 요청 시점의 모든 실행 조건에 대한 증명으로 사용하지 않는다.
 
-현재 작업 트리의 공통 요청에는 [종료 메시지](reasoning-budget-diagnostic.md)도 추가됐다. benchmark 결과 JSON에는 해당 필드가 아직 저장되지 않으며, 코드 보완과 진단 분리는 후속 작업이다.
+현재 작업 트리의 공통 요청에는 [종료 메시지](reasoning-budget-diagnostic.md)도 추가됐다. 과거 benchmark JSON에는 해당 필드가 없었다. 새 성공·실패 기록에는 `generation_config.reasoning_budget_message`를 저장한다.
 
 ## 결과 해석과 남은 확인
 

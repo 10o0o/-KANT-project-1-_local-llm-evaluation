@@ -42,7 +42,7 @@ data/coci/2025_2026/contest5/testdata/skare/
 └── ...
 ```
 
-선정 문항의 영어 문제문은 같은 JSON의 `statement_path`에 있습니다. 모델에는 설명·입출력 조건·제약·예제를 전달하고, 제목·대회 정보·시간 제한·난이도 등 평가용 메타데이터는 분리합니다. 원본 PDF와 테스트 데이터의 출처는 COCI이며, 이 저장소가 해당 자료에 별도의 라이선스를 부여하지 않습니다.
+선정 문항의 영어 문제문은 같은 JSON의 `statement_path`에 있습니다. 모델에는 설명·입출력 조건·제약·예제를 전달하고, 제목·대회 정보·난이도 등 평가용 메타데이터는 분리합니다. 시간·메모리 제한은 `problems.json`에서 읽어 문제 바로 위의 실행 제한 블록으로 로컬·Cloud에 동일하게 전달합니다. 원본 PDF와 테스트 데이터의 출처는 COCI이며, 이 저장소가 해당 자료에 별도의 라이선스를 부여하지 않습니다.
 
 문제문에 포함된 그림은 Markdown에서 확인할 수 있습니다. 현재 호출기는 텍스트만 전송하므로 이미지 파일 자체는 모델에 전달되지 않습니다.
 
@@ -61,8 +61,8 @@ bash configs/llama.cpp/gemma4.sh
 | 서버 설정 | Qwen | Gemma |
 | --- | --- | --- |
 | API 모델 이름 | `qwen36` | `gemma4` |
-| Context | 32768 | 32768 |
-| 기본 출력 / reasoning / temperature | 30720 / 26624 / 0 | 30720 / 26624 / 0 |
+| Context | 65536 | 65536 |
+| 기본 출력 / reasoning / temperature | 61440 / 53248 / 0 | 61440 / 53248 / 0 |
 | Parallel / Flash Attention | 1 / on | 1 / on |
 | GPU layers | all | auto |
 | CPU MoE layers | 32 | 미지정 |
@@ -88,7 +88,7 @@ uv run python scripts/run_benchmark.py \
 
 워밍업은 모델당 별도 짧은 입력으로 호출하고 완료 여부만 터미널에 표시한다. 파일 저장·환경 기록·성능 측정은 하지 않는다. 실패하면 오류를 그대로 전달한다. 워밍업은 본 실험 40회와 평균에서 제외한다. 요청은 출력 128·reasoning 64·temperature 0이다.
 
-`--problems`에는 `all` 또는 `problems.json`의 ID를 쉼표로 나열한다. 본 실험은 동일 문제문·지시문·생성 설정으로 두 번 독립 요청한다. 이전 답변이나 채점 결과는 전달하지 않으며 Round 1 없이 Round 2도 실행할 수 있다. 현재 작업 트리의 공통 요청에는 [reasoning 종료 메시지](docs/reasoning-budget-diagnostic.md)도 추가했다. 메시지 본문·소스 근거와 결과 JSON의 해당 필드 누락은 진단 문서에 정리했다. 공통 요청의 `cache_prompt=false`와 서버의 `--cache-ram 0`은 유지한다. 여기서 독립 요청은 이전 답변을 전달하지 않는 절차를 뜻한다. 응답의 캐시 카운터는 해당 요청의 근거이며 전체 실험의 독립성을 단독으로 증명하지 않는다.
+`--problems`에는 `all` 또는 `problems.json`의 ID를 쉼표로 나열한다. 본 실험은 동일 문제문·지시문·생성 설정으로 두 번 독립 요청한다. 이전 답변이나 채점 결과는 전달하지 않으며 Round 1 없이 Round 2도 실행할 수 있다. 현재 작업 트리의 공통 요청에는 [reasoning 종료 메시지](docs/reasoning-budget-diagnostic.md)도 추가했다. 메시지 본문·소스 근거는 진단 문서에 정리했다. 새 로컬 성공·실패 기록에는 `generation_config.reasoning_budget_message`도 저장한다. 공통 요청의 `cache_prompt=false`와 서버의 `--cache-ram 0`은 유지한다. 여기서 독립 요청은 이전 답변을 전달하지 않는 절차를 뜻한다. 응답의 캐시 카운터는 해당 요청의 근거이며 전체 실험의 독립성을 단독으로 증명하지 않는다.
 
 설정 변경은 서버 재시작이 필요하다. 실행할 모델과 서버를 직접 맞춘다. 환경 파일 연결·검증은 하지 않는다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있다. 호출 실패는 기록한 뒤 중단하고, 같은 명령 재실행 시 보존된 실패 시도는 건너뛴다.
 
@@ -96,20 +96,23 @@ uv run python scripts/run_benchmark.py \
 
 ## 결과 확인
 
+로컬과 Cloud 모두 문제 → 모델 → 라운드 순서로 저장한다. 로컬은 `round_1`·`round_2`, Luna는 `round_1`만 사용한다. 제한 미제공 조건의 로컬 6회·Cloud 10회는 `results/pilot/pre_resource_limits_20260916_162603_416706/`에 원본 그대로 분리했고 새 집계에서 제외한다.
+
+
 실행 결과는 다음 위치에 저장합니다.
 
 ```text
-results/benchmark/round_<라운드>/<문제 이름>/<모델 이름>/
+results/benchmark/<문제 이름>/<모델 이름>/round_<라운드>/
 ├── response.json   # API 원본 응답
 ├── candidate.py    # 추출한 Python 코드가 있을 때 생성
 └── result.json     # 생성 설정·응답·추론·사용량·채점 결과
 ```
 
-`--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 건너뜁니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다. Tomahawk run `20260916_124351_312419`는 진단이므로 본 실험에서 제외합니다. 문서 검증 중 `results/pilot/reasoning_block/`로 분리된 것을 확인했으며 자세한 예외는 [결과 분류](results/README.md)에 있습니다.
+`--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 입력 프롬프트와 생성 설정이 같을 때만 건너뜁니다. 조건이 다르면 호출 전에 중단합니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다. Tomahawk run `20260916_124351_312419`는 진단이므로 본 실험에서 제외합니다. 문서 검증 중 `results/pilot/reasoning_block/`로 분리된 것을 확인했으며 자세한 예외는 [결과 분류](results/README.md)에 있습니다.
 
 기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다.
 
-현재 설정은 서버 Context 32768, 기본 출력 30720·reasoning 26624, 공통 본 실험 요청 max_tokens 30720 / reasoning_budget_tokens 26624 / temperature 0 / cache_prompt false다. 기존 reasoning_budget_message 본문은 유지한다. 이전 Context 12288·출력 8192·reasoning 2048의 진단 기록과 구분하며 새 설정의 실제 적용·VRAM 적합성은 서버 재시작 후 확인해야 한다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
+현재 설정은 서버 Context 65536, 기본 출력 61440·reasoning 53248, 공통 본 실험 요청 max_tokens 61440 / reasoning_budget_tokens 53248 / temperature 0 / cache_prompt false다. 기존 reasoning_budget_message 본문은 유지한다. 이전 Context 12288·출력 8192·reasoning 2048의 진단 기록과 구분하며 새 설정의 실제 적용·VRAM 적합성은 서버 재시작 후 확인해야 한다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
 
 본 실험은 요청·응답·실패·전체 응답 시간·토큰·생성 속도·채점 결과를 계속 저장한다. 환경 세션 파일과의 연결 및 서버 시작 계측은 제거했다. 요청별 로딩 시간은 llama.cpp 응답에 없어 null과 사유를 남긴다.
 
@@ -131,7 +134,7 @@ Judge는 `<문제 이름>.in.*`와 대응하는 `.out.*` 파일을 사용하며,
 
 `result.json`의 `judge`에서 통과 수·전체 테스트 수·테스트별 판정·최대 실행 시간을 확인할 수 있습니다. 실패가 여러 종류면 전체 판정에는 첫 실패의 상태를 기록합니다. 모델의 응답 생성 시간과 생성된 코드의 테스트 실행 시간은 별도 지표입니다. 풀이 설명의 정확성은 응답 원문을 읽고 평가합니다.
 
-현재 Judge는 메모리 제한과 샌드박스를 구현하지 않았으며, 생성 코드를 로컬 권한으로 실행합니다. 결과는 이 실행 환경의 관측값이며 대회 공식 채점 결과와 같음을 보장하지 않습니다.
+공식 메모리 제한은 모델 입력에 제공하지만, Judge는 코드의 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않습니다. AC는 메모리 제한 준수를 증명하지 않습니다. 현재 Judge는 샌드박스를 구현하지 않았으며, 생성 코드를 로컬 권한으로 실행합니다. 결과는 이 실행 환경의 관측값이며 대회 공식 채점 결과와 같음을 보장하지 않습니다.
 
 ## 저장소 구성과 문서
 
@@ -158,7 +161,7 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 
 실행 결과의 용도와 집계 범위는 [결과 분류](results/README.md), 이전 파일의 위치와 복원 방법은 [정리 이력](docs/history/README.md)에 정리했습니다.
 
-로컬 benchmark와 분리된 [Luna Cloud 실행기](docs/cloud-benchmark.md)를 추가했다. 발제의 5문항×1회를 직접 정한 10문항×1회로 확장하며, Luna reasoning=max·출력 한도 128000을 사용한다. 로컬과 생성 예산·반복 수가 다름을 명시하고 동일 문제·프롬프트·Judge로 비교한다. 실제 Cloud 실행과 품질 평가·집계는 아직 하지 않았다.
+로컬 benchmark와 분리된 [Luna Cloud 실행기](docs/cloud-benchmark.md)를 추가했다. 발제의 5문항×1회를 직접 정한 10문항×1회로 확장하며, Luna reasoning=max·출력 한도 128000을 사용한다. 로컬과 생성 예산·반복 수가 다름을 명시하고 동일 문제·프롬프트·Judge로 비교한다. 이전 프롬프트의 Cloud 10회는 pilot으로 분리했다. 새 조건의 실행·품질 평가·집계는 남아 있다.
 
 `openai_secret_key`를 실행 환경에 설정한 뒤 `uv run python scripts/run_cloud_benchmark.py --problems all`로 실행한다. 기존 `.env`를 로드하는 방법과 비용·오류 처리는 Cloud 안내를 따른다. 코드 채점이 로컬 측정에 영향을 주지 않도록 로컬 실험 종료 후 실행한다.
 
