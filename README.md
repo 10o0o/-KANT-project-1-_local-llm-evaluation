@@ -149,6 +149,7 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 | --- | --- |
 | [요구사항](docs/requirements.md) | 평가 목적과 모델 선정 기준 |
 | [모델 조사](docs/models.md) | 후보 모델 정보와 실행 경과 |
+| [Cloud 비교](docs/cloud-benchmark.md) | Luna 10문항 실행·결과·비용과 비교 조건 |
 | [실행 환경](docs/environment.md) | 장비·버전·모델 파일과 측정 근거·미확인 항목 |
 | [발제 원문](docs/project-brief.md) | 프로젝트 과제 기준 |
 | [단계별 안내](docs/guide.md) | 실습 단계와 참고 자료 |
@@ -157,7 +158,9 @@ docs/               프로젝트 요구사항과 조사·학습 기록
 
 실행 결과의 용도와 집계 범위는 [결과 분류](results/README.md), 이전 파일의 위치와 복원 방법은 [정리 이력](docs/history/README.md)에 정리했습니다.
 
-현재 benchmark는 llama.cpp 로컬 모델용입니다. 발제 STEP 7의 Cloud 모델 1개·공통 5문항·각 1회 비교는 이후 추가할 단계이며, 이번 구조화에 Cloud 호출 기능은 포함하지 않았습니다. 기존 문제 로딩·프롬프트·코드 추출·Judge를 재사용할 수 있도록 실행 진입점과 역할을 분리했습니다.
+로컬 benchmark와 분리된 [Luna Cloud 실행기](docs/cloud-benchmark.md)를 추가했다. 발제의 5문항×1회를 직접 정한 10문항×1회로 확장하며, Luna reasoning=max·출력 한도 128000을 사용한다. 로컬과 생성 예산·반복 수가 다름을 명시하고 동일 문제·프롬프트·Judge로 비교한다. 실제 Cloud 실행과 품질 평가·집계는 아직 하지 않았다.
+
+`openai_secret_key`를 실행 환경에 설정한 뒤 `uv run python scripts/run_cloud_benchmark.py --problems all`로 실행한다. 기존 `.env`를 로드하는 방법과 비용·오류 처리는 Cloud 안내를 따른다. 코드 채점이 로컬 측정에 영향을 주지 않도록 로컬 실험 종료 후 실행한다.
 
 llama.cpp 전환은 튜터에게 허락받았다. [평가 기준](docs/requirements.md)과 [기록 복구 점검](docs/logging-review.md)을 따른다. 기록 복구와 본 실험 준비는 아직 완료되지 않았다.
 
