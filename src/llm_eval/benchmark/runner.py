@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
+from time import perf_counter
 
 from llm_eval.benchmark.prompts import build_round1_prompt
 from llm_eval.code_extract import extract_python_code
@@ -71,6 +72,7 @@ def run_problem(
 
     print("문제 요청...")
 
+    response_start = perf_counter()
     response = chat(
         client,
         model,
@@ -79,6 +81,7 @@ def run_problem(
         max_tokens=MAX_TOKENS,
         reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
     )
+    response_elapsed = perf_counter() - response_start
 
     response_data = response.model_dump()
 

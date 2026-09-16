@@ -68,11 +68,26 @@ bash configs/llama.cpp/qwen36.sh
 
 두 서버는 모두 `127.0.0.1:8080`을 사용합니다. 모델을 바꿀 때는 실행 중인 서버를 종료한 뒤 다른 서버를 시작합니다. 서버의 모델 로딩이 끝난 후 문제 실행기를 호출합니다.
 
+| 항목 | Qwen | Gemma |
+|---|---:|---:|
+| Context | 12288 | 12288 |
+| Max output | 8192 | 8192 |
+| Reasoning budget | 2048 | 2048 |
+| Temperature | 0 | 0 |
+| Parallel | 1 | 1 |
+| Flash Attention | on | on |
+| GPU layers | all | all |
+| CPU MoE layers | 32 | 해당 없음/설정값 |
+| Generation threads | 16 | auto |
+| Batch threads | 24 | auto |
+| Fit | off | off |
+| Runtime | llama.cpp `4c9233c03` | 동일 |
+
 | 항목 | Gemma | Qwen |
 | --- | --- | --- |
 | API 모델 이름 | `gemma4` | `qwen36` |
 | Context | 12288 | 12288 |
-| GPU 설정 | `--gpu-layers auto` | `--gpu-layers all --n-cpu-moe 28` |
+| GPU 설정 | `--gpu-layers auto` | `--gpu-layers all --n-cpu-moe 32` |
 | 서버 기본 출력 한도 | 8192 | 8192 |
 | 서버 기본 reasoning budget | 2048 | 2048 |
 | Temperature | 0 | 0 |
