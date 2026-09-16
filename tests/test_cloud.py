@@ -107,17 +107,11 @@ class RunnerTests(unittest.TestCase):
     def record(self):
         return json.loads((self.output / "result.json").read_text())
 
-    @patch("llm_eval.cloud.runner.judge_problem")
+    @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
     @patch("llm_eval.cloud.runner.perf_counter", side_effect=[10, 12])
-    def test_success_same_prompt_raw_before_judge_and_skip(self, clock, judge):
+    def test_success_saves_generation_only_and_skips(self, clock, judge):
         response = self.response()
 
-        def fake_judge(**kwargs):
-            self.assertEqual(json.loads((self.output / "response.json").read_text()), response.model_dump.return_value)
-            self.assertEqual(kwargs["code_path"].read_text(), "print(1)")
-            return {"status": "AC", "passed_cases": 1, "total_cases": 1}
-
-        judge.side_effect = fake_judge
         self.run_problem()
         request = self.sdk.responses.create.call_args.kwargs
         self.assertEqual(request, {
@@ -127,14 +121,17 @@ class RunnerTests(unittest.TestCase):
             "input": [{"role": "user", "content": build_round1_prompt("same statement", time_limit_seconds=1, memory_limit_mib=512)}],
         })
         record = self.record()
-        self.assertEqual(record["judge"]["status"], "AC")
+        self.assertIsNone(record["judge"])
+        self.assertTrue(record["record_complete"])
+        self.assertEqual((self.output / "candidate.py").read_text(), "print(1)")
+        self.assertEqual(json.loads((self.output / "response.json").read_text()), response.model_dump.return_value)
         self.assertEqual(record["metrics"]["response_elapsed_seconds"], 2)
         self.assertIsNone(record["metrics"]["generation_tokens_per_second"])
         self.assertEqual(record["model"]["response_model"], client.MODEL)
         self.assertEqual(record["generation"]["response_id"], "resp_test")
         self.run_problem()
         self.sdk.responses.create.assert_called_once()
-        judge.assert_called_once()
+        judge.assert_not_called()
         self.assertFalse((self.root / "results/cloud").exists())
 
     def test_changed_limits_abort_without_second_call(self):
@@ -149,32 +146,33 @@ class RunnerTests(unittest.TestCase):
                 self.problem[field] = original
         self.sdk.responses.create.assert_called_once()
 
-    @patch("llm_eval.cloud.runner.judge_problem")
+    @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
     def test_refusal_no_code_and_missing_usage(self, judge):
         response = self.response("", "completed")
         response.model_dump.return_value["usage"] = None
         response.model_dump.return_value["output"] = [{"type": "message", "content": [{"type": "refusal", "refusal": "Cannot answer"}]}]
         self.run_problem()
         record = self.record()
-        self.assertEqual(record["judge"]["status"], "NO_CODE")
+        self.assertIsNone(record["judge"])
         self.assertIsNone(record["metrics"]["cost"]["estimated_usd"])
         self.assertFalse((self.output / "candidate.py").exists())
         judge.assert_not_called()
 
-    @patch("llm_eval.cloud.runner.judge_problem", return_value={"status": "RE"})
-    def test_incomplete_with_code_is_judged(self, judge):
+    @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
+    def test_incomplete_with_code_is_saved(self, judge):
         self.response(status="incomplete")
         self.run_problem()
         record = self.record()
         self.assertEqual(record["generation"]["status"], "incomplete")
-        self.assertEqual(record["judge"]["status"], "RE")
+        self.assertIsNone(record["judge"])
+        judge.assert_not_called()
         self.assertEqual(record["generation"]["incomplete_details"]["reason"], "max_output_tokens")
 
-    @patch("llm_eval.cloud.runner.judge_problem")
+    @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
     def test_incomplete_without_code(self, judge):
         self.response("unfinished answer", "incomplete")
         self.run_problem()
-        self.assertEqual(self.record()["judge"]["status"], "NO_CODE")
+        self.assertIsNone(self.record()["judge"])
         judge.assert_not_called()
 
     def test_api_failure_safe_record_and_skip(self):
@@ -212,15 +210,13 @@ class RunnerTests(unittest.TestCase):
             self.run_problem()
         self.sdk.responses.create.assert_not_called()
 
-    @patch("llm_eval.cloud.runner.judge_problem", side_effect=OSError("fixture unavailable"))
-    def test_judge_failure_keeps_response_and_prevents_paid_retry(self, judge):
+    def test_legacy_judged_record_skips(self):
         self.response()
-        with self.assertRaises(SystemExit):
-            self.run_problem()
-        self.assertFalse(self.record()["record_complete"])
-        self.assertTrue((self.output / "response.json").exists())
-        with self.assertRaises(SystemExit):
-            self.run_problem()
+        self.run_problem()
+        saved = self.record()
+        saved["judge"] = {"status": "TLE"}
+        (self.output / "result.json").write_text(json.dumps(saved))
+        self.run_problem()
         self.sdk.responses.create.assert_called_once()
 
     def test_changed_prompt_aborts_without_second_call(self):
@@ -242,7 +238,7 @@ class RunnerTests(unittest.TestCase):
             self.run_problem()
         self.sdk.responses.create.assert_called_once()
 
-    @patch("llm_eval.cloud.runner.judge_problem")
+    @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
     def test_failed_api_response_preserved_and_stops(self, judge):
         self.response("", "failed")
         with self.assertRaises(SystemExit):

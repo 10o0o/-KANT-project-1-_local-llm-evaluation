@@ -25,7 +25,7 @@
 
 ## 실행
 
-로컬 측정과 Cloud의 코드 채점이 CPU를 함께 사용하지 않도록 **로컬 실험 종료 후 직접 실행한다**. Cloud 워밍업은 없고 모델·생성 설정은 코드에 고정한다.
+생성 실행기는 응답·지표·후보 코드까지만 저장한다. 로컬 성능 측정에 다른 작업의 부하가 겹치지 않도록 **로컬 실험 종료 후 직접 실행한다**. Cloud 워밍업은 없고 모델·생성 설정은 코드에 고정한다.
 
 `openai_secret_key`가 실행 환경에 있으면 저장소 루트에서 다음 명령을 사용한다.
 
@@ -43,15 +43,25 @@ uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchma
 
 ## 결과와 실패 보존
 
-`results/benchmark/<문제 이름>/luna/round_1/` 아래에 API 원본 `response.json`, 코드가 있으면 `candidate.py`, 정리된 `result.json`을 저장한다. 원본 응답은 채점보다 먼저 저장한다. 요청 모델과 반환 모델·response ID·전체 입력·실제 전송 설정·usage·호출 상태·API 상태·판정을 구분한다.
+`results/benchmark/<문제 이름>/luna/round_1/` 아래에 API 원본 `response.json`, 코드가 있으면 `candidate.py`, 정리된 `result.json`을 저장한다. 채점은 전체 생성 완료와 로컬 모델 서버 종료 후 별도로 실행한다. 요청 모델과 반환 모델·response ID·전체 입력·실제 전송 설정·usage·호출 상태·API 상태를 저장하며 `judge=null`을 유지한다.
 
 - `call.status=success`는 completed 또는 incomplete 응답을 받았다는 뜻이다. 정답이나 생성 완료를 뜻하지 않는다. API 완료 여부는 `generation.status`와 `incomplete_details`로 확인한다.
-- incomplete도 코드가 있으면 채점하고 없으면 NO_CODE다. 거절의 원문은 response.json에 보존하며 코드가 없으면 NO_CODE로 남긴다. failed 등 비정상 API 상태는 저장 후 중단한다.
+- incomplete도 코드를 추출해 저장한다. 후속 일괄 채점에서 코드가 있으면 실행하고 없으면 NO_CODE다. 거절 원문은 response.json에 보존한다. failed 등 비정상 API 상태는 저장 후 중단한다.
 - API 예외·timeout은 안전한 오류 유형·HTTP 상태와 실패까지의 시간만 기록한 뒤 중단한다. 헤더·전체 예외 문자열을 출력하거나 저장하지 않는다.
-- 입력·전송 설정이 같은 완료된 성공·실패 시도는 재실행 시 건너뛴다. 기존 기록과 입력·설정이 다르면 재호출하지 않고 중단한다. 원본 실패를 성공으로 교체하지 않는다. 불완전한 폴더나 채점 처리 오류는 자동 재호출 없이 중단한다. `record_complete`는 파일 처리 완료 표시로 모델의 정답 판정과 다르다.
+- 입력·전송 설정이 같은 완료된 성공·실패 시도는 재실행 시 건너뛴다. 기존 기록과 입력·설정이 다르면 재호출하지 않고 중단한다. 원본 실패를 성공으로 교체하지 않는다. 불완전한 폴더나 생성 후처리 오류는 자동 재호출 없이 중단한다. 기존 채점 오류로 미완료인 폴더도 자동 복구하지 않는다. `record_complete`는 파일 처리 완료 표시로 모델의 정답 판정과 다르다.
 - 파일·기록을 삭제해서 재시도하지 않는다. 추가 실험·재시도는 별도 원본 보존과 집계 분리가 필요하며 이번 실행기는 자동 재시도를 지원하지 않는다.
 
 네트워크 포함 전체 응답 시간은 API 호출 직전부터 반환 직후까지이며 저장·채점 시간은 제외한다. Cloud VRAM·로딩 시간·서버 generation tok/s는 API 미제공 사유와 함께 null이다. 출력 토큰÷전체 응답 시간을 로컬 생성 속도와 같은 지표로 만들지 않는다. 내부 reasoning 전문은 요청하거나 만들어 기록하지 않고 제공된 토큰 수만 보존한다.
+
+## 생성 후 채점
+
+로컬·Cloud 생성과 모델 서버를 모두 종료한 뒤 저장소 루트에서 실행한다.
+
+```bash
+uv run python scripts/run_judge.py --problems all --models all --rounds all
+```
+
+Cloud만 선택하려면 `--models luna --rounds 1`을 사용한다. 모델 API나 인증키 없이 저장된 후보를 순차 실행한다. 각 실행은 새 `results/judging/<세션 ID>/`에 저장하며 기존 생성 결과는 변경하지 않는다. [채점 세션과 집계 기준](../results/README.md#일괄-채점-세션)을 따른다. 기존 단일 후보 검증은 `scripts/check_candidate.py`를 그대로 사용한다.
 
 ## 비용
 

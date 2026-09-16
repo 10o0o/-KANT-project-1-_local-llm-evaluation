@@ -58,6 +58,36 @@ class BenchmarkConditionsTests(unittest.TestCase):
         self.assertEqual(self.path.read_bytes(), original)
         self.assertFalse((self.root / 'results/benchmark/round_1').exists())
 
+    def test_code_is_saved_without_immediate_judging(self):
+        (self.root / "tests").mkdir()
+        (self.root / "tests/p.in.1").write_text("1")
+        (self.root / "tests/p.out.1").write_text("1")
+        self.call.return_value.model_dump.return_value = {
+            "choices": [{"finish_reason": "stop", "message": {
+                "content": "```python\nprint(1)\n```"}}],
+        }
+        with patch("subprocess.run", side_effect=AssertionError("candidate must not run")):
+            self.run_local()
+        saved = json.loads(self.path.read_text())
+        self.assertTrue(saved["record_complete"])
+        self.assertIsNone(saved["judge"])
+        self.assertEqual(self.path.with_name("candidate.py").read_text(), "print(1)")
+        self.run_local()
+        self.call.assert_called_once()
+
+    def test_legacy_judged_record_skips_but_false_marker_blocks(self):
+        self.run_local()
+        saved = json.loads(self.path.read_text())
+        saved.pop("record_complete")
+        saved["judge"] = {"status": "TLE"}
+        self.path.write_text(json.dumps(saved))
+        self.run_local()
+        saved["record_complete"] = False
+        self.path.write_text(json.dumps(saved))
+        with self.assertRaisesRegex(SystemExit, "incomplete"):
+            self.run_local()
+        self.call.assert_called_once()
+
     def test_local_changes_abort_without_call(self):
         self.run_local()
         original = self.path.read_bytes()

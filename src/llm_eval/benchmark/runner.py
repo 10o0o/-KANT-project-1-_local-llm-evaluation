@@ -12,7 +12,7 @@ from llm_eval.benchmark.utils import (
     print_benchmark_run,
 )
 from llm_eval.code_extract import extract_python_code
-from llm_eval.judge import judge_problem
+from llm_eval.records import write_json, generation_complete
 from llm_eval.llama_cpp import REASONING_BUDGET_MESSAGE, chat
 from llm_eval.runtime import measured_metrics, safe_memory
 
@@ -72,12 +72,8 @@ def run_problem(
                 )
             call_status = saved.get("call", {}).get("status")
 
-            if call_status == "error":
-                status = "CALL_ERROR"
-                completed = True
-            else:
-                status = saved["judge"]["status"]
-                completed = status in {"AC", "WA", "TLE", "RE", "NO_CODE"}
+            status = "CALL_ERROR" if call_status == "error" else "생성 완료·채점 대기"
+            completed = generation_complete(saved)
         except (OSError, ValueError, KeyError, TypeError, AttributeError):
             completed = False
 
@@ -134,15 +130,7 @@ def run_problem(
 
         failure_record["metrics"] = measured_metrics(response_elapsed, {}, {}, memory)
 
-        result_path.write_text(
-            json.dumps(
-                failure_record,
-                ensure_ascii=False,
-                indent=2,
-                default=str,
-            ),
-            encoding="utf-8",
-        )
+        write_json(result_path, failure_record)
         raise
 
     response_elapsed = perf_counter() - response_start
@@ -167,26 +155,9 @@ def run_problem(
 
     code = extract_python_code(response_text)
 
-    if code is None:
-        judge_result = {
-            "status": "NO_CODE",
-            "passed_cases": 0,
-            "total_cases": None,
-            "max_case_seconds": None,
-            "time_limit_seconds": time_limit_seconds,
-            "test_results": [],
-        }
-
-    else:
+    if code is not None:
         candidate_path = result_dir / "candidate.py"
         candidate_path.write_text(code, encoding="utf-8")
-
-        judge_result = judge_problem(
-            code_path=candidate_path,
-            problem_dir=problem_dir,
-            problem_name=problem_name,
-            time_limit_seconds=time_limit_seconds,
-        )
 
     usage = response_data.get("usage") or {}
     timings = response_data.get("timings") or {}
@@ -208,19 +179,11 @@ def run_problem(
         usage=usage,
         timings=timings,
         code=code,
-        judge_result=judge_result,
     )
 
     record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
 
-    with open(result_path, "w", encoding="utf-8") as f:
-        json.dump(
-            record,
-            f,
-            ensure_ascii=False,
-            indent=2,
-            default=str,
-        )
+    write_json(result_path, record)
 
     print_benchmark_result(
         run_id=run_id,
@@ -231,6 +194,5 @@ def run_problem(
         usage=usage,
         metrics=record["metrics"],
         code=code,
-        judge_result=judge_result,
         result_dir=result_dir,
     )

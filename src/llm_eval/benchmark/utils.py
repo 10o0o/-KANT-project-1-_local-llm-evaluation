@@ -109,6 +109,7 @@ def build_failure_record(
         },
         "extracted_code": None,
         "judge": None,
+        "record_complete": True,
     }
 
 
@@ -130,7 +131,6 @@ def build_success_record(
     usage,
     timings,
     code,
-    judge_result,
 ):
     return {
         "run_id": run_id,
@@ -185,7 +185,8 @@ def build_success_record(
             "generation_tokens_per_second": timings.get("predicted_per_second"),
         },
         "extracted_code": code,
-        "judge": judge_result,
+        "judge": None,
+        "record_complete": True,
     }
 
 
@@ -199,7 +200,6 @@ def print_benchmark_result(
     usage,
     metrics,
     code,
-    judge_result,
     result_dir,
 ):
     print()
@@ -215,12 +215,5 @@ def print_benchmark_result(
         metrics.get("generation_tokens_per_second"),
     )
     print("has_code:", code is not None)
-    print("judge:", judge_result["status"])
-    print(
-        "passed:",
-        judge_result["passed_cases"],
-        "/",
-        judge_result["total_cases"],
-    )
-    print("max_case_seconds:", judge_result["max_case_seconds"])
+    print("생성 완료·채점 대기")
     print("saved:", result_dir)

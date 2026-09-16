@@ -6,11 +6,7 @@ from llm_eval.benchmark.prompts import build_round1_prompt
 from llm_eval.cloud.client import MODEL, TIMEOUT_SECONDS, request_options
 from llm_eval.cloud.metrics import measured_metrics
 from llm_eval.code_extract import extract_python_code
-from llm_eval.judge import judge_problem
-
-
-def write_json(path, data):
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+from llm_eval.records import write_json, generation_complete
 
 
 def completed_record(path, problem, request):
@@ -23,8 +19,9 @@ def completed_record(path, problem, request):
                 f"ABORT: 기존 Cloud 요청과 현재 입력·설정이 다릅니다: {path}"
             )
         return (
-            record["record_complete"] is True
+            generation_complete(record)
             and record["experiment"]["type"] == "cloud"
+            and record["experiment"]["round"] == 1
             and record["problem"]["id"] == problem["id"]
             and record["model"]["id"] == MODEL
             and record["call"]["status"] in {"success", "error"}
@@ -128,30 +125,6 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         if code is not None:
             candidate = result_dir / "candidate.py"
             candidate.write_text(code, encoding="utf-8")
-        if status in {"completed", "incomplete"}:
-            if code is None:
-                record["judge"] = {
-                    "status": "NO_CODE",
-                    "passed_cases": 0,
-                    "total_cases": None,
-                    "max_case_seconds": None,
-                    "time_limit_seconds": problem["time_limit_seconds"],
-                    "test_results": [],
-                }
-            else:
-                try:
-                    record["judge"] = judge_problem(
-                        code_path=candidate,
-                        problem_dir=project_root / problem["problem_dir"],
-                        problem_name=problem["name"],
-                        time_limit_seconds=problem["time_limit_seconds"],
-                    )
-                except Exception as exc:
-                    record["judge_error"] = {"type": type(exc).__name__}
-                    write_json(result_path, record)
-                    raise SystemExit(
-                        "Cloud 응답은 보존했습니다. 채점 실패 기록을 확인하세요."
-                    ) from None
     except Exception as exc:
         record["processing_error"] = {"type": type(exc).__name__}
         record["record_complete"] = False
@@ -167,5 +140,5 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
     if record["call"]["status"] == "error":
         raise SystemExit("Cloud 응답의 비정상 상태를 저장하고 중단했습니다.")
     print(
-        f"Cloud 완료: {problem['id']} / {status} / {record['judge']['status']} / {elapsed:.2f}s"
+        f"Cloud 생성 완료·채점 대기: {problem['id']} / {status} / {elapsed:.2f}s"
     )
