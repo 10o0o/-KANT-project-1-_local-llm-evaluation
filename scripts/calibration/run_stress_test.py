@@ -90,7 +90,9 @@ def main():
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
-    result_dir = root / "results" / "calibration" / "stress" / run_id / args.model / "slaganje"
+    result_dir = (
+        root / "results" / "calibration" / "stress" / run_id / args.model / "slaganje"
+    )
 
     result_dir.mkdir(parents=True, exist_ok=False)
 
@@ -119,6 +121,10 @@ def main():
             "temperature": TEMPERATURE,
             "max_tokens": MAX_TOKENS,
             "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
+            "reasoning_budget_message": (
+                "Considering the limited time by the user, "
+                "I have to give the solution based on the thinking directly now."
+            ),
         },
         "finish_reason": finish_reason,
         "completion_tokens": completion_tokens,

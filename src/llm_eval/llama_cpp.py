@@ -32,5 +32,9 @@ def chat(
         extra_body={
             "reasoning_budget_tokens": reasoning_budget_tokens,
             "cache_prompt": False,
+            "reasoning_budget_message": (
+                "Considering the limited time by the user, "
+                "I have to give the solution based on the thinking directly now."
+            ),
         },
     )
