@@ -14,7 +14,7 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --parallel 1 \
   --fit off \
   --gpu-layers all \
-  --n-cpu-moe 28 \
+  --n-cpu-moe 32 \
   --load-mode none \
   --flash-attn on \
   --temp 0 \
