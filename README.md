@@ -54,13 +54,16 @@ uv run llm-eval generate local \
 uv run llm-eval queue
 ```
 
-Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있습니다. `--round`를 생략하면 Cloud는 Round 1을 사용합니다. 키 값은 출력·문서·결과에 저장하지 않습니다.
+Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있습니다. 비교 대상은 `luna`와 `motif3` 두 제공자이며 `--model`은 필수입니다. 두 Cloud 모델은 잠금을 공유하므로 순차로 실행합니다. `--round`를 생략하면 Cloud는 Round 1을 사용합니다. 키는 모델별 환경 변수(`openai_secret_key`, `morph_api_key`)에서 읽으며 값은 출력·문서·결과에 저장하지 않습니다.
 
 ```bash
 uv run --env-file ../project1-python-start/.env \
-  llm-eval generate cloud --problems all --round 1
+  llm-eval generate cloud --model luna --problems all --round 1
 uv run --env-file ../project1-python-start/.env \
-  llm-eval generate cloud --problems all --round 2
+  llm-eval generate cloud --model luna --problems all --round 2
+
+uv run llm-eval generate cloud --model motif3 --problems all --round 1
+uv run llm-eval generate cloud --model motif3 --problems all --round 2
 ```
 
 로컬·Cloud 전체 생성과 모델 서버 종료 후 오프라인 채점을 실행합니다.
@@ -123,7 +126,7 @@ results/judging/<세션 ID>/
 | --- | --- |
 | [architecture](docs/architecture.md) | 모든 관리 파일의 책임·호출자·테스트·제거된 CLI 매핑 지도 |
 | [로컬 실행 안내](docs/operations/local-runbook.md) | 서버·워밍업·로컬 두 회차·큐·채점·모의 검증 |
-| [Cloud 비교 안내](docs/operations/cloud-runbook.md) | Luna 독립 회차·안전한 키 로드·비용·채점 경계 |
+| [Cloud 비교 안내](docs/operations/cloud-runbook.md) | Luna·Motif-3 독립 회차·모델별 키 로드·비용·채점 경계 |
 | [실행 환경](docs/operations/environment.md) | 장비·버전·서버 설정의 관측 범위 |
 | [기록 구현 점검](docs/operations/recording.md) | 지표·저장·누락값·Judge 한계 |
 | [발제·평가·요구사항](docs/project/assignment.md) | 원문 기준·평가표·사용자 정의 조건 |

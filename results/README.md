@@ -4,7 +4,8 @@
 
 | 경로 | 용도 | 본 실험 집계 |
 | --- | --- | --- |
-| `benchmark/<문제>/luna/round_<회차>/` | Cloud 10문항×2회 독립 실행(총 20회), 로컬과 별도 비교 | Cloud 집계 |
+| `benchmark/<문제>/luna/round_<회차>/` | Cloud Luna 10문항×2회 독립 실행(총 20회), 로컬과 별도 비교 | Luna 집계 |
+| `benchmark/<문제>/motif3/round_<회차>/` | Cloud Motif-3 10문항×2회 독립 실행(총 20회), 두 번째 Cloud 비교 대상 | Motif-3 집계 |
 | `benchmark/<문제>/<qwen36 또는 gemma4>/round_<회차>/` | 로컬 모델당 10문항×2회 | 로컬 집계 |
 | `pilot/pre_offline_judging_20260916_173157_900249/` | 생성·일괄 채점 분리 후 새 실행을 위한 기존 19건·54파일 원본 보존 | 제외 |
 | `pilot/pre_resource_limits_20260916_162603_416706/` | 실행 제한 미제공 조건의 로컬 6회·Cloud 10회와 이동 manifest | 제외 |
@@ -34,7 +35,7 @@ Calibration의 `PASS`는 최종 응답과 코드 블록 생성 여부를 확인�
 
 Diagnostics의 수정 코드는 모델 원본 답변이 아니므로 모델 정답률에 포함하지 않는다. 저장된 판정 근거가 없으면 코드 파일만으로 수동 재채점 성공을 단정하지 않는다.
 
-원본 내용은 수정하지 않고 이전 경로와 복원 방법은 [정리 이력](../docs/history/README.md)에 남겼다. 이전 Cloud 10회는 pilot으로 보존하고, [Cloud 안내](../docs/operations/cloud-runbook.md)에 따라 현재 계획인 전체 10문항×2회 독립 실행 결과를 `benchmark/<문제>/luna/round_1/`·`round_2/`에 저장한다. Cloud 20회는 로컬의 40회에 합산하지 않으며 최종 로컬 후보 선정에서도 제외한다. 원본 응답·선택적 후보 코드·정리된 결과를 나누고, 성공·실패 시도를 덮어쓰지 않는다.
+원본 내용은 수정하지 않고 이전 경로와 복원 방법은 [정리 이력](../docs/history/README.md)에 남겼다. 이전 Cloud 10회는 pilot으로 보존하고, [Cloud 안내](../docs/operations/cloud-runbook.md)에 따라 현재 계획인 전체 10문항×2회 독립 실행 결과를 Cloud 모델별로 `benchmark/<문제>/luna/round_1/`·`round_2/`와 `benchmark/<문제>/motif3/round_1/`·`round_2/`에 저장한다. Cloud 모델당 20회는 로컬의 40회에 합산하지 않고 두 Cloud 모델끼리도 합산하지 않으며, 최종 로컬 후보 선정에서도 제외한다. Motif-3는 Luna 실행기를 확장해 추가한 두 번째 Cloud 대상이며 실제 호출·결과는 아직 확인하지 않았으므로 폴더가 없는 상태가 정상이다. 원본 응답·선택적 후보 코드·정리된 결과를 나누고, 성공·실패 시도를 덮어쓰지 않는다.
 
 모델당 서버 시작 후 warmup 1회를 수행한다.
 warmup은 본 실험 40회 및 품질·성능 평균에서 제외한다.

@@ -10,11 +10,12 @@
 | CLI-02 | 요청·기록·재개·잠금 회귀 검증 | 완료 | 모의·합성 프로세스 138개 통과 | 실제 실험은 사용자 직접 수행 |
 | CLI-03 | 폴더·파일 역할 설명 | 완료 | README·architecture·운영 안내·AGENTS | 구조 변경 시 함께 갱신 |
 | CLI-04 | 성격별 커밋·게시 | 검증 완료·성격별 게시 | 코드 `5090336`; 문서 커밋은 이 절의 Git 이력으로 추적 | 원격 일치는 게시 후 확인 |
+| CLOUD-02 | Cloud 두 번째 제공자(Motif-3) 실행기 확장 | 구현·테스트 완료, 실제 호출 미수행 | AI; `cloud/client.py` provider 등록부, Chat Completions 어댑터, 모의 테스트 152개 통과 | `morph_api_key`를 넣고 1문항으로 먼저 호출해 원본 구조를 직접 확인 |
 | EVAL | 원본 확인·남은 생성·채점·평가 | 직접 수행 대기 | 신규 미추적 결과 내용은 이번에 미확인 | 원본 기록과 미생성 범위부터 확인 |
 
 구현 전 관련 실행 프로세스가 없음을 확인했다. 서버 셸·데이터·결과 원본·생성 조건은 보존하며 신규 미추적 실험 결과는 게시 대상에서 제외한다. Gemma 병렬 실행은 이번 범위에 포함하지 않는다. 중간 정보는 이 문서와 STATE에서 관리하며 Notion은 변경하지 않는다.
 
-검증 명령: `uv sync --locked --offline`, `LLM_EVAL_RUN_PROCESS_TESTS=1 uv run python -m unittest discover -s tests -v`. 테스트 138개가 통과했으며 console/module의 도움말 26회는 모델·데이터 접근 없이 출력했다. 실제 모델/API·GPU 조회·실험 후보 채점은 하지 않았다. 구형 실행 감지, Cloud/로컬 병행, Judge 배타, 큐 FD 상속, 실패 보존·독립 회차를 회귀 검증했다.
+검증 명령: `uv sync --locked --offline`, `LLM_EVAL_RUN_PROCESS_TESTS=1 uv run python -m unittest discover -s tests -v`. Cloud 제공자 확장 후 테스트 152개가 통과했다. 이전 단일 CLI 통합 시점에는 138개였으며 console/module의 도움말 26회는 모델·데이터 접근 없이 출력했다. 실제 모델/API·GPU 조회·실험 후보 채점은 하지 않았다. 구형 실행 감지, Cloud/로컬 병행, Judge 배타, 큐 FD 상속, 실패 보존·독립 회차를 회귀 검증했다.
 
 변경 문서 11개의 상대 링크·앵커 133개와 구조 안내의 관리 파일 목록, `git diff --check`를 확인했다. 보호 대상 서버 셸·데이터·결과 원본·고정 의존성·발제·원문 스냅샷은 이전 HEAD 대비 변경이 없다.
 
