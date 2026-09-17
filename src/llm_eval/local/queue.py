@@ -230,7 +230,8 @@ def run_queue(root, timeout=900):
     root = root.resolve()
     if not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("startup timeout은 양수여야 합니다.")
-    # One repository lock covers queue, generation, cloud calls, and judging.
+    # The local lane covers queue children and excludes judging; Cloud has an
+    # independent lane and may run concurrently.
     with workload(root, "queue") as lease:
         problems = load_problems(root)
         if len(problems) != 10 or len({p['id'] for p in problems}) != 10:

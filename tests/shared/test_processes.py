@@ -27,13 +27,52 @@ class ProcessScannerTests(unittest.TestCase):
         found = processes.active_workloads(self.proc, excluded_pids=set())
         self.assertEqual([(item["pid"], item["kind"]) for item in found], [(101, "local")])
 
-    def test_server_allowance_depends_on_workload_kind(self):
-        self.process(201, ["/bin/llama-server", "--alias", "qwen36"])
-        processes.ensure_workload_safe("local", self.proc, excluded_pids=set())
-        processes.ensure_workload_safe("warmup", self.proc, excluded_pids=set())
-        for kind in ("queue", "cloud", "judge"):
+    def test_conflict_matrix_allows_cloud_with_local_workloads_and_server(self):
+        allowed_pairs = (
+            ("local", ["python3", "scripts/run_cloud_benchmark.py"]),
+            ("local", ["/bin/llama-server", "--alias", "qwen36"]),
+            ("warmup", ["python3", "scripts/run_cloud_benchmark.py"]),
+            ("warmup", ["/bin/llama-server", "--alias", "qwen36"]),
+            ("queue", ["python3", "scripts/run_cloud_benchmark.py"]),
+            ("cloud", ["python3", "scripts/run_benchmark.py"]),
+            ("cloud", ["python3", "scripts/run_warmup.py"]),
+            ("cloud", ["python3", "scripts/run_local_queue.py"]),
+            ("cloud", ["/bin/llama-server", "--alias", "qwen36"]),
+        )
+        for index, (kind, argv) in enumerate(allowed_pairs, 201):
+            with self.subTest(kind=kind, active=argv[1]):
+                self.process(index, argv)
+                try:
+                    processes.ensure_workload_safe(
+                        kind, self.proc, excluded_pids=set()
+                    )
+                finally:
+                    (self.proc / str(index) / "cmdline").unlink()
+
+        self.process(299, ["python3", "scripts/run_batch_judge.py"])
+        for kind in processes.WORKLOAD_KINDS:
             with self.subTest(kind=kind), self.assertRaises(RuntimeError):
                 processes.ensure_workload_safe(kind, self.proc, excluded_pids=set())
+
+    def test_duplicate_and_same_lane_workloads_conflict(self):
+        cases = {
+            "local": ["python3", "scripts/run_local_queue.py"],
+            "warmup": ["python3", "scripts/run_benchmark.py"],
+            "queue": ["python3", "scripts/run_warmup.py"],
+            "cloud": ["python3", "scripts/run_cloud_benchmark.py"],
+        }
+        for index, (kind, argv) in enumerate(cases.items(), 301):
+            with self.subTest(kind=kind):
+                child = self.proc / str(index)
+                child.mkdir()
+                (child / "cmdline").write_bytes(
+                    b"\0".join(item.encode() for item in argv) + b"\0"
+                )
+                with self.assertRaises(RuntimeError):
+                    processes.ensure_workload_safe(
+                        kind, self.proc, excluded_pids=set()
+                    )
+                (child / "cmdline").unlink()
 
     @patch.object(processes.os, "killpg", side_effect=AssertionError("must not signal"))
     def test_conflict_never_signals_discovered_process(self, kill):

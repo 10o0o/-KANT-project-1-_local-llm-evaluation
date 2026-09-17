@@ -148,7 +148,7 @@ class QueueTests(unittest.TestCase):
         with queue.queue_lock(self.root / 'logs/local_queue'):
             with self.assertRaisesRegex(RuntimeError, '실행 중'):
                 queue.run_queue(self.root)
-        self.idle.side_effect = RuntimeError('active cloud')
-        with self.assertRaisesRegex(RuntimeError, 'active cloud'):
+        self.idle.side_effect = RuntimeError('active local')
+        with self.assertRaisesRegex(RuntimeError, 'active local'):
             queue.run_queue(self.root)
         self.spawn.assert_not_called()

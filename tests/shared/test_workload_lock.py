@@ -37,6 +37,82 @@ class WorkloadLockTests(unittest.TestCase):
         with self.assertRaises(OSError):
             os.fstat(lease.fd)
 
+    def test_local_and_cloud_lanes_are_independent_and_duplicate_cloud_blocks(self):
+        with patch.object(processes, "ensure_workload_safe"):
+            with processes.workload(self.root, "local"):
+                with processes.workload(self.root, "cloud"):
+                    with self.assertRaisesRegex(RuntimeError, "이미 다른"):
+                        with processes.workload(self.root, "cloud"):
+                            pass
+
+        self.assertNotEqual(
+            processes.workload_lock_path(self.root),
+            processes.cloud_workload_lock_path(self.root),
+        )
+
+    def test_judge_takes_both_lanes_and_rolls_back_local_on_cloud_conflict(self):
+        with patch.object(processes, "ensure_workload_safe"):
+            with processes.workload(self.root, "cloud"):
+                with self.assertRaisesRegex(RuntimeError, "이미 다른"):
+                    with processes.workload(self.root, "judge"):
+                        pass
+                # A failed judge must not retain its first, local-lane lock.
+                with processes.workload(self.root, "local"):
+                    pass
+
+            with processes.workload(self.root, "judge"):
+                for kind in ("local", "cloud"):
+                    with self.subTest(kind=kind), self.assertRaisesRegex(
+                        RuntimeError, "이미 다른"
+                    ):
+                        with processes.workload(self.root, kind):
+                            pass
+
+    def test_second_lane_oserror_closes_new_fd_and_rolls_back_local(self):
+        failure = OSError("fixture flock failure")
+        with (
+            patch.object(processes, "ensure_workload_safe"),
+            patch.object(processes.os, "open", side_effect=[10, 11]),
+            patch.object(
+                processes.fcntl,
+                "flock",
+                side_effect=[None, failure, None],
+            ),
+            patch.object(processes.os, "close") as close,
+            self.assertRaisesRegex(OSError, "fixture flock failure"),
+        ):
+            with processes.workload(self.root, "judge"):
+                pass
+
+        self.assertEqual([call.args[0] for call in close.call_args_list], [11, 10])
+
+    def test_cleanup_failure_still_releases_both_judge_lane_fds(self):
+        failure = OSError("fixture unlock failure")
+        with (
+            patch.object(processes, "ensure_workload_safe"),
+            patch.object(processes.os, "open", side_effect=[10, 11]),
+            patch.object(
+                processes.fcntl,
+                "flock",
+                side_effect=[None, None, failure, None],
+            ) as flock,
+            patch.object(processes.os, "close") as close,
+            self.assertRaisesRegex(OSError, "fixture unlock failure"),
+        ):
+            with processes.workload(self.root, "judge"):
+                pass
+
+        self.assertEqual(
+            [call.args for call in flock.call_args_list],
+            [
+                (10, fcntl.LOCK_EX | fcntl.LOCK_NB),
+                (11, fcntl.LOCK_EX | fcntl.LOCK_NB),
+                (11, fcntl.LOCK_UN),
+                (10, fcntl.LOCK_UN),
+            ],
+        )
+        self.assertEqual([call.args[0] for call in close.call_args_list], [11, 10])
+
     def test_valid_inherited_fd_is_borrowed_and_never_unlocked_or_closed(self):
         lock_path = processes.workload_lock_path(self.root)
         lock_path.parent.mkdir(parents=True)

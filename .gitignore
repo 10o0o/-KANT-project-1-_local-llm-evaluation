@@ -23,3 +23,4 @@ data/coci/**/testdata/
 logs/local_queue/
 
 logs/.workload.lock
+logs/.cloud-workload.lock

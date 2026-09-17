@@ -38,7 +38,10 @@ class LifecycleTests(unittest.TestCase):
                 queue.check_idle(root)
                 (root / '456').mkdir()
                 (root / '456/cmdline').write_bytes(b'python\0scripts/run_cloud_benchmark.py\0')
-                with self.assertRaisesRegex(RuntimeError, '456'):
+                queue.check_idle(root)
+                (root / '789').mkdir()
+                (root / '789/cmdline').write_bytes(b'python\0scripts/run_benchmark.py\0')
+                with self.assertRaisesRegex(RuntimeError, '789'):
                     queue.check_idle(root)
 
     def test_server_death_during_generation_aborts(self):

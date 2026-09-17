@@ -2,6 +2,7 @@
 
 import fcntl
 import os
+import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,6 +10,13 @@ from pathlib import Path
 
 WORKLOAD_FD_ENV = "LLM_EVAL_WORKLOAD_LOCK_FD"
 WORKLOAD_KINDS = frozenset({"local", "warmup", "cloud", "queue", "judge"})
+ALLOWED_ACTIVE_KINDS = {
+    "local": frozenset({"cloud", "server"}),
+    "warmup": frozenset({"cloud", "server"}),
+    "queue": frozenset({"cloud"}),
+    "cloud": frozenset({"local", "warmup", "queue", "server"}),
+    "judge": frozenset(),
+}
 SCRIPT_KINDS = {
     "run_benchmark.py": "local",
     "run_local_benchmark.py": "local",
@@ -28,7 +36,22 @@ MODULE_KINDS = {
 
 
 def workload_lock_path(root: Path) -> Path:
+    """Return the existing local-generation lane lock path."""
     return Path(root).resolve() / "logs" / ".workload.lock"
+
+
+def cloud_workload_lock_path(root: Path) -> Path:
+    return Path(root).resolve() / "logs" / ".cloud-workload.lock"
+
+
+def _workload_lock_paths(root: Path, kind: str) -> tuple[Path, ...]:
+    local_path = workload_lock_path(root)
+    if kind == "cloud":
+        return (cloud_workload_lock_path(root),)
+    if kind == "judge":
+        # Fixed order prevents two-lane acquisition from introducing deadlocks.
+        return (local_path, cloud_workload_lock_path(root))
+    return (local_path,)
 
 
 def ancestor_pids(proc_root: Path = Path("/proc")) -> set[int]:
@@ -102,7 +125,7 @@ def ensure_workload_safe(
 ) -> None:
     if kind not in WORKLOAD_KINDS:
         raise ValueError(f"지원하지 않는 작업 종류: {kind}")
-    allowed = {"server"} if kind in {"local", "warmup"} else set()
+    allowed = ALLOWED_ACTIVE_KINDS[kind]
     conflicts = [
         item
         for item in active_workloads(proc_root, excluded_pids)
@@ -163,8 +186,9 @@ def workload(
     root: Path,
     kind: str,
     allow_inherited: bool = False,
+    proc_root: Path = Path("/proc"),
 ):
-    """Hold this repository's workload lock, or borrow its inherited FD."""
+    """Hold the required local/cloud lanes, or borrow the local lane FD."""
     root = Path(root).resolve()
     if kind not in WORKLOAD_KINDS:
         raise ValueError(f"지원하지 않는 작업 종류: {kind}")
@@ -176,26 +200,41 @@ def workload(
         if not allow_inherited:
             raise RuntimeError("이 작업은 상속된 작업 잠금을 사용할 수 없습니다.")
         fd = _validate_inherited_fd(root, inherited_value)
-        ensure_workload_safe(kind)
+        ensure_workload_safe(kind, proc_root)
         yield WorkloadLease(root, kind, fd, borrowed=True)
         return
 
-    ensure_workload_safe(kind)
-    path = workload_lock_path(root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
-    acquired = False
+    ensure_workload_safe(kind, proc_root)
+    paths = _workload_lock_paths(root, kind)
+    paths[0].parent.mkdir(parents=True, exist_ok=True)
+    acquired_fds = []
     try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            acquired = True
-        except BlockingIOError as exc:
-            raise RuntimeError("이미 다른 벤치마크 작업이 실행 중입니다.") from exc
-        ensure_workload_safe(kind)
-        yield WorkloadLease(root, kind, fd, borrowed=False)
+        for path in paths:
+            fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                os.close(fd)
+                raise RuntimeError("이미 다른 벤치마크 작업이 실행 중입니다.") from exc
+            except BaseException:
+                os.close(fd)
+                raise
+            acquired_fds.append(fd)
+        ensure_workload_safe(kind, proc_root)
+        yield WorkloadLease(root, kind, acquired_fds[0], borrowed=False)
     finally:
-        try:
-            if acquired:
+        body_failed = sys.exc_info()[0] is not None
+        cleanup_error = None
+        for fd in reversed(acquired_fds):
+            try:
                 fcntl.flock(fd, fcntl.LOCK_UN)
-        finally:
-            os.close(fd)
+            except BaseException as exc:
+                if cleanup_error is None:
+                    cleanup_error = exc
+            try:
+                os.close(fd)
+            except BaseException as exc:
+                if cleanup_error is None:
+                    cleanup_error = exc
+        if cleanup_error is not None and not body_failed:
+            raise cleanup_error
