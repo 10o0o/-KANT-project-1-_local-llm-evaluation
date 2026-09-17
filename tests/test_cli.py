@@ -24,12 +24,15 @@ class CommandTests(unittest.TestCase):
             dispatch.assert_not_called()
 
     def test_argument_contracts(self):
-        self.assertEqual(cli.parse_args(['generate', 'cloud', '--problems', 'all']).round, 1)
+        cloud = cli.parse_args(['generate', 'cloud', '--model', 'luna', '--problems', 'all'])
+        self.assertEqual((cloud.round, cloud.model), (1, 'luna'))
         self.assertEqual(cli.parse_args(['queue']).startup_timeout_seconds, 900)
         batch = cli.parse_args(['judge', 'batch'])
         self.assertEqual((batch.problems, batch.models, batch.rounds), ('all', 'all', 'all'))
         for args in [[], ['generate', 'local', '--model', 'gemma4', '--problems', 'all'],
-                     ['generate', 'cloud', '--problems', 'all', '--round', '3'],
+                     ['generate', 'cloud', '--model', 'luna', '--problems', 'all', '--round', '3'],
+                     ['generate', 'cloud', '--problems', 'all'],
+                     ['generate', 'cloud', '--model', 'gpt-luna', '--problems', 'all'],
                      ['warmup', '--model', 'unknown'], ['judge', 'candidate']]:
             with self.subTest(args=args), contextlib.redirect_stderr(io.StringIO()), \
                     self.assertRaises(SystemExit) as exit:
@@ -39,7 +42,7 @@ class CommandTests(unittest.TestCase):
     def test_wrong_checkout_rejected_before_dispatch(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(cli.Path, 'cwd', return_value=Path(folder)), \
                 patch.object(cli, 'dispatch') as dispatch, self.assertRaisesRegex(SystemExit, '저장소 루트'):
-            cli.main(['generate', 'cloud', '--problems', 'all'])
+            cli.main(['generate', 'cloud', '--model', 'luna', '--problems', 'all'])
         dispatch.assert_not_called()
 
     def test_root_is_callers_checkout_not_package_location(self):
@@ -56,8 +59,8 @@ class CommandTests(unittest.TestCase):
         cases = [
             (['generate','local','--model','gemma4','--problems','p1','--round','2'],
              'llm_eval.local.generation.run_selected', ('gemma4','p1',2)),
-            (['generate','cloud','--problems','p1','--round','2'],
-             'llm_eval.cloud.generation.run_selected', ('p1',2)),
+            (['generate','cloud','--model','motif3','--problems','p1','--round','2'],
+             'llm_eval.cloud.generation.run_selected', ('motif3','p1',2)),
             (['queue'], 'llm_eval.local.queue.run_queue', (900,)),
             (['warmup','--model','gemma4'], 'llm_eval.local.client.run_warmup', ('gemma4',)),
             (['judge','batch'], 'llm_eval.judging.workflow.run_batch_judging', ('all','all','all')),

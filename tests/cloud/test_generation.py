@@ -38,7 +38,7 @@ class RunnerTests(unittest.TestCase):
         response = Mock()
         response.output_text = content
         response.model_dump.return_value = {
-            "id": "resp_test", "model": client.MODEL, "status": status,
+            "id": "resp_test", "model": client.LUNA.model, "status": status,
             "service_tier": "default", "usage": usage(),
             "incomplete_details": {"reason": "max_output_tokens"} if status == "incomplete" else None,
             "output": [{"type": "message", "content": [{"type": "output_text", "text": content}]}],
@@ -154,7 +154,7 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(json.loads((self.output / "response.json").read_text()), response.model_dump.return_value)
         self.assertEqual(record["metrics"]["response_elapsed_seconds"], 2)
         self.assertIsNone(record["metrics"]["generation_tokens_per_second"])
-        self.assertEqual(record["model"]["response_model"], client.MODEL)
+        self.assertEqual(record["model"]["response_model"], client.LUNA.model)
         self.assertEqual(record["generation"]["response_id"], "resp_test")
         self.run_problem()
         self.sdk.responses.create.assert_called_once()

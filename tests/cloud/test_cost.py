@@ -19,7 +19,7 @@ from .helpers import usage
 
 class CostTests(unittest.TestCase):
     def cost(self, data):
-        return estimated_cost(data, client.MODEL, "default")
+        return estimated_cost(data, client.LUNA.model, "default")
 
     def test_read_write_and_reasoning_not_double_counted(self):
         # 700*.20 + 200*.02 + 100*.25 + 500*1.20 = 769 microdollars.
@@ -42,5 +42,5 @@ class CostTests(unittest.TestCase):
                 result = self.cost(data)
                 self.assertIsNone(result["estimated_usd"])
                 self.assertTrue(result["reason"])
-        for model, tier in [("unknown", "default"), (client.MODEL, "priority"), (None, None)]:
+        for model, tier in [("unknown", "default"), (client.LUNA.model, "priority"), (None, None)]:
             self.assertIsNone(estimated_cost(usage(), model, tier)["estimated_usd"])

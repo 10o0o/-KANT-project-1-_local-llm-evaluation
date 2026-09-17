@@ -39,12 +39,13 @@ class BatchTests(unittest.TestCase):
             "run_id": f"run-{name}-{model}-{number}",
             "problem": {"id": f"id_{name}", "time_limit_seconds": 1},
             "model": {"id": batch.MODEL_IDS[model]},
-            "experiment": {"type": "cloud" if model == "luna" else "benchmark", "round": number},
+            "experiment": {"type": "cloud" if model in batch.CLOUD_MODELS else "benchmark",
+                           "round": number},
             "call": {"status": "error" if error else "success"},
             "generation": None if error else {"content": code or "no code"},
             "extracted_code": code, "judge": {"status": "TLE"} if legacy else None,
         }
-        if not legacy or model == "luna":
+        if not legacy or model in batch.CLOUD_MODELS:
             record["record_complete"] = True
         write_json(folder / "result.json", record)
         if not error:
@@ -211,7 +212,7 @@ class BatchTests(unittest.TestCase):
             batch._run_batch(self.root)
         self.judge.assert_not_called()
 
-    def test_coverage_counts_include_both_luna_rounds(self):
+    def test_coverage_counts_include_both_rounds_of_every_cloud_model(self):
         names = [f"p{number}" for number in range(10)]
         problems = [
             {"id": f"id_{name}", "name": name, "problem_dir": f"data/{name}",
@@ -241,8 +242,16 @@ class BatchTests(unittest.TestCase):
         luna_round_two, luna_round_two_missing, _ = batch.collect(
             self.root, problems, ["luna"], ["2"]
         )
+        motif_entries, motif_missing, _ = batch.collect(
+            self.root, problems, ["motif3"], ["1", "2"]
+        )
 
-        self.assertEqual((len(all_entries), len(all_missing)), (60, 0))
+        # 10 problems x 4 models x 2 rounds; each cloud model is counted separately.
+        self.assertEqual((len(all_entries), len(all_missing)), (80, 0))
+        self.assertEqual((len(motif_entries), len(motif_missing)), (20, 0))
+        self.assertEqual(
+            {entry["model_id"] for entry in motif_entries}, {"motif/motif-3"}
+        )
         self.assertEqual((len(luna_entries), len(luna_missing)), (20, 0))
         self.assertEqual((len(luna_round_one), len(luna_round_one_missing)), (10, 0))
         self.assertEqual((len(luna_round_two), len(luna_round_two_missing)), (10, 0))

@@ -17,7 +17,10 @@ from llm_eval.shared.storage import write_json
 from llm_eval.shared.artifacts import generation_complete, validate_artifacts
 from llm_eval.shared.workloads import workload, active_workloads
 
-MODEL_IDS = {"qwen36": "qwen36", "gemma4": "gemma4", "luna": "gpt-5.6-luna"}
+# Append new models; this order is the canonical model order of every judging session.
+MODEL_IDS = {"qwen36": "qwen36", "gemma4": "gemma4", "luna": "gpt-5.6-luna",
+             "motif3": "motif/motif-3"}
+CLOUD_MODELS = frozenset({"luna", "motif3"})
 
 
 def now():
@@ -72,7 +75,7 @@ def collect(root, problems, models, rounds):
                 path = folder / "result.json"
                 try:
                     record = json.loads(path.read_text(encoding="utf-8"))
-                    expected_type = "cloud" if model == "luna" else "benchmark"
+                    expected_type = "cloud" if model in CLOUD_MODELS else "benchmark"
                     if (not generation_complete(record)
                             or record["problem"]["id"] != problem["id"]
                             or record["model"]["id"] != MODEL_IDS[model]

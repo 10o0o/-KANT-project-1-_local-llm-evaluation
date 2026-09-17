@@ -18,7 +18,8 @@ def parse_args(argv=None):
         "--problems", required=True, help="all 또는 쉼표로 구분한 문제 ID"
     )
     local.add_argument("--round", type=int, choices=(1, 2), required=True)
-    cloud = providers.add_parser("cloud", help="Luna에 독립 요청")
+    cloud = providers.add_parser("cloud", help="클라우드 서버에 요청")
+    cloud.add_argument("--model", choices=("luna", "motif3"), required=True)
     cloud.add_argument(
         "--problems", required=True, help="all 또는 쉼표로 구분한 문제 ID"
     )
@@ -70,7 +71,7 @@ def dispatch(root, args):
             return run_selected(root, args.model, args.problems, args.round)
         from llm_eval.cloud.generation import run_selected
 
-        return run_selected(root, args.problems, args.round)
+        return run_selected(root, args.model, args.problems, args.round)
     if args.command == "queue":
         from llm_eval.local.queue import run_queue
 
