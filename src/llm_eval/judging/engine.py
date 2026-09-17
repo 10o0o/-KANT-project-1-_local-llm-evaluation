@@ -2,7 +2,7 @@ import sys
 import time
 from pathlib import Path
 
-from llm_eval.judging.process import (
+from llm_eval.judging.execution import (
     ProcessCleanupError,
     collect_bounded_output,
     spawn_isolated,

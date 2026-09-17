@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 from urllib.error import URLError
 
 from llm_eval.local import queue, server
-from llm_eval.local.runner import request_conditions
+from llm_eval.local.generation import request_conditions
 from llm_eval.shared.storage import write_json
 
 
@@ -30,7 +30,7 @@ class QueueTests(unittest.TestCase):
         config.mkdir(parents=True)
         for model in queue.MODELS:
             (config / f'{model}.sh').write_text(f'exec llama-server --alias {model}\n')
-        self.enterContext(patch('llm_eval.shared.processes.ensure_workload_safe'))
+        self.enterContext(patch('llm_eval.shared.workloads.ensure_workload_safe'))
         self.idle = self.enterContext(patch.object(queue, 'check_idle'))
         self.stop = self.enterContext(patch.object(queue, 'stop_owned'))
         self.free = self.enterContext(patch.object(queue, 'wait_port_free'))
@@ -58,8 +58,8 @@ class QueueTests(unittest.TestCase):
 
     def generate(self, args, log):
         self.commands.append(args)
-        if args[0] == 'scripts/run_local_benchmark.py':
-            model, number = args[2], int(args[-1])
+        if args[:4] == ['-m', 'llm_eval', 'generate', 'local']:
+            model, number = args[5], int(args[-1])
             for problem in self.problems:
                 folder = self.root / f"results/benchmark/{problem['name']}/{model}/round_{number}"
                 if not folder.exists():
@@ -74,13 +74,13 @@ class QueueTests(unittest.TestCase):
         folder = self.record(self.problems[0], 'qwen36', 1)
         original = (folder / 'result.json').read_bytes()
         session = queue.run_queue(self.root)
-        self.assertEqual([(a[0], a[2], a[-1]) for a in self.commands], [
-            ('scripts/run_warmup.py', 'qwen36', 'qwen36'),
-            ('scripts/run_local_benchmark.py', 'qwen36', '1'),
-            ('scripts/run_local_benchmark.py', 'qwen36', '2'),
-            ('scripts/run_warmup.py', 'gemma4', 'gemma4'),
-            ('scripts/run_local_benchmark.py', 'gemma4', '1'),
-            ('scripts/run_local_benchmark.py', 'gemma4', '2'),
+        self.assertEqual([(a[2], a[3], a[-1]) for a in self.commands], [
+            ('warmup', '--model', 'qwen36'),
+            ('generate', 'local', '1'),
+            ('generate', 'local', '2'),
+            ('warmup', '--model', 'gemma4'),
+            ('generate', 'local', '1'),
+            ('generate', 'local', '2'),
         ])
         self.assertEqual((folder / 'result.json').read_bytes(), original)
         self.assertIn('--gpu-layers auto', (session / 'gemma4.server.sh').read_text())
@@ -101,7 +101,7 @@ class QueueTests(unittest.TestCase):
 
     def test_failed_or_incomplete_record_blocks_before_server(self):
         folder = self.record(self.problems[0], 'qwen36', 1, error=True)
-        with self.assertRaisesRegex(RuntimeError, '호출 실패'):
+        with self.assertRaisesRegex(SystemExit, '호출 실패'):
             queue.run_queue(self.root)
         (folder / 'result.json').unlink()
         with self.assertRaisesRegex(SystemExit, 'incomplete'):
@@ -122,7 +122,7 @@ class QueueTests(unittest.TestCase):
 
     def test_child_success_without_results_stops(self):
         self.command.side_effect = None
-        with self.assertRaisesRegex(RuntimeError, '미완료'):
+        with self.assertRaisesRegex(SystemExit, '미완료'):
             queue.run_queue(self.root)
         self.assertEqual(self.command.call_count, 2)  # warmup + first round only
         self.assertEqual(self.status()['status'], 'error')
@@ -130,7 +130,7 @@ class QueueTests(unittest.TestCase):
 
     def test_warmup_failure_or_interrupt_cleans_owned_server(self):
         self.command.side_effect = KeyboardInterrupt()
-        with self.assertRaises(KeyboardInterrupt):
+        with self.assertRaisesRegex(SystemExit, '예약 중단'):
             queue.run_queue(self.root)
         self.assertEqual(self.command.call_count, 1)
         self.assertEqual(self.status()['status'], 'interrupted')
@@ -138,17 +138,14 @@ class QueueTests(unittest.TestCase):
 
     def test_startup_failure_stops_without_commands(self):
         self.ready.side_effect = RuntimeError('not ready')
-        with self.assertRaisesRegex(RuntimeError, 'not ready'):
+        with self.assertRaisesRegex(SystemExit, 'not ready'):
             queue.run_queue(self.root)
         self.command.assert_not_called()
         self.assertEqual(self.status()['status'], 'error')
         self.stop.assert_any_call(self.spawn.return_value)
 
-    def test_duplicate_queue_and_external_workload_block(self):
-        with queue.queue_lock(self.root / 'logs/local_queue'):
-            with self.assertRaisesRegex(RuntimeError, '실행 중'):
-                queue.run_queue(self.root)
+    def test_external_workload_blocks(self):
         self.idle.side_effect = RuntimeError('active local')
-        with self.assertRaisesRegex(RuntimeError, 'active local'):
+        with self.assertRaisesRegex(SystemExit, 'active local'):
             queue.run_queue(self.root)
         self.spawn.assert_not_called()

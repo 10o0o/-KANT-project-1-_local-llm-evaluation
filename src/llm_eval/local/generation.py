@@ -1,35 +1,56 @@
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
 
-from llm_eval.shared.prompts import build_problem_prompt
-from llm_eval.local.records import build_record, build_failure_record, build_success_record
-from llm_eval.shared.paths import generation_dir
+from llm_eval.shared.problems import problem_prompt
+from llm_eval.shared.artifacts import (
+    generation_dir,
+    read_generation_record,
+    validate_artifacts,
+)
 from llm_eval.shared.code_extraction import extract_python_code
 from llm_eval.shared.storage import write_json, write_text
-from llm_eval.shared.artifacts import validate_artifacts
-from llm_eval.local.client import REASONING_BUDGET_MESSAGE, chat
+from llm_eval.local.client import (
+    chat,
+    create_client,
+    generation_config,
+)
 from llm_eval.local.metrics import measured_metrics, safe_memory
+from llm_eval.shared.problems import load_problems, select_problems
+from llm_eval.shared.workloads import workload
 
-# Final frozen benchmark generation config.
-TEMPERATURE = 0
-
-MAX_TOKENS = 61440
-REASONING_BUDGET_TOKENS = 53248
+def build_record(
+    run_id,
+    round_number,
+    model,
+    problem,
+    time_limit_seconds,
+    prompt,
+    config,
+):
+    return {
+        "run_id": run_id,
+        "experiment": {"type": "benchmark", "round": round_number},
+        "model": {"id": model, "name": model, "runtime": "llama.cpp"},
+        "problem": {
+            "id": problem["id"],
+            "name": problem["name"],
+            "title": problem["title"],
+            "difficulty": problem["difficulty"],
+            "time_limit_seconds": time_limit_seconds,
+            "memory_limit_mib": problem["memory_limit_mib"],
+            "judge_type": problem["judge_type"],
+        },
+        "request": {"messages": [{"role": "user", "content": prompt}]},
+        "generation_config": dict(config),
+        "judge": None,
+        "record_complete": True,
+    }
 
 
 def request_conditions(project_root, problem):
-    statement = (project_root / problem["statement_path"]).read_text(encoding="utf-8")
-    prompt = build_problem_prompt(
-        statement, time_limit_seconds=problem["time_limit_seconds"],
-        memory_limit_mib=problem["memory_limit_mib"],
-    )
-    return {"messages": [{"role": "user", "content": prompt}]}, {
-        "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS,
-        "reasoning_budget_tokens": REASONING_BUDGET_TOKENS,
-        "cache_prompt": False, "reasoning_budget_message": REASONING_BUDGET_MESSAGE,
-    }
+    prompt = problem_prompt(project_root, problem)
+    return {"messages": [{"role": "user", "content": prompt}]}, generation_config()
 
 
 def inspect_existing(result_dir, problem, model, round_number, request, config):
@@ -38,9 +59,7 @@ def inspect_existing(result_dir, problem, model, round_number, request, config):
         return None
     result_path = result_dir / "result.json"
     try:
-        saved = json.loads(result_path.read_text(encoding="utf-8"))
-        if not isinstance(saved, dict):
-            raise ValueError("Invalid result record")
+        saved = read_generation_record(result_path)
         if (
             saved.get("request") != request or saved.get("generation_config") != config
             or saved.get("model", {}).get("id") != model
@@ -52,6 +71,15 @@ def inspect_existing(result_dir, problem, model, round_number, request, config):
         return saved
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         raise SystemExit(f"ABORT: incomplete benchmark result exists; check before retrying\npath: {result_dir}") from exc
+
+
+def preflight_problem(project_root, problem, model, round_number):
+    request, config = request_conditions(project_root, problem)
+    folder = generation_dir(project_root, problem["name"], model, round_number)
+    record = inspect_existing(folder, problem, model, round_number, request, config)
+    if record is None:
+        return "missing"
+    return "complete" if record["call"]["status"] == "success" else "failed"
 
 
 def run_problem(
@@ -72,7 +100,12 @@ def run_problem(
         return
 
     _print_run(
-        round_number, model, problem, TEMPERATURE, MAX_TOKENS, REASONING_BUDGET_TOKENS
+        round_number,
+        model,
+        problem,
+        expected_config["temperature"],
+        expected_config["max_tokens"],
+        expected_config["reasoning_budget_tokens"],
     )
 
     run_id = datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ")
@@ -85,9 +118,11 @@ def run_problem(
             client,
             model,
             prompt,
-            temperature=TEMPERATURE,
-            max_tokens=MAX_TOKENS,
-            reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
+            temperature=expected_config["temperature"],
+            max_tokens=expected_config["max_tokens"],
+            reasoning_budget_tokens=expected_config["reasoning_budget_tokens"],
+            cache_prompt=expected_config["cache_prompt"],
+            reasoning_budget_message=expected_config["reasoning_budget_message"],
         )
     except Exception as exc:
         response_elapsed = perf_counter() - response_start
@@ -95,28 +130,35 @@ def run_problem(
         print("호출 실패:", type(exc).__name__)
         print("실패까지 걸린 시간:", response_elapsed)
 
-        failure_record = build_failure_record(
-            run_id,
-            round_number,
-            model,
-            problem,
-            time_limit_seconds,
-            prompt,
-            TEMPERATURE,
-            MAX_TOKENS,
-            REASONING_BUDGET_TOKENS,
-            response_elapsed,
-            exc,
+        failure_record = build_record(
+            run_id, round_number, model, problem, time_limit_seconds, prompt,
+            expected_config,
         )
-
-        failure_record["metrics"] = measured_metrics(response_elapsed, {}, {}, memory)
+        failure_record.update(
+            call={
+                "status": "error",
+                "error": {"type": type(exc).__name__, "message": str(exc)},
+            },
+            generation=None,
+            metrics=measured_metrics(response_elapsed, {}, {}, memory),
+            extracted_code=None,
+        )
 
         write_json(result_path, failure_record)
         raise
 
     response_elapsed = perf_counter() - response_start
-    save_response(result_dir, response, response_elapsed, run_id,
-                  round_number, model, problem, prompt)
+    save_response(
+        result_dir,
+        response,
+        response_elapsed,
+        run_id,
+        round_number,
+        model,
+        problem,
+        prompt,
+        expected_config,
+    )
 
 
 def _print_run(
@@ -164,16 +206,26 @@ def _print_result(
     print("saved:", result_dir)
 
 
-def save_response(result_dir, response, response_elapsed, run_id, round_number, model, problem, prompt):
+def save_response(
+    result_dir,
+    response,
+    response_elapsed,
+    run_id,
+    round_number,
+    model,
+    problem,
+    prompt,
+    config,
+):
     """Persist a received response; a partial write must never authorize a retry."""
     time_limit_seconds = problem["time_limit_seconds"]
     response_path = result_dir / "response.json"
     result_path = result_dir / "result.json"
     record = build_record(run_id, round_number, model, problem, time_limit_seconds,
-                          prompt, TEMPERATURE, MAX_TOKENS, REASONING_BUDGET_TOKENS)
+                          prompt, config)
     record.update(call={"status": "success", "error": None}, generation=None,
                   extracted_code=None, record_complete=False,
-                  metrics=measured_metrics(response_elapsed, {}, {}, {}))
+                  metrics={"response_elapsed_seconds": response_elapsed})
     stage = "serialize_response"
     try:
         stage = "serialize_response"
@@ -183,6 +235,10 @@ def save_response(result_dir, response, response_elapsed, run_id, round_number, 
         write_json(response_path, response_data)
 
         memory = safe_memory(None, "response_received", model=model)
+
+        usage = response_data.get("usage") or {}
+        timings = response_data.get("timings") or {}
+        record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
 
         stage = "extract_response"
         choice = response_data["choices"][0]
@@ -198,30 +254,19 @@ def save_response(result_dir, response, response_elapsed, run_id, round_number, 
             stage = "save_candidate"
             write_text(candidate_path, code)
 
-        usage = response_data.get("usage") or {}
-        timings = response_data.get("timings") or {}
-
         stage = "build_record"
-        record = build_success_record(
-            run_id=run_id,
-            round_number=round_number,
-            model=model,
-            problem=problem,
-            time_limit_seconds=time_limit_seconds,
-            prompt=prompt,
-            temperature=TEMPERATURE,
-            max_tokens=MAX_TOKENS,
-            reasoning_budget_tokens=REASONING_BUDGET_TOKENS,
-            response_elapsed=response_elapsed,
-            choice=choice,
-            response_text=response_text,
-            reasoning_text=reasoning_text,
-            usage=usage,
-            timings=timings,
-            code=code,
+        record.update(
+            call={"status": "success", "error": None},
+            generation={
+                "finish_reason": choice["finish_reason"],
+                "content": response_text,
+                "reasoning_content": reasoning_text,
+                "usage": usage,
+                "timings": timings,
+            },
+            extracted_code=code,
+            record_complete=True,
         )
-
-        record["metrics"] = measured_metrics(response_elapsed, usage, timings, memory)
 
         stage = "save_record"
         write_json(result_path, record)
@@ -245,3 +290,18 @@ def save_response(result_dir, response, response_elapsed, run_id, round_number, 
         code=code,
         result_dir=result_dir,
     )
+
+
+def run_selected(project_root: Path, model: str, selection: str, round_number: int):
+    if model not in {"qwen36", "gemma4"}:
+        raise ValueError(f"지원하지 않는 로컬 모델: {model}")
+    if type(round_number) is not int or round_number not in (1, 2):
+        raise ValueError(f"잘못된 로컬 회차: {round_number}; 1 또는 2")
+    with workload(project_root, "local", allow_inherited=True):
+        selected_problems = select_problems(load_problems(project_root), selection)
+        print("선택한 문제:")
+        for problem in selected_problems:
+            print("-", problem["id"])
+        with create_client() as client:
+            for problem in selected_problems:
+                run_problem(project_root, problem, model, round_number, client)

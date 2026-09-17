@@ -1,6 +1,5 @@
 """Sequential, offline judging of immutable benchmark generation records."""
 
-import argparse
 import fcntl
 import hashlib
 import json
@@ -12,14 +11,13 @@ from pathlib import Path
 from uuid import uuid4
 
 from llm_eval.judging.engine import JUDGE_POLICY, judge_problem
-from llm_eval.shared.problems import load_problems
-from llm_eval.shared.paths import generation_dir
+from llm_eval.shared.problems import get_problem, load_problems
+from llm_eval.shared.artifacts import generation_dir
 from llm_eval.shared.storage import write_json
 from llm_eval.shared.artifacts import generation_complete, validate_artifacts
-from llm_eval.shared.processes import workload, active_workloads
+from llm_eval.shared.workloads import workload, active_workloads
 
 MODEL_IDS = {"qwen36": "qwen36", "gemma4": "gemma4", "luna": "gpt-5.6-luna"}
-RUNNERS = {"run_benchmark.py", "run_local_benchmark.py", "run_judge.py", "run_batch_judge.py", "check_candidate.py", "run_cloud_benchmark.py", "run_warmup.py", "run_local_queue.py"}
 
 
 def now():
@@ -122,7 +120,7 @@ def verify_sources(root, entry, test_files):
             raise ValueError("채점 준비 이후 테스트 데이터 변경")
 
 
-def run_batch(root, problem_selection="all", model_selection="all", round_selection="all"):
+def _run_batch(root, problem_selection="all", model_selection="all", round_selection="all"):
     root = root.resolve()
     available = load_problems(root)
     ids = choose(problem_selection, [p["id"] for p in available], "문제 ID")
@@ -172,17 +170,29 @@ def run_batch(root, problem_selection="all", model_selection="all", round_select
         return session
 
 
-def main(root, argv=None):
-    parser = argparse.ArgumentParser(description="모델 서버 종료 후 저장된 원본 후보를 순차 채점")
-    parser.add_argument("--problems", default="all", help="all 또는 전체 문제 ID 쉼표 목록")
-    parser.add_argument("--models", default="all", help="all 또는 qwen36,gemma4,luna")
-    parser.add_argument("--rounds", default="all", help="all 또는 1,2")
-    args = parser.parse_args(argv)
-    try:
-        with workload(root, "judge"):
-            run_batch(root, args.problems, args.models, args.rounds)
-    except (OSError, ValueError, RuntimeError) as exc:
-        raise SystemExit(f"ABORT: {exc}") from None
+def run_batch_judging(root, problems="all", models="all", rounds="all"):
+    with workload(root, "judge"):
+        return _run_batch(root, problems, models, rounds)
+
+
+def run_candidate_check(root, code_path, problem_id):
+    with workload(root, "judge"):
+        problem = get_problem(load_problems(root), problem_id)
+        code_path = Path(code_path).resolve()
+        if not code_path.is_file():
+            raise ValueError(f"코드 파일을 찾을 수 없습니다: {code_path}")
+        if problem["judge_type"] != "token":
+            raise ValueError("현재는 token 방식의 문제만 지원합니다.")
+        result = judge_problem(
+            code_path=code_path, problem_dir=root / problem["problem_dir"],
+            problem_name=problem["name"],
+            time_limit_seconds=problem["time_limit_seconds"],
+        )
+    print("최종 판정:", result["status"])
+    print("통과:", result["passed_cases"], "/", result["total_cases"])
+    print("최대 실행 시간:", result["max_case_seconds"])
+    return result
+
 
 def build_manifest(session_id, ids, models, rounds, missing, datasets, entries):
     return {
@@ -193,7 +203,7 @@ def build_manifest(session_id, ids, models, rounds, missing, datasets, entries):
         "python": sys.version, "python_executable": sys.executable,
         "platform": platform.platform(),
         "judge_sha256": digest(Path(__file__).with_name("engine.py")),
-        "judge_process_sha256": digest(Path(__file__).with_name("process.py")),
+        "judge_process_sha256": digest(Path(__file__).with_name("execution.py")),
         "judge_policy": dict(JUDGE_POLICY),
         "missing": missing, "coverage_complete": not missing,
         "test_data": datasets, "entries": entries,

@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from llm_eval.local import metrics as runtime
 from llm_eval.local import server
-from llm_eval.local import runner, warmup
+from llm_eval.local import generation as runner
 from llm_eval.local.client import chat
 
 

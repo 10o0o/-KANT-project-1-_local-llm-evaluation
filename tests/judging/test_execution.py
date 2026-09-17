@@ -7,7 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
-from llm_eval.judging import process as judge_process
+from llm_eval.judging import execution as judge_process
 
 
 class FakePipe:

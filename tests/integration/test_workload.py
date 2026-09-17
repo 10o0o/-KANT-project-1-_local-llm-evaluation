@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 
 
 @unittest.skipUnless(os.environ.get("LLM_EVAL_RUN_PROCESS_TESTS") == "1", "opt-in synthetic processes")
@@ -33,7 +33,7 @@ class RealWorkloadTests(unittest.TestCase):
         borrow = """
 import os, sys
 from pathlib import Path
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 root = Path(sys.argv[1])
 for kind in ('warmup', 'local'):
     with workload(root, kind, allow_inherited=True, proc_root=root / 'proc') as lease:
@@ -44,7 +44,7 @@ print('borrowed')
         cloud = """
 import sys
 from pathlib import Path
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 try:
     root = Path(sys.argv[1])
     with workload(root, 'cloud', proc_root=root / 'proc'):
@@ -73,7 +73,7 @@ else:
         template = """
 import sys
 from pathlib import Path
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 try:
     root = Path(sys.argv[1])
     with workload(root, {kind!r}, proc_root=root / 'proc'):
@@ -97,7 +97,7 @@ else:
         template = """
 import sys
 from pathlib import Path
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 root = Path(sys.argv[1])
 try:
     with workload(root, {kind!r}, proc_root=root / 'proc'):
@@ -124,7 +124,7 @@ else:
         code = """
 import os, sys
 from pathlib import Path
-from llm_eval.shared.processes import (
+from llm_eval.shared.workloads import (
     cloud_workload_lock_path,
     workload,
     workload_lock_path,
@@ -155,7 +155,7 @@ print('rejected')
         code = """
 import sys
 from pathlib import Path
-from llm_eval.shared.processes import workload
+from llm_eval.shared.workloads import workload
 try:
     root = Path(sys.argv[1])
     with workload(root, 'cloud', proc_root=root / 'proc'):

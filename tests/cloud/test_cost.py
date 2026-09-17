@@ -10,8 +10,8 @@ from unittest.mock import Mock, patch
 import httpx2 as httpx
 from openai import APITimeoutError, AuthenticationError
 
-from llm_eval.shared.prompts import build_problem_prompt
-from llm_eval.cloud import client, runner
+from llm_eval.shared.problems import build_problem_prompt
+from llm_eval.cloud import client, generation as runner
 from llm_eval.cloud.metrics import estimated_cost
 
 

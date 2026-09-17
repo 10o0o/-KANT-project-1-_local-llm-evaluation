@@ -6,10 +6,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from llm_eval.local import runner
-from llm_eval.shared.prompts import build_problem_prompt
-from llm_eval.shared.paths import generation_dir
-from llm_eval.cloud import runner as cloud_runner
+from llm_eval.local import generation as runner
+from llm_eval.shared.problems import build_problem_prompt
+from llm_eval.shared.artifacts import generation_dir
+from llm_eval.cloud import generation as cloud_runner
+from llm_eval.local import client as local_client
 from llm_eval.local.client import REASONING_BUDGET_MESSAGE, chat
 
 
@@ -104,7 +105,7 @@ class BenchmarkConditionsTests(unittest.TestCase):
                 self.problem[field] = old
         for field, value in [('MAX_TOKENS', 100), ('REASONING_BUDGET_TOKENS', 50),
                              ('TEMPERATURE', 1), ('REASONING_BUDGET_MESSAGE', 'changed')]:
-            with self.subTest(field=field), patch.object(runner, field, value):
+            with self.subTest(field=field), patch.object(local_client, field, value):
                 with self.assertRaisesRegex(SystemExit, '입력·설정'):
                     self.run_local()
         for field, key, value in [('model', 'id', 'gemma4'),

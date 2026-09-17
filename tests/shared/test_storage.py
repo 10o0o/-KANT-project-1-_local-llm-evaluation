@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from llm_eval.judging import batch
+from llm_eval.judging import workflow as batch
 from llm_eval.shared.storage import write_json
 
 

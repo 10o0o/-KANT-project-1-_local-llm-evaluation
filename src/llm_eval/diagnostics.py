@@ -1,33 +1,18 @@
-import argparse
+"""Historical diagnostic requests, intentionally separate from benchmark prompts."""
+from openai import OpenAI
+from llm_eval.shared.workloads import workload
 import json
 from datetime import datetime
-from pathlib import Path
 
-from llm_eval.shared.code_extraction import extract_python_code
 from llm_eval.local.client import chat, create_client
+from llm_eval.shared.code_extraction import extract_python_code
 
 TEMPERATURE = 0
 MAX_TOKENS = 6144
 REASONING_BUDGET_TOKENS = 2048
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--model",
-        required=True,
-        choices=["qwen36", "gemma4"],
-    )
-
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-
-    root = Path(__file__).resolve().parents[2]
-
+def _generation_limit_probe(root, model):
     statement_path = root / "data/coci/2025_2026/contest5/statements/slaganje.md"
 
     statement = statement_path.read_text(encoding="utf-8")
@@ -52,11 +37,11 @@ def main():
 
     client = create_client()
 
-    print(f"Stress test 시작: {args.model}")
+    print(f"Stress test 시작: {model}")
 
     response = chat(
         client,
-        args.model,
+        model,
         prompt,
         temperature=TEMPERATURE,
         max_tokens=MAX_TOKENS,
@@ -91,7 +76,7 @@ def main():
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
     result_dir = (
-        root / "results" / "calibration" / "stress" / run_id / args.model / "slaganje"
+        root / "results" / "calibration" / "stress" / run_id / model / "slaganje"
     )
 
     result_dir.mkdir(parents=True, exist_ok=False)
@@ -115,7 +100,7 @@ def main():
     result = {
         "run_id": run_id,
         "type": "generation_stress_test",
-        "model": args.model,
+        "model": model,
         "problem": "slaganje",
         "generation_config": {
             "temperature": TEMPERATURE,
@@ -146,7 +131,7 @@ def main():
 
     print()
     print("===== Stress Test Result =====")
-    print("model:", args.model)
+    print("model:", model)
     print("finish_reason:", finish_reason)
     print("completion_tokens:", completion_tokens)
     print("has_code:", code is not None)
@@ -154,5 +139,47 @@ def main():
     print("saved:", result_dir)
 
 
-if __name__ == "__main__":
-    main()
+
+def _response_probe():
+    client = OpenAI(
+        base_url="http://127.0.0.1:8080/v1",
+        api_key="local",
+        timeout=3600,
+        max_retries=0,
+    )
+
+    r = client.chat.completions.create(
+        # model="qwen36",
+        model="gemma4",
+        messages=[
+            {
+                "role": "user",
+                "content": """
+    다음 문제를 Python으로 해결하는 방법을 충분히 자세히 설명하세요.
+
+    정수 n이 주어질 때 1부터 n까지의 합을 출력하세요.
+    입력: 1000000
+    """,
+            }
+        ],
+        temperature=0,
+        max_tokens=1024,
+        extra_body={
+            "reasoning_budget_tokens": 512,
+        },
+    )
+
+    print(r.choices[0].message.content)
+    print()
+    print(r.model_dump().get("timings"))
+
+
+
+def run_response_probe(root):
+    with workload(root, "local"):
+        return _response_probe()
+
+
+def run_generation_limit_probe(root, model):
+    with workload(root, "local"):
+        return _generation_limit_probe(root, model)

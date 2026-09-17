@@ -1,21 +1,28 @@
-import json
 from datetime import UTC, datetime
 from time import perf_counter
 
-from llm_eval.shared.prompts import build_problem_prompt
-from llm_eval.shared.paths import generation_dir
-from llm_eval.cloud.client import MODEL, TIMEOUT_SECONDS, request_options
+from llm_eval.cloud.client import (
+    MODEL,
+    TIMEOUT_SECONDS,
+    create_client,
+    request_options,
+)
 from llm_eval.cloud.metrics import measured_metrics
 from llm_eval.shared.code_extraction import extract_python_code
 from llm_eval.shared.storage import write_json, write_text
-from llm_eval.shared.artifacts import generation_complete, validate_artifacts
+from llm_eval.shared.artifacts import (
+    generation_complete,
+    generation_dir,
+    read_generation_record,
+    validate_artifacts,
+)
+from llm_eval.shared.problems import load_problems, problem_prompt, select_problems
+from llm_eval.shared.workloads import workload
 
 
 def completed_record(path, problem, request, round_number=1):
     try:
-        record = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(record, dict):
-            return False
+        record = read_generation_record(path)
         if record.get("request") != request:
             raise SystemExit(
                 f"ABORT: 기존 Cloud 요청과 현재 입력·설정이 다릅니다: {path}"
@@ -77,12 +84,7 @@ def run_problem(
 
 
 def request_conditions(project_root, problem):
-    statement = (project_root / problem["statement_path"]).read_text(encoding="utf-8")
-    prompt = build_problem_prompt(
-        statement,
-        time_limit_seconds=problem["time_limit_seconds"],
-        memory_limit_mib=problem["memory_limit_mib"],
-    )
+    prompt = problem_prompt(project_root, problem)
     return {**request_options(), "input": [{"role": "user", "content": prompt}]}
 
 
@@ -165,3 +167,22 @@ def save_response(result_dir, record, response, elapsed):
     print(
         f"Cloud 생성 완료·채점 대기: {record['problem']['id']} / {status} / {elapsed:.2f}s"
     )
+
+
+def run_selected(project_root, selection: str, round_number: int = 1):
+    if type(round_number) is not int or round_number not in (1, 2):
+        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 1 또는 2")
+    with workload(project_root, "cloud"):
+        selected = select_problems(load_problems(project_root), selection)
+        if len({problem["id"] for problem in selected}) != len(selected):
+            raise ValueError("중복 문제 ID는 허용하지 않습니다.")
+        with create_client() as client:
+            selected_ids = [problem["id"] for problem in selected]
+            for problem in selected:
+                run_problem(
+                    project_root,
+                    problem,
+                    client,
+                    selected_ids,
+                    round_number=round_number,
+                )

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from llm_eval.judging import batch
+from llm_eval.judging import workflow as batch
 from llm_eval.shared.storage import write_json
 
 
@@ -63,7 +63,7 @@ class BatchTests(unittest.TestCase):
         a = self.source(legacy=True)
         b = self.source("b", "luna")
         before = self.snapshot()
-        first = batch.run_batch(self.root)
+        first = batch._run_batch(self.root)
         manifest = self.manifest(first)
         self.assertTrue(manifest["complete"])
         self.assertFalse(manifest["coverage_complete"])
@@ -71,7 +71,7 @@ class BatchTests(unittest.TestCase):
         self.assertEqual([c.kwargs["code_path"] for c in self.judge.call_args_list], [a / "candidate.py", b / "candidate.py"])
         self.assertEqual(self.snapshot(), before)
         saved = {str(p): p.read_bytes() for p in first.rglob("*") if p.is_file()}
-        second = batch.run_batch(self.root)
+        second = batch._run_batch(self.root)
         self.assertNotEqual(first, second)
         self.assertEqual(saved, {str(p): p.read_bytes() for p in first.rglob("*") if p.is_file()})
         self.assertEqual(self.judge.call_count, 4)
@@ -90,7 +90,7 @@ class BatchTests(unittest.TestCase):
         with (folder / ".lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.assertRaisesRegex(RuntimeError, "다른 일괄 채점"):
-                batch.run_batch(self.root)
+                batch._run_batch(self.root)
         self.judge.assert_not_called()
 
     def test_invalid_identity_or_missing_generation_blocks(self):
@@ -103,13 +103,13 @@ class BatchTests(unittest.TestCase):
             saved = {**original, key: value}
             write_json(path, saved)
             with self.assertRaises(ValueError):
-                batch.run_batch(self.root)
+                batch._run_batch(self.root)
         self.judge.assert_not_called()
 
     def test_no_code_and_call_error_are_distinct_and_never_execute(self):
         self.source(code=None)
         self.source("b", error=True, code=None)
-        session = batch.run_batch(self.root)
+        session = batch._run_batch(self.root)
         entries = self.manifest(session)["entries"]
         self.assertEqual([e["status"] for e in entries], ["NO_CODE", "CALL_ERROR"])
         self.assertIsNone(entries[1]["judge_path"])
@@ -118,17 +118,17 @@ class BatchTests(unittest.TestCase):
     def test_selection_uses_full_problem_id_model_and_round(self):
         self.source()
         self.source("b", "gemma4", 2)
-        session = batch.run_batch(self.root, "id_b", "gemma4", "2")
+        session = batch._run_batch(self.root, "id_b", "gemma4", "2")
         self.assertEqual(len(self.manifest(session)["entries"]), 1)
         self.assertEqual(self.judge.call_args.kwargs["problem_name"], "b")
         with self.assertRaises(ValueError):
-            batch.run_batch(self.root, "b")
+            batch._run_batch(self.root, "b")
 
     def test_manifest_identifies_actual_engine(self):
         self.source()
-        session = batch.run_batch(self.root)
+        session = batch._run_batch(self.root)
         implementation = Path(batch.__file__).with_name("engine.py")
-        process = Path(batch.__file__).with_name("process.py")
+        process = Path(batch.__file__).with_name("execution.py")
         manifest = self.manifest(session)
         self.assertEqual(manifest["judge_sha256"], batch.digest(implementation))
         self.assertEqual(manifest["judge_process_sha256"], batch.digest(process))
@@ -148,11 +148,11 @@ class BatchTests(unittest.TestCase):
         candidate = folder / "candidate.py"
         candidate.write_text("changed")
         with self.assertRaisesRegex(ValueError, "원본 extracted_code"):
-            batch.run_batch(self.root)
+            batch._run_batch(self.root)
         candidate.write_text("print(1)")
         (folder / "result.json").unlink()
         with self.assertRaisesRegex(ValueError, "불완전"):
-            batch.run_batch(self.root)
+            batch._run_batch(self.root)
         self.judge.assert_not_called()
         self.assertFalse(list((self.root / "results/judging").glob("*/manifest.json")))
 
@@ -162,7 +162,7 @@ class BatchTests(unittest.TestCase):
             content = path.read_bytes()
             path.unlink()
             with self.assertRaises(ValueError):
-                batch.run_batch(self.root)
+                batch._run_batch(self.root)
             path.write_bytes(content)
         self.judge.assert_not_called()
 
@@ -170,7 +170,7 @@ class BatchTests(unittest.TestCase):
         self.source()
         self.idle.return_value = [{"pid": 123, "name": "llama-server"}]
         with self.assertRaisesRegex(RuntimeError, "실행 중"):
-            batch.run_batch(self.root)
+            batch._run_batch(self.root)
         self.assertFalse((self.root / "results/judging").exists())
         self.judge.assert_not_called()
 
@@ -181,7 +181,7 @@ class BatchTests(unittest.TestCase):
             good = {"status": "AC", "test_results": []}
             self.judge.side_effect = [good, failure]
             with self.assertRaises(type(failure)):
-                batch.run_batch(self.root)
+                batch._run_batch(self.root)
             manifests = sorted((self.root / "results/judging").glob("*/manifest.json"))
             path = manifests[-1]
             data = json.loads(path.read_text())
@@ -197,7 +197,7 @@ class BatchTests(unittest.TestCase):
             return {"status": "AC"}
         self.judge.side_effect = change
         with self.assertRaisesRegex(ValueError, "후보 코드 변경"):
-            batch.run_batch(self.root)
+            batch._run_batch(self.root)
         path = next((self.root / "results/judging").glob("*/manifest.json"))
         self.assertFalse(json.loads(path.read_text())["complete"])
 
@@ -208,7 +208,7 @@ class BatchTests(unittest.TestCase):
         record["record_complete"] = False
         write_json(path, record)
         with self.assertRaises(ValueError):
-            batch.run_batch(self.root)
+            batch._run_batch(self.root)
         self.judge.assert_not_called()
 
     def test_coverage_counts_include_both_luna_rounds(self):

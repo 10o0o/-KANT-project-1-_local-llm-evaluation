@@ -21,6 +21,10 @@ SCRIPT_KINDS = {
     "run_benchmark.py": "local",
     "run_local_benchmark.py": "local",
     "run_warmup.py": "warmup",
+    "diagnose.py": "local",
+    "response_probe.py": "local",
+    "generation_limit_probe.py": "local",
+    "run_stress_test.py": "local",
     "run_cloud_benchmark.py": "cloud",
     "run_local_queue.py": "queue",
     "run_judge.py": "judge",
@@ -72,16 +76,46 @@ def ancestor_pids(proc_root: Path = Path("/proc")) -> set[int]:
 
 def _runner_kind(argv: list[str]) -> str | None:
     executable = Path(argv[0]).name
-    if not (executable.startswith("python") or executable == "uv") or "-c" in argv:
+    if "-c" in argv or not (
+        executable.startswith("python") or executable in {"uv", "llm-eval"}
+    ):
+        return None
+    command = None
+    if executable == "llm-eval":
+        command = argv[1:]
+    elif "-m" in argv:
+        index = argv.index("-m") + 1
+        if index < len(argv):
+            if argv[index] == "llm_eval":
+                command = argv[index + 1:]
+            elif argv[index] in MODULE_KINDS:
+                return MODULE_KINDS[argv[index]]
+    if command is None:
+        for index, argument in enumerate(argv[1:], 1):
+            if Path(argument).name == "llm-eval":
+                command = argv[index + 1:]
+                break
+    if command is not None:
+        if not command or "--help" in command or "-h" in command:
+            return None
+        head = tuple(command[:2])
+        if head == ("generate", "local"):
+            return "local"
+        if head == ("generate", "cloud"):
+            return "cloud"
+        if command[0] == "queue":
+            return "queue"
+        if command[0] == "warmup":
+            return "warmup"
+        if head in {("judge", "batch"), ("judge", "candidate")}:
+            return "judge"
+        if head in {("diagnose", "response"), ("diagnose", "generation-limit")}:
+            return "local"
         return None
     for argument in argv[1:]:
         kind = SCRIPT_KINDS.get(Path(argument).name)
         if kind is not None:
             return kind
-    if "-m" in argv:
-        index = argv.index("-m") + 1
-        if index < len(argv):
-            return MODULE_KINDS.get(argv[index])
     return None
 
 

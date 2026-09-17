@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from llm_eval.local import queue
-from llm_eval.shared import processes
+from llm_eval.shared import workloads as processes
 
 
 class WorkloadLockTests(unittest.TestCase):

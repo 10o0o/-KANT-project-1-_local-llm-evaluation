@@ -10,8 +10,8 @@ from unittest.mock import Mock, patch
 import httpx2 as httpx
 from openai import APITimeoutError, AuthenticationError
 
-from llm_eval.shared.prompts import build_problem_prompt
-from llm_eval.cloud import client, runner
+from llm_eval.shared.problems import build_problem_prompt
+from llm_eval.cloud import client, generation as runner
 from llm_eval.cloud.metrics import estimated_cost
 
 
@@ -135,7 +135,7 @@ class RunnerTests(unittest.TestCase):
         self.sdk.responses.create.assert_not_called()
 
     @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
-    @patch("llm_eval.cloud.runner.perf_counter", side_effect=[10, 12])
+    @patch("llm_eval.cloud.generation.perf_counter", side_effect=[10, 12])
     def test_success_saves_generation_only_and_skips(self, clock, judge):
         response = self.response()
 

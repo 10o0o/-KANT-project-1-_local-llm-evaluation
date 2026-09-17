@@ -6,6 +6,9 @@ dependencies = [
     "openai==3.8.0",
 ]
 
+[project.scripts]
+llm-eval = "llm_eval.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

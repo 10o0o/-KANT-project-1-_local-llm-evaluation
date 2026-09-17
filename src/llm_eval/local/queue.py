@@ -1,21 +1,19 @@
 """Local generation queue; owns only the server and clients it starts."""
 
-import argparse
 import hashlib
 import math
 import signal
 import subprocess
 import sys
 import time
-from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from llm_eval.local.runner import inspect_existing, request_conditions
-from llm_eval.shared.paths import generation_dir
+from llm_eval.local.client import generation_config
+from llm_eval.local.generation import preflight_problem
 from llm_eval.shared.problems import load_problems
-from llm_eval.shared.processes import (
+from llm_eval.shared.workloads import (
     WorkloadLease,
     ancestor_pids,
     ensure_workload_safe,
@@ -42,27 +40,20 @@ def check_idle(proc_root=Path("/proc")):
 def inspect_round(root, problems, model, number):
     missing = []
     for problem in problems:
-        request, config = request_conditions(root, problem)
-        folder = generation_dir(root, problem["name"], model, number)
-        record = inspect_existing(folder, problem, model, number, request, config)
-        if record is None:
+        status = preflight_problem(root, problem, model, number)
+        if status == "missing":
             missing.append(problem["id"])
-        elif record["call"]["status"] != "success":
-            raise RuntimeError(f"저장된 호출 실패: {folder}; 자동 재시도하지 않습니다.")
+        elif status == "failed":
+            raise RuntimeError(
+                f"저장된 호출 실패: {problem['id']} / {model} / round {number}; "
+                "자동 재시도하지 않습니다."
+            )
     return missing
 
 
 def inspect_all(root, problems):
     return {(model, number): inspect_round(root, problems, model, number)
             for model in MODELS for number in (1, 2)}
-
-
-@contextmanager
-def queue_lock(folder):
-    folder = Path(folder).resolve()
-    root = folder.parent.parent if folder.name == "local_queue" and folder.parent.name == "logs" else folder
-    with workload(root, "queue") as lease:
-        yield lease
 
 
 class LocalQueue:
@@ -151,7 +142,10 @@ class LocalQueue:
             self.event("generation", model=model, round=number, remaining=remaining)
             self.command(
                 [
-                    "scripts/run_local_benchmark.py",
+                    "-m",
+                    "llm_eval",
+                    "generate",
+                    "local",
                     "--model",
                     model,
                     "--problems",
@@ -172,7 +166,10 @@ class LocalQueue:
         check_idle()
         self.start_server(model)
         self.event("warmup", model=model)
-        self.command(["scripts/run_warmup.py", "--model", model], f"{model}.warmup.log")
+        self.command(
+            ["-m", "llm_eval", "warmup", "--model", model],
+            f"{model}.warmup.log",
+        )
         for number in (1, 2):
             self.run_round(problems, model, number)
         self.event("server_stopping", model=model)
@@ -212,7 +209,7 @@ class LocalQueue:
     def execute(self, problems, work):
         try:
             self.event("preflight_complete", remaining={f"{m}/round_{n}": ids for (m, n), ids in work.items()},
-                       generation_request=request_conditions(self.root, problems[0])[1])
+                       generation_request=generation_config())
             for model in MODELS:
                 self.run_model(problems, work, model)
             self.state["status"] = "completed"
@@ -226,7 +223,7 @@ class LocalQueue:
                 raise RuntimeError("; ".join(errors))
 
 
-def run_queue(root, timeout=900):
+def _execute_queue(root, timeout=900):
     root = root.resolve()
     if not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("startup timeout은 양수여야 합니다.")
@@ -245,15 +242,12 @@ def run_queue(root, timeout=900):
         return session
 
 
-def main(root, argv=None):
-    parser = argparse.ArgumentParser(description="Qwen·Gemma 두 회차 로컬 생성만 순차 실행")
-    parser.add_argument("--startup-timeout-seconds", type=float, default=900)
-    args = parser.parse_args(argv)
+def run_queue(root, timeout=900):
     def interrupt(signum, frame):
         raise KeyboardInterrupt(f"signal {signum}")
     previous = {s: signal.signal(s, interrupt) for s in (signal.SIGINT, signal.SIGTERM)}
     try:
-        run_queue(root, args.startup_timeout_seconds)
+        return _execute_queue(root, timeout)
     except KeyboardInterrupt:
         raise SystemExit("예약 중단: 로그와 기존 결과를 확인하세요.") from None
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:

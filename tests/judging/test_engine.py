@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from llm_eval.judging import engine
-from llm_eval.judging.process import CollectedProcessOutput, ProcessCleanupError
+from llm_eval.judging.execution import CollectedProcessOutput, ProcessCleanupError
 
 
 @unittest.skipUnless(

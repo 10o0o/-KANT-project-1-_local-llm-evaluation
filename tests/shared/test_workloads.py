@@ -1,4 +1,4 @@
-from llm_eval.judging import batch
+from llm_eval.judging import workflow as batch
 import fcntl
 import os
 import tempfile
@@ -7,10 +7,28 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from llm_eval.local import queue
-from llm_eval.shared import processes
+from llm_eval.shared import workloads as processes
 
 
 class ProcessScannerTests(unittest.TestCase):
+    def test_unified_cli_forms_classify_all_workloads(self):
+        commands = [
+            (["generate", "local"], "local"), (["generate", "cloud"], "cloud"),
+            (["queue"], "queue"), (["warmup"], "warmup"),
+            (["judge", "batch"], "judge"), (["judge", "candidate"], "judge"),
+            (["diagnose", "response"], "local"),
+            (["diagnose", "generation-limit"], "local"), (["validate"], None),
+            (["generate", "cloud", "--help"], None),
+        ]
+        prefixes = [["/venv/bin/llm-eval"], ["python3", "/venv/bin/llm-eval"],
+                    ["uv", "run", "--env-file", "example.env", "llm-eval"],
+                    ["python3", "-m", "llm_eval"], ["uv", "run", "python", "-m", "llm_eval"]]
+        for prefix in prefixes:
+            for command, expected in commands:
+                with self.subTest(argv=prefix + command):
+                    self.assertEqual(processes._runner_kind(prefix + command), expected)
+
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

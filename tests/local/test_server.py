@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 from urllib.error import URLError
 
 from llm_eval.local import queue, server
-from llm_eval.local.runner import request_conditions
+from llm_eval.local.generation import request_conditions
 from llm_eval.shared.storage import write_json
 
 
@@ -116,5 +116,8 @@ class LifecycleTests(unittest.TestCase):
             child.poll.return_value = 7
             with patch.object(obj, 'spawn', return_value=child) as spawn:
                 with self.assertRaisesRegex(RuntimeError, '실행 실패'):
-                    obj.command(['scripts/run_warmup.py', '--model', 'qwen36'], 'warm.log')
+                    obj.command(
+                        ['-m', 'llm_eval', 'warmup', '--model', 'qwen36'],
+                        'warm.log',
+                    )
                 self.assertEqual(spawn.call_args.args[0][0], queue.sys.executable)
