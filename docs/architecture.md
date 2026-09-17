@@ -153,6 +153,7 @@ src/llm_eval/
 | --- | --- |
 | `pyproject.toml` | 패키지 이름·Python/의존성·빌드·console 명령 정의; uv/Hatch가 읽는다 |
 | `uv.lock` | 고정 의존성 목록; `uv sync --locked`가 읽는다 |
+| `.python-version` | 인터프리터 버전 고정; `uv`가 읽는다. Judge가 후보 코드를 실행 중인 인터프리터로 돌리므로 채점 조건에 해당한다 |
 | `configs/llama.cpp/qwen36.sh` | Qwen 서버 실행 인자; 수동 실행과 큐가 사용하며 이번 구조 변경에서 보존 |
 | `configs/llama.cpp/gemma4.sh` | Gemma 서버 실행 인자; fit-target 0·load/lazy auto 등 원본 튜닝 보존 |
 | `configs/evaluation.json` | 생성 시작 후 확정된 평가 정책·모델 4개·20회 분모·12/20 로컬 통과선·네 scoring 문제의 유효 제한 |

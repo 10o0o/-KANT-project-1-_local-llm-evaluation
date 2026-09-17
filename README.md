@@ -33,7 +33,7 @@ cd local-llm-evaluation
 uv sync --locked
 ```
 
-Python은 `>=3.12`가 필요하고, 패키지와 고정 의존성은 `pyproject.toml`·`uv.lock`이 정의합니다. 모델 가중치, llama.cpp 런타임, API 키, COCI 테스트 데이터는 저장소에 넣지 않습니다. 각자 준비한 뒤 `data/coci/problems.json`의 `statement_path`·`problem_dir`과 시간·메모리 제한이 실제 파일과 맞는지 먼저 확인합니다.
+Python은 `>=3.12`가 필요하고, 패키지와 고정 의존성은 `pyproject.toml`·`uv.lock`이 정의합니다. 인터프리터 자체는 `.python-version`이 `3.12.14`로 고정합니다. Judge는 후보 코드를 실행 중인 인터프리터로 돌리므로 Python 버전이 곧 채점 조건이고, 특히 TLE 판정이 버전에 따라 갈립니다. 고정이 없으면 기기마다 다른 버전이 잡혀 같은 후보의 판정이 달라질 수 있어 `>=3.12`만으로 두지 않았습니다. 모델 가중치, llama.cpp 런타임, API 키, COCI 테스트 데이터는 저장소에 넣지 않습니다. 각자 준비한 뒤 `data/coci/problems.json`의 `statement_path`·`problem_dir`과 시간·메모리 제한이 실제 파일과 맞는지 먼저 확인합니다.
 
 ```bash
 uv run llm-eval validate
@@ -156,7 +156,8 @@ results/evaluation/<평가 ID>/
 ├── AGENTS.md                # 작업 경계와 보존 규칙
 ├── STATE.md                 # 확인된 진행 상태와 다음 한 작업
 ├── pyproject.toml           # package와 llm-eval console script
-└── uv.lock                  # 고정 의존성
+├── uv.lock                  # 고정 의존성
+└── .python-version          # 채점 조건을 고정하는 인터프리터 버전
 ```
 
 운영 명령은 `uv run llm-eval`과 같은 구현인 `python -m llm_eval` 둘뿐입니다. 예전에는 `scripts/` 아래에 진입점이 열 개 넘게 흩어져 있었는데, 문서에 적은 명령과 실제 쓰는 명령이 어긋나기 시작해 전부 패키지 안으로 합쳤습니다. 파일별 책임과 호출 관계, 관련 테스트는 [architecture](docs/architecture.md)에 매핑해 두었습니다.
