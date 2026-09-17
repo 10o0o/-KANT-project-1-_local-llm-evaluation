@@ -66,8 +66,6 @@ def collect(root, problems, models, rounds):
     for problem in problems:
         for model in models:
             for number in rounds:
-                if model == "luna" and number != "1":
-                    continue
                 relative = generation_dir(root, problem["name"], model, number).relative_to(root)
                 folder = root / relative
                 if not folder.exists():

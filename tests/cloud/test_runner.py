@@ -46,11 +46,93 @@ class RunnerTests(unittest.TestCase):
         self.sdk.responses.create.return_value = response
         return response
 
-    def run_problem(self):
-        return runner.run_problem(self.root, self.problem, self.sdk)
+    def run_problem(self, round_number=1):
+        return runner.run_problem(
+            self.root, self.problem, self.sdk, round_number=round_number
+        )
 
-    def record(self):
-        return json.loads((self.output / "result.json").read_text())
+    def record(self, round_number=1):
+        output = self.root / f"results/benchmark/test_problem/luna/round_{round_number}"
+        return json.loads((output / "result.json").read_text())
+
+    def test_rounds_use_same_request_in_separate_runs(self):
+        self.response()
+        self.run_problem(round_number=1)
+        self.run_problem(round_number=2)
+
+        first = self.record(1)
+        second = self.record(2)
+        self.assertEqual(first["request"], second["request"])
+        self.assertNotEqual(first["run_id"], second["run_id"])
+        self.assertEqual(first["experiment"], {
+            "type": "cloud", "round": 1, "planned_attempts": 20,
+        })
+        self.assertEqual(second["experiment"], {
+            "type": "cloud", "round": 2, "planned_attempts": 20,
+        })
+        self.assertEqual(self.sdk.responses.create.call_count, 2)
+        self.assertEqual(
+            self.sdk.responses.create.call_args_list[0].kwargs,
+            self.sdk.responses.create.call_args_list[1].kwargs,
+        )
+        self.run_problem(round_number=1)
+        self.run_problem(round_number=2)
+        self.assertEqual(self.sdk.responses.create.call_count, 2)
+
+    def test_round_one_call_error_does_not_block_round_two_success(self):
+        response = self.response()
+        self.sdk.responses.create.side_effect = [RuntimeError("fixture"), response]
+
+        with self.assertRaises(SystemExit):
+            self.run_problem(round_number=1)
+        self.run_problem(round_number=2)
+
+        self.assertEqual(self.record(1)["call"]["status"], "error")
+        self.assertEqual(self.record(2)["call"]["status"], "success")
+        self.assertEqual(self.sdk.responses.create.call_count, 2)
+
+    def test_legacy_round_one_planned_attempts_ten_skips_byte_for_byte(self):
+        self.response()
+        self.run_problem()
+        path = self.output / "result.json"
+        record = self.record()
+        record["experiment"]["planned_attempts"] = 10
+        path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
+        before = path.read_bytes()
+
+        self.run_problem()
+
+        self.assertEqual(path.read_bytes(), before)
+        self.sdk.responses.create.assert_called_once()
+
+    def test_round_two_error_skips_and_partial_or_mismatched_record_blocks(self):
+        self.sdk.responses.create.side_effect = RuntimeError("fixture")
+        with self.assertRaises(SystemExit):
+            self.run_problem(round_number=2)
+        self.run_problem(round_number=2)
+        self.sdk.responses.create.assert_called_once()
+
+        path = self.root / "results/benchmark/test_problem/luna/round_2/result.json"
+        record = self.record(2)
+        record["experiment"]["round"] = 1
+        path.write_text(json.dumps(record), encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            self.run_problem(round_number=2)
+        self.sdk.responses.create.assert_called_once()
+
+        path.unlink()
+        with self.assertRaises(SystemExit):
+            self.run_problem(round_number=2)
+        self.sdk.responses.create.assert_called_once()
+
+    def test_invalid_direct_round_fails_before_read_reservation_or_request(self):
+        (self.root / "statement.md").unlink()
+
+        with self.assertRaisesRegex(ValueError, "1 또는 2"):
+            self.run_problem(round_number=3)
+
+        self.assertFalse((self.root / "results").exists())
+        self.sdk.responses.create.assert_not_called()
 
     @patch("subprocess.run", side_effect=AssertionError("candidate must not run"))
     @patch("llm_eval.cloud.runner.perf_counter", side_effect=[10, 12])

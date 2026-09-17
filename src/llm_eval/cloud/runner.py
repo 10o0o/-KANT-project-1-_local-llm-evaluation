@@ -11,7 +11,7 @@ from llm_eval.shared.storage import write_json, write_text
 from llm_eval.shared.artifacts import generation_complete, validate_artifacts
 
 
-def completed_record(path, problem, request):
+def completed_record(path, problem, request, round_number=1):
     try:
         record = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(record, dict):
@@ -24,7 +24,7 @@ def completed_record(path, problem, request):
         return (
             generation_complete(record)
             and record["experiment"]["type"] == "cloud"
-            and record["experiment"]["round"] == 1
+            and record["experiment"]["round"] == round_number
             and record["problem"]["id"] == problem["id"]
             and record["model"]["id"] == MODEL
             and record["call"]["status"] in {"success", "error"}
@@ -33,18 +33,22 @@ def completed_record(path, problem, request):
         return False
 
 
-def run_problem(project_root, problem, client, selected_problem_ids=None):
-    result_dir = generation_dir(project_root, problem["name"], "luna", 1)
+def run_problem(
+    project_root, problem, client, selected_problem_ids=None, *, round_number=1
+):
+    if type(round_number) is not int or round_number not in (1, 2):
+        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 1 또는 2")
+    result_dir = generation_dir(project_root, problem["name"], "luna", round_number)
     result_path = result_dir / "result.json"
     request = request_conditions(project_root, problem)
 
     if result_dir.exists():
-        if completed_record(result_path, problem, request):
+        if completed_record(result_path, problem, request, round_number):
             print(f"SKIP: cloud problem={problem['id']} (이미 기록한 시도)")
             return
         raise SystemExit(f"ABORT: 불완전한 Cloud 결과를 확인하세요: {result_dir}")
 
-    record = build_record(problem, request, selected_problem_ids)
+    record = build_record(problem, request, selected_problem_ids, round_number)
     # Exclusive reservation prevents a second invocation from issuing the same paid request.
     result_dir.mkdir(parents=True, exist_ok=False)
     print(f"Cloud 요청: {problem['id']} / {MODEL}")
@@ -82,10 +86,12 @@ def request_conditions(project_root, problem):
     return {**request_options(), "input": [{"role": "user", "content": prompt}]}
 
 
-def build_record(problem, request, selected_problem_ids):
+def build_record(problem, request, selected_problem_ids, round_number=1):
     return {
         "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
-        "experiment": {"type": "cloud", "round": 1, "planned_attempts": 10},
+        "experiment": {
+            "type": "cloud", "round": round_number, "planned_attempts": 20,
+        },
         "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
         "model": {
             "id": MODEL,

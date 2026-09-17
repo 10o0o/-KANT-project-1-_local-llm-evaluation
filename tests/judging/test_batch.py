@@ -81,7 +81,7 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(result["source_run_id"], "run-a-qwen36-1")
         self.assertTrue(manifest["test_data"]["id_a"])
         self.assertTrue(manifest["missing"])
-        self.assertFalse(any("luna/round_2" in x for x in manifest["missing"]))
+        self.assertTrue(any("luna/round_2" in x for x in manifest["missing"]))
 
     def test_concurrent_batch_lock_prevents_execution(self):
         self.source()
@@ -198,3 +198,39 @@ class BatchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             batch.run_batch(self.root)
         self.judge.assert_not_called()
+
+    def test_coverage_counts_include_both_luna_rounds(self):
+        names = [f"p{number}" for number in range(10)]
+        problems = [
+            {"id": f"id_{name}", "name": name, "problem_dir": f"data/{name}",
+             "time_limit_seconds": 1, "judge_type": "token"}
+            for name in names
+        ]
+        write_json(self.root / "data/coci/problems.json", problems)
+        for problem in problems:
+            folder = self.root / problem["problem_dir"]
+            folder.mkdir()
+            (folder / f"{problem['name']}.in.1").write_text("1")
+            (folder / f"{problem['name']}.out.1").write_text("1")
+        for name in names:
+            for model in batch.MODEL_IDS:
+                for number in (1, 2):
+                    self.source(name, model, number)
+
+        all_entries, all_missing, _ = batch.collect(
+            self.root, problems, list(batch.MODEL_IDS), ["1", "2"]
+        )
+        luna_entries, luna_missing, _ = batch.collect(
+            self.root, problems, ["luna"], ["1", "2"]
+        )
+        luna_round_one, luna_round_one_missing, _ = batch.collect(
+            self.root, problems, ["luna"], ["1"]
+        )
+        luna_round_two, luna_round_two_missing, _ = batch.collect(
+            self.root, problems, ["luna"], ["2"]
+        )
+
+        self.assertEqual((len(all_entries), len(all_missing)), (60, 0))
+        self.assertEqual((len(luna_entries), len(luna_missing)), (20, 0))
+        self.assertEqual((len(luna_round_one), len(luna_round_one_missing)), (10, 0))
+        self.assertEqual((len(luna_round_two), len(luna_round_two_missing)), (10, 0))
