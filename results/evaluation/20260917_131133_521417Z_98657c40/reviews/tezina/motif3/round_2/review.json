@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "몫 q가 일정한 w의 구간을 뒤집어 잡는 변형과 cap 분할이 정확하고, O(max_val log max_val) 복잡도가 제시됐다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

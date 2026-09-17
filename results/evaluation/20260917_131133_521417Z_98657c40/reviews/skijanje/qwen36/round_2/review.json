@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "Li Chao Tree와 두 스택 슬라이딩 윈도우 접근을 제시하고 O(N log C)를 밝혔으나, 본문에 'No, O(k) query is too slow' 같은 미결 검토가 그대로 남아 결론에 도달하지 못했고 코드도 완결되지 않았다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

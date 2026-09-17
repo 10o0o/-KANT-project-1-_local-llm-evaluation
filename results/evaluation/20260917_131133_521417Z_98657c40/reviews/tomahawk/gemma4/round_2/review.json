@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "각 연산의 기여를 D/L/R별 폐형식으로 쓰고 차분 배열로 기울기 변화를 추적하는 접근이 정확하다. O(Q log Q)·O(Q)도 일치한다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

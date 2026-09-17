@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "빈도 배열과 두 접두사 합 F, G로 몫이 일정한 구간을 일괄 처리하고 10^8 cap 경계를 분리한 접근이 정확하다. O(max·log max)도 맞다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

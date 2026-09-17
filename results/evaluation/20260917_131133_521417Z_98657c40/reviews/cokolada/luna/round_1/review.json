@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "별도의 '정당성 증명' 절에서 필요성과 충분성을 나눠 증명하고 최소성을 논증했다. O(nm) 시간·O(m) 공간이 스트리밍 구현과 일치한다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

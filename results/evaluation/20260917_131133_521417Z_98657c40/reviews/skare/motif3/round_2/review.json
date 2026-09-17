@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "분할·교체 시뮬레이션 접근이 정확하고 시간 복잡도를 O(k*n)으로 밝혀 리스트 이동 비용을 반영했다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

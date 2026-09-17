@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "T(r,c)=A(r)+B(c) 분리로 최대·최소 차가 각 성분 차의 합이 됨을 보이고, B의 볼록성에서 삼분 탐색을 정당화했다. O(q log q + log n log q)도 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

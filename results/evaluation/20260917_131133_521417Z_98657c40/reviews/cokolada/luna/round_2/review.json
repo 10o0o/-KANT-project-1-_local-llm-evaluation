@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "'직사각형 내부에 다른 색이 섞이면 반드시 중간에 색이 다른 인접 칸이 생긴다'는 연결성 논법으로 충분성을 보였고 복잡도가 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

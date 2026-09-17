@@ -1,0 +1,962 @@
+{
+  "skare/qwen36/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "슬라이스 할당으로 조각을 교체하는 시뮬레이션과 집합으로 중복 제거하는 접근이 정확하고, O(k·n) 시간·O(n) 공간 분석이 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/qwen36/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "슬라이스 할당으로 조각을 교체하는 시뮬레이션과 집합으로 중복 제거하는 접근이 정확하고, O(k·n) 시간·O(n) 공간 분석이 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "슬라이스 할당 시뮬레이션 접근이 정확하고, 리스트 중간 삽입이 O(k)라서 전체가 O(k²)라는 분석이 구현과 정확히 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "동일한 시뮬레이션 접근에 O(k²) 시간·O(k) 공간 분석이 정확하고 k<n≤500에서 250,000 연산이라는 근거도 맞다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "i번째 절단 시점에 조각이 i개라 x_i가 항상 유효하다는 점까지 짚었고, 리스트 중간 삽입 비용에서 O(k²)를 정확히 도출했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "교체 시뮬레이션과 집합 변환 접근이 정확하고 O(k²) 시간·O(k) 공간 분석이 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/motif3/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "교체 시뮬레이션과 집합 기반 중복 제거 접근은 정확하다. 다만 '각 작업이 O(1) 시간에 처리된다'고 적었는데 리스트 중간 삽입은 O(k)라 복잡도 주장이 구현과 어긋난다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skare/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "분할·교체 시뮬레이션 접근이 정확하고 시간 복잡도를 O(k*n)으로 밝혀 리스트 이동 비용을 반영했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/qwen36/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "인접 행·열 중 한 칸이라도 색이 다르면 절단이 필수임을 밝히고 '불필요한 컷은 하나도 없으므로 이 값이 최소'라고 최소성까지 논증했다. 복잡도도 O(N×M)/O(N×M)으로 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/qwen36/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "인접 행·열 중 한 칸이라도 색이 다르면 절단이 필수임을 밝히고 '불필요한 컷은 하나도 없으므로 이 값이 최소'라고 최소성까지 논증했다. 복잡도도 O(N×M)/O(N×M)으로 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "전체를 관통하는 절단만 가능하다는 성질에서 인접 행·열의 불일치가 절단을 강제함을 보였고 O(n×m) 복잡도가 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "'어떤 조각이 0과 1을 모두 포함하면 그 안에 색이 다른 인접 칸이 있어야 하고 그건 이미 절단됐어야 한다'는 모순 논법으로 충분성을 논증했다. 복잡도도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "별도의 '정당성 증명' 절에서 필요성과 충분성을 나눠 증명하고 최소성을 논증했다. O(nm) 시간·O(m) 공간이 스트리밍 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "'직사각형 내부에 다른 색이 섞이면 반드시 중간에 색이 다른 인접 칸이 생긴다'는 연결성 논법으로 충분성을 보였고 복잡도가 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/motif3/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "인접 행·열 경계에서 색이 다르면 절단이 필요하다는 접근이 정확하고 O(n*m) 복잡도 분석이 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "cokolada/motif3/round_2": {
+    "explanation": {
+      "score": 0,
+      "evidence": "절단이 초콜릿 전체를 관통한다는 문제 조건을 무시하고 '가장 작은 단색 직사각형으로 분할'하는 O(n²m²) 구간 DP로 접근했다. 문제 해석 자체가 틀린 핵심 오류다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "26/75 WA다. 절단이 초콜릿 전체를 관통한다는 조건을 무시하고 구간 DP로 임의 분할을 탐색하는 접근이라 문제 해석부터 다르다. 알고리즘 교체가 필요하다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/qwen36/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "R=N-k가 짝수여야 함을 보이고 합분해 수 2^(M-1)에서 기하급수 합으로 2^floor(N/2)라는 폐형식을 유도했다. pow의 O(log N)과 O(1) 공간도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/qwen36/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "R=N-k가 짝수여야 함을 보이고 합분해 수 2^(M-1)에서 기하급수 합으로 2^floor(N/2)라는 폐형식을 유도했다. pow의 O(log N)과 O(1) 공간도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "R=2S 짝수 조건과 합분해 수 2^(S-1)을 세우고 기하급수 합으로 2^M을 유도했다. O(log M) 모듈러 거듭제곱도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "sum_{d=1}^{S} C(S-1, d-1) = 2^(S-1)로 이항계수 합까지 명시해 유도했고 O(log N)·O(1)이 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "S개 동전 사이 S-1곳의 분할 선택으로 2^(S-1)을 조합적으로 설명하고 k=N 경우를 분리해 2^floor(N/2)를 유도했다. O(log N)·O(1)이 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "이항계수 합 sum C(S-1,d-1) = 2^(S-1)을 명시하고 각 S마다 k가 유일하게 정해짐을 지적해 중복 없이 합산했다. 복잡도도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/motif3/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "R이 짝수여야 함과 분배 방법 수 2^(R/2-1)을 밝히고 총합이 2^floor(N/2)로 단순화됨을 제시했다. 모듈러 거듭제곱의 로그 시간도 언급했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "dzeparac/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "T=(N-k)/2로 두고 합성 수가 2^(T-1)임을 밝힌 뒤 k의 패리티별로 나눠 합산해 2^floor(N/2)를 유도했다. 로그 시간 근거도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/qwen36/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "T(r,c)=A(r)+B(c) 분리로 최대·최소 차가 각 성분 차의 합이 됨을 보이고, B의 볼록성에서 삼분 탐색을 정당화했다. O(q log q + log n log q)도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/qwen36/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "T(r,c)=A(r)+B(c) 분리로 최대·최소 차가 각 성분 차의 합이 됨을 보이고, B의 볼록성에서 삼분 탐색을 정당화했다. O(q log q + log n log q)도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "T=R_i+C_j 분리와 R_i의 단조성, C_j가 L·R 기여의 합이라 기울기 변화점에서만 극값이 나온다는 분석이 정확하고 O(q log q)도 맞다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "마지막 줄이 `solve`로 끝나 함수가 호출되지 않아 출력이 없었다. `solve()`로 괄호만 추가했다. 행·열 성분 분리와 분할점 평가라는 원래 알고리즘은 그대로다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/tomahawk_gemma4_r1.py"
+    }
+  },
+  "tomahawk/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "각 연산의 기여를 D/L/R별 폐형식으로 쓰고 차분 배열로 기울기 변화를 추적하는 접근이 정확하다. O(Q log Q)·O(Q)도 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "연산이 행 성분과 열 성분으로 분리되므로 최대·최소가 각각 독립으로 결정된다는 핵심을 정확히 짚었다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "D·L·R 각 연산의 기여를 max(0, ...) 폐형식으로 명시해 분리 구조를 정확히 세웠다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/motif3/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "온도를 행 기여 f(i)와 열 기여 g(j)로 분리하고, f의 단조성과 g의 분할점 평가로 극값을 찾는 접근이 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tomahawk/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "A(i)+B(j) 분리와 조각별 선형 함수의 중요점만 평가하는 접근, 정렬 후 접미사 합과 이진 검색 활용이 일관되게 서술됐다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/qwen36/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "c_j = a_{n+1-j} 치환으로 |c_j - j| ≤ 1을 끌어내고 그런 순열 수가 F_{n+1}임을 점화식으로 보였다. 확률 F_{n+1}/k^n과 페르마 소정리 역원, O(log n)이 모두 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/qwen36/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "c_j = a_{n+1-j} 치환으로 |c_j - j| ≤ 1을 끌어내고 그런 순열 수가 F_{n+1}임을 점화식으로 보였다. 확률 F_{n+1}/k^n과 페르마 소정리 역원, O(log n)이 모두 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "|a_i + i - n - 1| ≤ 1을 n-i ≤ a_i ≤ n-i+2로 풀고 c_i 치환으로 |i - c_i| ≤ 1을 끌어내 F_{n+1}을 얻는 유도가 정확하다. 본문 'n-int+2'는 전사 오타이나 핵심을 훼손하지 않는다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "마지막 줄이 `solve`로 끝나 함수가 호출되지 않아 출력이 없었다. `solve()`로 괄호만 추가했다. 행렬 거듭제곱 피보나치와 모듈러 역원이라는 원래 알고리즘은 그대로다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/struktura_gemma4_r1.py"
+    }
+  },
+  "struktura/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "j = n+1-i 치환으로 |p_j - j| ≤ 1을 유도하고 그 순열 수가 F_{n+1}임을 밝혔다. k<n이면 0, 확률 F_{n+1}/k^n, O(log n)까지 일관된다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "b_j = a_{n+1-j} 치환 후 b_1의 두 경우로 나눠 T_n = T_{n-1} + T_{n-2}를 직접 유도하고 T_n = F_{n+1}을 확정했다. 빠른 doubling의 O(log n)과 재귀 스택 O(log n)까지 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "치환 후 '제자리 또는 인접 두 원소 교환'만 가능하다는 구조적 관찰로 점화식을 세워 F_{n+1}을 얻었다. 복잡도 서술이 구현과 일치한다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/motif3/round_1": {
+    "explanation": {
+      "score": 0,
+      "evidence": "답변이 코드 블록만으로 구성되고 산문이 없다. 접근법·정당성·복잡도 설명이 전혀 없다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "struktura/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "마지막 두 원소 값을 상태로 두는 전이 행렬을 세워 행렬 거듭제곱으로 세는 접근이 일관되고, n=1·2 경계와 k<n 예외를 분리했다. O(log n)·O(1)도 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/qwen36/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "이분 그래프의 최대 독립 집합 = 정점 수 - 최대 매칭이라는 König 정리 적용은 정확하다. 다만 복잡도를 'O(NM·α)'로 적고 Kuhn의 O(VE)가 '격자에서 평균적으로 O(NM)에 수렴'한다고 근거 없이 단정했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/qwen36/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "이분 그래프의 최대 독립 집합 = 정점 수 - 최대 매칭이라는 König 정리 적용은 정확하다. 다만 복잡도를 'O(NM·α)'로 적고 Kuhn의 O(VE)가 '격자에서 평균적으로 O(NM)에 수렴'한다고 근거 없이 단정했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "2와 인접한 0을 후보에서 제외한 뒤 격자의 이분성을 이용해 최대 독립 집합 = 정점 수 - 최대 매칭을 적용했고, 복잡도를 O(V·E)로 과장 없이 적었다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "이분 매칭의 재귀 DFS가 기본 재귀 한도를 넘겨 RecursionError가 났다(130개 중 120개는 통과). `sys.setrecursionlimit(300000)` 한 줄만 추가했다. 매칭 알고리즘 자체는 손대지 않았다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/prepisivanje_gemma4_r1.py"
+    }
+  },
+  "prepisivanje/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "2와 인접한 0을 후보에서 제외한 뒤 격자의 이분성을 이용해 최대 독립 집합 = 정점 수 - 최대 매칭을 적용했고, 복잡도를 O(V·E)로 과장 없이 적었다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "round_1과 동일한 원본이며 같은 RecursionError가 났다. `sys.setrecursionlimit(300000)` 한 줄만 추가했다. 매칭 알고리즘 자체는 손대지 않았다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/prepisivanje_gemma4_r2.py"
+    }
+  },
+  "prepisivanje/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "별도 정당성 증명 절에서 유효 배치와 독립 집합의 일대일 대응을 보이고 König 정리를 적용했다. Hopcroft–Karp의 O(E√V)와 격자에서의 O(nm√(nm))이 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "최대 독립 집합 = 정점 수 - 최소 정점 커버, 그리고 König으로 최소 정점 커버 = 최대 매칭이라는 두 단계를 명시해 유도했다. 복잡도 분석도 전처리와 매칭을 분리해 정확하다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/motif3/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "2와 인접한 0을 제외한 뒤 이분 그래프 최대 독립 집합에 König을 적용하는 접근이 정확하다. 다만 시간·공간 복잡도 분석이 제시되지 않았다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "prepisivanje/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "동일한 König 기반 유도에 더해 최대 독립 집합 = 총 사용 가능 셀 - 최대 매칭을 수식으로 명시하고 O(n×m×min(n,m)) 복잡도까지 제시했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/qwen36/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "조화 급수 분해로 floor(x/w)가 같은 구간을 묶는 접근과 O(n·sqrt(MAX_A)) 분석은 정확하다. 다만 '약 3.2×10^7 연산으로 2초 제한 내 충분히 실행 가능'이라는 정당화가 실측 TLE로 반증됐다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/qwen36/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "조화 급수 분해로 floor(x/w)가 같은 구간을 묶는 접근과 O(n·sqrt(MAX_A)) 분석은 정확하다. 다만 '약 3.2×10^7 연산으로 2초 제한 내 충분히 실행 가능'이라는 정당화가 실측 TLE로 반증됐다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/gemma4/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "빈도 배열과 두 접두사 합(P1, P2)으로 몫이 일정한 구간을 일괄 처리하는 접근이 정확하고, 반복 횟수가 조화수 합 10^5·H_k임을 밝혔다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/gemma4/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "빈도 배열과 두 접두사 합(P1, P2)으로 몫이 일정한 구간을 일괄 처리하는 접근이 정확하고, 반복 횟수가 조화수 합 10^5·H_k임을 밝혔다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "몫이 일정한 구간 [qd, (q+1)d-1]과 cap 경계 a ≤ floor(10^8/q)-2로 구간을 둘로 나누는 접근을 정당성 절에서 '모든 쌍을 정확히 한 번씩 더한다'고 논증했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "정당성 증명을 5단계로 나눠 모든 (아이템, weight type) 쌍이 빠짐없이 한 번 더해짐을 보였고, O(n + A log D) 시간·O(n + A) 공간이 정확하다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "41번째 줄의 식별자가 `un capped_right`로 중간에 공백이 끼어 SyntaxError가 났다. `uncapped_right`로 공백만 제거했다. 몫 구간 분해와 cap 경계 처리 로직은 손대지 않았다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/tezina_luna_r2.py"
+    }
+  },
+  "tezina/motif3/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "빈도 배열과 두 접두사 합 F, G로 몫이 일정한 구간을 일괄 처리하고 10^8 cap 경계를 분리한 접근이 정확하다. O(max·log max)도 맞다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "tezina/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "몫 q가 일정한 w의 구간을 뒤집어 잡는 변형과 cap 분할이 정확하고, O(max_val log max_val) 복잡도가 제시됐다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/qwen36/round_1": {
+    "explanation": {
+      "score": 0,
+      "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 88/104로 TLE다. 비트 연산으로 행 쌍 교집합을 세는 O(n²·m/w) 구조 자체의 비용이 원인이라 인덱스·경계 수정으로는 통과할 수 없고 알고리즘 교체가 필요하다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/qwen36/round_2": {
+    "explanation": {
+      "score": 0,
+      "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "round_1과 동일한 원본이며 2배 제한에서도 87/104로 TLE다. 같은 이유로 최소 수정 범위를 벗어난다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/gemma4/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "HVHV/VHVH 두 유형 분리와 행·열 개수 기반 누적합 접근은 타당하고 P1=P5 중복 사례도 지적했다. 다만 4-cycle 보정량의 근거가 제시되지 않아 정당성이 미완이다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 13/104 WA다. 답변이 밝힌 4-cycle 중복 보정이 계산식에 반영되지 않아 세는 공식 자체가 틀렸다. 수식을 다시 세워야 하므로 알고리즘 교체에 해당한다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/gemma4/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "HVHV/VHVH 두 유형 분리와 행·열 개수 기반 누적합 접근은 타당하고 P1=P5 중복 사례도 지적했다. 다만 4-cycle 보정량의 근거가 제시되지 않아 정당성이 미완이다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "round_1과 동일한 원본이며 2배 제한에서도 13/104 WA다. 같은 이유로 최소 수정 범위를 벗어난다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "두 방향 패턴을 분리해 누적합으로 세고, 다섯 번째 칸이 첫 칸과 겹치는 경우만 문제가 됨을 보인 뒤 직사각형 네 꼭짓점 수를 비트마스크 kC2로 보정했다. 복잡도도 구분해 제시했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "P_j, Q_i, S_j, T_j를 정의해 가로 시작 경로 수 H를 폐형식으로 유도하고 전치로 세로 시작을 처리했다. 중복 보정까지 포함해 정당성이 완결적이다."
+    },
+    "repair": {
+      "decision": "candidate",
+      "reason": "`if level == len(planes)`가 경계를 좁게 잡아 level이 리스트 끝을 건너뛰면 append가 일어나지 않고 IndexError가 났다. 1차 시도로 `>=`만 바꿨더니 level이 2 이상 건너뛸 때 한 번의 append로 모자라 같은 오류가 남았다. `while level >= len(planes)`로 필요한 만큼 늘리도록 고쳤다. 비트 평면 캐리 전파 알고리즘 자체는 손대지 않았다.",
+      "algorithm_preserved": true,
+      "code_path": "repairs/pet_luna_r2.py"
+    }
+  },
+  "pet/motif3/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "HVHV/VHVH 분해와 행·열 사전 계산 합으로 O(n*m)에 세는 접근은 타당하다. 다만 다섯 칸이 서로 달라야 한다는 조건의 중복 보정을 다루지 않아 정당성이 빠졌다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 13/104 WA다. 경로 중복 보정이 빠져 계산식이 틀렸으므로 최소 수정 범위를 벗어난다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "pet/motif3/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "dp[k][i][j][dir] 상태 전이로 방향 교대를 표현한 접근은 서술이 일관된다. 다만 복잡도 분석이 전혀 없고 n,m≤2000에서 이 상태 공간이 감당되는지에 대한 근거가 없다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 76/104로 TLE다. 5단계 DP 상태 전이를 n,m≤2000 격자에서 그대로 도는 구조라 상수 조정이 아니라 알고리즘 교체가 필요하다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/qwen36/round_1": {
+    "explanation": {
+      "score": 0,
+      "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 30/91 WA다. 행마다 세그먼트 트리를 초기화하는 판정 로직이 틀려 대부분의 테스트에서 값이 어긋나므로 경계 한 곳을 고쳐 해결되지 않는다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/qwen36/round_2": {
+    "explanation": {
+      "score": 0,
+      "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "round_1과 동일한 원본이며 2배 제한에서도 30/91 WA다. 같은 이유로 최소 수정 범위를 벗어난다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/gemma4/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "정렬한 앞열 최대키 M'_r과 정렬한 친구 키 H_r에 대해 M'_r < H_r이 필요충분이라는 매칭 조건은 정확하다. 다만 설명한 세그먼트 트리를 코드로 구현하지 않고 'Final code structure ... pass'로 끝나 설명과 산출물이 불일치한다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "코드가 `pass`와 'I will provide a complete, working implementation' 주석으로 끝나는 미완성 스텁이라 0/91이다. 설명한 세그먼트 트리가 구현돼 있지 않아 고칠 알고리즘 자체가 없다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/gemma4/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "정렬한 앞열 최대키 M'_r과 정렬한 친구 키 H_r에 대해 M'_r < H_r이 필요충분이라는 매칭 조건은 정확하다. 다만 설명한 세그먼트 트리를 코드로 구현하지 않고 'Final code structure ... pass'로 끝나 설명과 산출물이 불일치한다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "round_1과 동일한 미완성 스텁이며 0/91이다. 같은 이유로 최소 수정 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "좌석별 요구 인덱스 p를 정의하고 정렬 후 p_i ≤ i가 배치의 필요충분조건임을, 다시 '모든 q에 대해 count(p_i ≤ q) ≥ q'와 동치임을 보였다. Hall 조건에 해당하는 정확한 유도다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "앉을 수 없는 친구 수 r로 조건을 r_i < i로 정리하고 누적 개수 조건과의 동치를 보였다. 꽉 찬 좌석을 r=k로 처리하는 경계도 명시했다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/motif3/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "열별 앞선 최대 키 사전 계산과 정렬 기반 매칭 판정이 정확하고, 복잡도를 O(n×(m-k+1)×k log k)로 최악의 경우까지 숨기지 않고 제시했다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 80/91로 TLE다. 창마다 장애물 키를 정렬하는 O(n·m·k log k) 구조가 원인이라 슬라이딩 자료구조로 교체해야 하며 최소 수정 범위를 벗어난다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "ucionica/motif3/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "정렬된 장애물 키 목록을 슬라이딩하며 유지하는 접근과 조기 종료가 일관되고, O(n*m*k) 시간·O(n*m) 공간을 명시했다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 85/91로 TLE다. 정렬 목록을 유지하는 방식이지만 삽입·삭제 비용이 남아 같은 이유로 알고리즘 교체가 필요하다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/qwen36/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "Li Chao Tree와 두 스택 슬라이딩 윈도우 접근을 제시하고 O(N log C)를 밝혔으나, 본문에 'No, O(k) query is too slow' 같은 미결 검토가 그대로 남아 결론에 도달하지 못했고 코드도 완결되지 않았다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/qwen36/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "Li Chao Tree와 두 스택 슬라이딩 윈도우 접근을 제시하고 O(N log C)를 밝혔으나, 본문에 'No, O(k) query is too slow' 같은 미결 검토가 그대로 남아 결론에 도달하지 못했고 코드도 완결되지 않았다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/gemma4/round_1": {
+    "explanation": {
+      "score": 1,
+      "evidence": "hecticness를 직선 평가 문제로 정리하고 Li Chao Tree를 세그먼트 트리 노드마다 두는 O(n log²n) 구조를 제시했다. 다만 k 거리 제약 처리의 정당성이 서술에 그치고 코드가 완결되지 않았다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/gemma4/round_2": {
+    "explanation": {
+      "score": 1,
+      "evidence": "hecticness를 직선 평가 문제로 정리하고 Li Chao Tree를 세그먼트 트리 노드마다 두는 O(n log²n) 구조를 제시했다. 다만 k 거리 제약 처리의 정당성이 서술에 그치고 코드가 완결되지 않았다."
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/luna/round_1": {
+    "explanation": {
+      "score": 2,
+      "evidence": "hecticness를 z_v에서 평가하는 직선 최댓값 문제로 정확히 변형하고, DFS 진입·이탈 시 덱 복원으로 조상 k개를 유지하는 정당성을 설명했다. Li Chao의 O(log 10^5)와 덱 재구성의 amortized 비용까지 제시했다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서 102/104까지 갔으나 두 건이 여전히 TLE다. Li Chao Tree와 롤백 덱을 Python으로 구현한 데서 오는 상수 비용이라 인덱스·경계 수정으로 줄일 수 없고, 자료구조를 바꿔야 한다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/luna/round_2": {
+    "explanation": {
+      "score": 2,
+      "evidence": "DFS 선순회 시간축에서 각 간선의 활성 구간이 O(n)개임을 보이고 시간 세그먼트 트리에 O(log n)으로 넣는 구조를 설명했다. 기울기 단조 삽입과 볼록 껍질까지 일관된다."
+    },
+    "repair": {
+      "decision": "not_repairable",
+      "reason": "2배 제한에서도 61/104로 TLE다. DFS 시간축 구간을 세그먼트 트리에 넣는 구조 자체가 Python에서 무겁다. 최소 수정으로는 통과할 수 없다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/motif3/round_1": {
+    "explanation": {
+      "score": null,
+      "evidence": ""
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 CALL_ERROR이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  },
+  "skijanje/motif3/round_2": {
+    "explanation": {
+      "score": null,
+      "evidence": ""
+    },
+    "repair": {
+      "decision": "not_applicable",
+      "reason": "원본 판정이 CALL_ERROR이라 최소 수정 보조 평가 대상이 아니다.",
+      "algorithm_preserved": null,
+      "code_path": null
+    }
+  }
+}

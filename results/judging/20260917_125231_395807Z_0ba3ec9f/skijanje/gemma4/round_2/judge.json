@@ -1,0 +1,14 @@
+{
+  "status": "NO_CODE",
+  "passed_cases": 0,
+  "total_cases": null,
+  "max_case_seconds": null,
+  "time_limit_seconds": 1.0,
+  "test_results": [],
+  "session_id": "20260917_125231_395807Z_0ba3ec9f",
+  "judged_at": "2026-09-17T13:05:32.788084+00:00",
+  "source_run_id": "20260917_111047_658697Z",
+  "source_result": "results/benchmark/skijanje/gemma4/round_2/result.json",
+  "source_sha256": "0b35f9ff48eb1643ddb1e8e9d4fadb3e56ed7f4fd4b3786972a177f6b3d21137",
+  "candidate_sha256": null
+}

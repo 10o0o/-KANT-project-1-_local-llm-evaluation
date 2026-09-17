@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "T=R_i+C_j 분리와 R_i의 단조성, C_j가 L·R 기여의 합이라 기울기 변화점에서만 극값이 나온다는 분석이 정확하고 O(q log q)도 맞다."
+  },
+  "repair": {
+    "decision": "candidate",
+    "reason": "마지막 줄이 `solve`로 끝나 함수가 호출되지 않아 출력이 없었다. `solve()`로 괄호만 추가했다. 행·열 성분 분리와 분할점 평가라는 원래 알고리즘은 그대로다.",
+    "algorithm_preserved": true,
+    "code_path": "repairs/tomahawk_gemma4_r1.py"
+  }
+}

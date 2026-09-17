@@ -1,0 +1,7 @@
+--- original/candidate.py
++++ attempt/candidate.py
+@@ -62,4 +62,4 @@
+     print(ans)
+ 
+ if __name__ == "__main__":
+-    solve+    solve()

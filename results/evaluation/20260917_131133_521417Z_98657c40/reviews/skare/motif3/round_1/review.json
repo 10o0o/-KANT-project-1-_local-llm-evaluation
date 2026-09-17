@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "교체 시뮬레이션과 집합 기반 중복 제거 접근은 정확하다. 다만 '각 작업이 O(1) 시간에 처리된다'고 적었는데 리스트 중간 삽입은 O(k)라 복잡도 주장이 구현과 어긋난다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

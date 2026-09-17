@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "dp[k][i][j][dir] 상태 전이로 방향 교대를 표현한 접근은 서술이 일관된다. 다만 복잡도 분석이 전혀 없고 n,m≤2000에서 이 상태 공간이 감당되는지에 대한 근거가 없다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 76/104로 TLE다. 5단계 DP 상태 전이를 n,m≤2000 격자에서 그대로 도는 구조라 상수 조정이 아니라 알고리즘 교체가 필요하다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

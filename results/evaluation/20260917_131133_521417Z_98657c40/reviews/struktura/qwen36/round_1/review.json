@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "c_j = a_{n+1-j} 치환으로 |c_j - j| ≤ 1을 끌어내고 그런 순열 수가 F_{n+1}임을 점화식으로 보였다. 확률 F_{n+1}/k^n과 페르마 소정리 역원, O(log n)이 모두 일치한다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

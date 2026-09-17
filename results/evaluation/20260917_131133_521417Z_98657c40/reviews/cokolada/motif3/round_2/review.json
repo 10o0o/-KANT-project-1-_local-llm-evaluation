@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 0,
+    "evidence": "절단이 초콜릿 전체를 관통한다는 문제 조건을 무시하고 '가장 작은 단색 직사각형으로 분할'하는 O(n²m²) 구간 DP로 접근했다. 문제 해석 자체가 틀린 핵심 오류다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "26/75 WA다. 절단이 초콜릿 전체를 관통한다는 조건을 무시하고 구간 DP로 임의 분할을 탐색하는 접근이라 문제 해석부터 다르다. 알고리즘 교체가 필요하다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

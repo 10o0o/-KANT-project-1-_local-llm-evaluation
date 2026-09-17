@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "HVHV/VHVH 두 유형 분리와 행·열 개수 기반 누적합 접근은 타당하고 P1=P5 중복 사례도 지적했다. 다만 4-cycle 보정량의 근거가 제시되지 않아 정당성이 미완이다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 13/104 WA다. 답변이 밝힌 4-cycle 중복 보정이 계산식에 반영되지 않아 세는 공식 자체가 틀렸다. 수식을 다시 세워야 하므로 알고리즘 교체에 해당한다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

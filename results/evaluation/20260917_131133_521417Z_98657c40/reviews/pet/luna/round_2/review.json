@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "P_j, Q_i, S_j, T_j를 정의해 가로 시작 경로 수 H를 폐형식으로 유도하고 전치로 세로 시작을 처리했다. 중복 보정까지 포함해 정당성이 완결적이다."
+  },
+  "repair": {
+    "decision": "candidate",
+    "reason": "`if level == len(planes)`가 경계를 좁게 잡아 level이 리스트 끝을 건너뛰면 append가 일어나지 않고 IndexError가 났다. 1차 시도로 `>=`만 바꿨더니 level이 2 이상 건너뛸 때 한 번의 append로 모자라 같은 오류가 남았다. `while level >= len(planes)`로 필요한 만큼 늘리도록 고쳤다. 비트 평면 캐리 전파 알고리즘 자체는 손대지 않았다.",
+    "algorithm_preserved": true,
+    "code_path": "repairs/pet_luna_r2.py"
+  }
+}

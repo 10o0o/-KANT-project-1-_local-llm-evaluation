@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "마지막 두 원소 값을 상태로 두는 전이 행렬을 세워 행렬 거듭제곱으로 세는 접근이 일관되고, n=1·2 경계와 k<n 예외를 분리했다. O(log n)·O(1)도 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

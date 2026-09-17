@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "좌석별 요구 인덱스 p를 정의하고 정렬 후 p_i ≤ i가 배치의 필요충분조건임을, 다시 '모든 q에 대해 count(p_i ≤ q) ≥ q'와 동치임을 보였다. Hall 조건에 해당하는 정확한 유도다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

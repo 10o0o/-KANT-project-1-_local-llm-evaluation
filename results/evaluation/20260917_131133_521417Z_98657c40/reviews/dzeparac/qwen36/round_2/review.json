@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "R=N-k가 짝수여야 함을 보이고 합분해 수 2^(M-1)에서 기하급수 합으로 2^floor(N/2)라는 폐형식을 유도했다. pow의 O(log N)과 O(1) 공간도 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

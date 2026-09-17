@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 0,
+    "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 88/104로 TLE다. 비트 연산으로 행 쌍 교집합을 세는 O(n²·m/w) 구조 자체의 비용이 원인이라 인덱스·경계 수정으로는 통과할 수 없고 알고리즘 교체가 필요하다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

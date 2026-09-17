@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "b_j = a_{n+1-j} 치환 후 b_1의 두 경우로 나눠 T_n = T_{n-1} + T_{n-2}를 직접 유도하고 T_n = F_{n+1}을 확정했다. 빠른 doubling의 O(log n)과 재귀 스택 O(log n)까지 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

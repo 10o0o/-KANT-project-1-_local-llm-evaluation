@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 0,
+    "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "round_1과 동일한 원본이며 2배 제한에서도 87/104로 TLE다. 같은 이유로 최소 수정 범위를 벗어난다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

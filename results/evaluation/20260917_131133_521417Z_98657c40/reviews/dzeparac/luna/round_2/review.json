@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "이항계수 합 sum C(S-1,d-1) = 2^(S-1)을 명시하고 각 S마다 k가 유일하게 정해짐을 지적해 중복 없이 합산했다. 복잡도도 정확하다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

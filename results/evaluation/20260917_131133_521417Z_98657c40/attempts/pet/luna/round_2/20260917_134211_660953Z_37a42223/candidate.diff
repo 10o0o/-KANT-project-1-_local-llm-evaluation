@@ -1,0 +1,11 @@
+--- original/candidate.py
++++ attempt/candidate.py
+@@ -20,7 +20,7 @@
+ 
+             carry = row_mask
+             while carry:
+-                if level == len(planes):
++                if level >= len(planes):
+                     planes.append(0)
+ 
+                 old = planes[level]

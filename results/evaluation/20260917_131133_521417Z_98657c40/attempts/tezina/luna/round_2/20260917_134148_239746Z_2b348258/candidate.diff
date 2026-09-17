@@ -1,0 +1,11 @@
+--- original/candidate.py
++++ attempt/candidate.py
+@@ -38,7 +38,7 @@
+             right = min(max_a, (q + 1) * d - 1)
+ 
+             # q * (a + 2) <= CAP 인 최대 a
+-            un capped_right = CAP // q - 2
++            uncapped_right = CAP // q - 2
+             uncapped_right = min(right, uncapped_right)
+ 
+             if uncapped_right >= left:

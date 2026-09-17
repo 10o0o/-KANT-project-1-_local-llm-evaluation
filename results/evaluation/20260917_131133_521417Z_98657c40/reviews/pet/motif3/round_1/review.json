@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "HVHV/VHVH 분해와 행·열 사전 계산 합으로 O(n*m)에 세는 접근은 타당하다. 다만 다섯 칸이 서로 달라야 한다는 조건의 중복 보정을 다루지 않아 정당성이 빠졌다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 13/104 WA다. 경로 중복 보정이 빠져 계산식이 틀렸으므로 최소 수정 범위를 벗어난다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

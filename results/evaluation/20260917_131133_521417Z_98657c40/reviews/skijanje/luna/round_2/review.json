@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "DFS 선순회 시간축에서 각 간선의 활성 구간이 O(n)개임을 보이고 시간 세그먼트 트리에 O(log n)으로 넣는 구조를 설명했다. 기울기 단조 삽입과 볼록 껍질까지 일관된다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 61/104로 TLE다. DFS 시간축 구간을 세그먼트 트리에 넣는 구조 자체가 Python에서 무겁다. 최소 수정으로는 통과할 수 없다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

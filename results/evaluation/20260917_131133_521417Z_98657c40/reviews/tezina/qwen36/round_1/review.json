@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "조화 급수 분해로 floor(x/w)가 같은 구간을 묶는 접근과 O(n·sqrt(MAX_A)) 분석은 정확하다. 다만 '약 3.2×10^7 연산으로 2초 제한 내 충분히 실행 가능'이라는 정당화가 실측 TLE로 반증됐다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 AC이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

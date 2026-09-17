@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "열별 앞선 최대 키 사전 계산과 정렬 기반 매칭 판정이 정확하고, 복잡도를 O(n×(m-k+1)×k log k)로 최악의 경우까지 숨기지 않고 제시했다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 80/91로 TLE다. 창마다 장애물 키를 정렬하는 O(n·m·k log k) 구조가 원인이라 슬라이딩 자료구조로 교체해야 하며 최소 수정 범위를 벗어난다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

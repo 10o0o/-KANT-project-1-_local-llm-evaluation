@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "2와 인접한 0을 후보에서 제외한 뒤 격자의 이분성을 이용해 최대 독립 집합 = 정점 수 - 최대 매칭을 적용했고, 복잡도를 O(V·E)로 과장 없이 적었다."
+  },
+  "repair": {
+    "decision": "candidate",
+    "reason": "이분 매칭의 재귀 DFS가 기본 재귀 한도를 넘겨 RecursionError가 났다(130개 중 120개는 통과). `sys.setrecursionlimit(300000)` 한 줄만 추가했다. 매칭 알고리즘 자체는 손대지 않았다.",
+    "algorithm_preserved": true,
+    "code_path": "repairs/prepisivanje_gemma4_r1.py"
+  }
+}

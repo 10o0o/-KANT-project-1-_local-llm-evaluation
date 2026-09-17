@@ -1,0 +1,9 @@
+--- original/candidate.py
++++ attempt/candidate.py
+@@ -1,4 +1,6 @@
+ import sys
++
++sys.setrecursionlimit(300000)
+ 
+ def solve():
+     # Read n and m

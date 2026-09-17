@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "정당성 증명을 5단계로 나눠 모든 (아이템, weight type) 쌍이 빠짐없이 한 번 더해짐을 보였고, O(n + A log D) 시간·O(n + A) 공간이 정확하다."
+  },
+  "repair": {
+    "decision": "candidate",
+    "reason": "41번째 줄의 식별자가 `un capped_right`로 중간에 공백이 끼어 SyntaxError가 났다. `uncapped_right`로 공백만 제거했다. 몫 구간 분해와 cap 경계 처리 로직은 손대지 않았다.",
+    "algorithm_preserved": true,
+    "code_path": "repairs/tezina_luna_r2.py"
+  }
+}

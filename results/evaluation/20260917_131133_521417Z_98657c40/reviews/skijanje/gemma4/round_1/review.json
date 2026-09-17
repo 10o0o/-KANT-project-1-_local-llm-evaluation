@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 1,
+    "evidence": "hecticness를 직선 평가 문제로 정리하고 Li Chao Tree를 세그먼트 트리 노드마다 두는 O(n log²n) 구조를 제시했다. 다만 k 거리 제약 처리의 정당성이 서술에 그치고 코드가 완결되지 않았다."
+  },
+  "repair": {
+    "decision": "not_applicable",
+    "reason": "원본 판정이 NO_CODE이라 최소 수정 보조 평가 대상이 아니다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

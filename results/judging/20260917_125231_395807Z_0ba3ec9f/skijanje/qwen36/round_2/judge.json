@@ -1,0 +1,14 @@
+{
+  "status": "NO_CODE",
+  "passed_cases": 0,
+  "total_cases": null,
+  "max_case_seconds": null,
+  "time_limit_seconds": 1.0,
+  "test_results": [],
+  "session_id": "20260917_125231_395807Z_0ba3ec9f",
+  "judged_at": "2026-09-17T13:05:32.761705+00:00",
+  "source_run_id": "20260917_100747_488969",
+  "source_result": "results/benchmark/skijanje/qwen36/round_2/result.json",
+  "source_sha256": "27b6b125fae3e3f14cb9c5b71066fee9c0e94f888507b0a0e681eb9e078e6b6e",
+  "candidate_sha256": null
+}

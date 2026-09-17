@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "정렬된 장애물 키 목록을 슬라이딩하며 유지하는 접근과 조기 종료가 일관되고, O(n*m*k) 시간·O(n*m) 공간을 명시했다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 85/91로 TLE다. 정렬 목록을 유지하는 방식이지만 삽입·삭제 비용이 남아 같은 이유로 알고리즘 교체가 필요하다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

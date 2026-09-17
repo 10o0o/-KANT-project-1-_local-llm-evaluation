@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 2,
+    "evidence": "hecticness를 z_v에서 평가하는 직선 최댓값 문제로 정확히 변형하고, DFS 진입·이탈 시 덱 복원으로 조상 k개를 유지하는 정당성을 설명했다. Li Chao의 O(log 10^5)와 덱 재구성의 amortized 비용까지 제시했다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서 102/104까지 갔으나 두 건이 여전히 TLE다. Li Chao Tree와 롤백 덱을 Python으로 구현한 데서 오는 상수 비용이라 인덱스·경계 수정으로 줄일 수 없고, 자료구조를 바꿔야 한다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}

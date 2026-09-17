@@ -1,0 +1,12 @@
+{
+  "explanation": {
+    "score": 0,
+    "evidence": "답변이 ```python 코드 블록 하나로만 구성되고 산문이 0자다. 접근법·정당성·복잡도 설명이 전혀 없다."
+  },
+  "repair": {
+    "decision": "not_repairable",
+    "reason": "2배 제한에서도 30/91 WA다. 행마다 세그먼트 트리를 초기화하는 판정 로직이 틀려 대부분의 테스트에서 값이 어긋나므로 경계 한 곳을 고쳐 해결되지 않는다.",
+    "algorithm_preserved": null,
+    "code_path": null
+  }
+}
