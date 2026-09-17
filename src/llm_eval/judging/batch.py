@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from llm_eval.judging.engine import judge_problem
+from llm_eval.judging.engine import JUDGE_POLICY, judge_problem
 from llm_eval.shared.problems import load_problems
 from llm_eval.shared.paths import generation_dir
 from llm_eval.shared.storage import write_json
@@ -191,7 +191,10 @@ def build_manifest(session_id, ids, models, rounds, missing, datasets, entries):
         "selection": {"problems": ids, "models": models, "rounds": [int(n) for n in rounds]},
         "timing": "wall_clock_subprocess_timeout_per_test",
         "python": sys.version, "python_executable": sys.executable,
-        "platform": platform.platform(), "judge_sha256": digest(Path(__file__).with_name("engine.py")),
+        "platform": platform.platform(),
+        "judge_sha256": digest(Path(__file__).with_name("engine.py")),
+        "judge_process_sha256": digest(Path(__file__).with_name("process.py")),
+        "judge_policy": dict(JUDGE_POLICY),
         "missing": missing, "coverage_complete": not missing,
         "test_data": datasets, "entries": entries,
     }

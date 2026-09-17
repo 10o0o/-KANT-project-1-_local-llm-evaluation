@@ -24,7 +24,7 @@ def generation_complete(record):
         return True
     judge = record.get("judge")
     return isinstance(judge, dict) and judge.get("status") in {
-        "AC", "WA", "TLE", "RE", "NO_CODE",
+        "AC", "WA", "TLE", "OLE", "RE", "NO_CODE",
     }
 
 

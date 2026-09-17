@@ -128,7 +128,19 @@ class BatchTests(unittest.TestCase):
         self.source()
         session = batch.run_batch(self.root)
         implementation = Path(batch.__file__).with_name("engine.py")
-        self.assertEqual(self.manifest(session)["judge_sha256"], batch.digest(implementation))
+        process = Path(batch.__file__).with_name("process.py")
+        manifest = self.manifest(session)
+        self.assertEqual(manifest["judge_sha256"], batch.digest(implementation))
+        self.assertEqual(manifest["judge_process_sha256"], batch.digest(process))
+        self.assertEqual(
+            manifest["judge_policy"],
+            {
+                "version": 1,
+                "per_test_output_limit_bytes": 10 * 1024 * 1024,
+                "output_limit_scope": "combined_stdout_stderr_bytes",
+                "resource_verdict_precedence": "first_trigger",
+            },
+        )
 
     def test_incomplete_or_modified_sources_abort_before_any_judging(self):
         self.source()

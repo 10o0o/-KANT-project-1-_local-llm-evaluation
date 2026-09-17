@@ -1,7 +1,9 @@
 import selectors
 import signal
 import subprocess
+import tempfile
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
@@ -79,6 +81,17 @@ class SpawnTests(unittest.TestCase):
 
 
 class CleanupTests(unittest.TestCase):
+    def test_group_liveness_ignores_zombies_but_detects_live_members(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            proc_root = Path(temporary)
+            process_dir = proc_root / "123"
+            process_dir.mkdir()
+            stat = process_dir / "stat"
+            stat.write_text("123 (fixture child) S 1 4321 4321 0")
+            self.assertTrue(judge_process._group_has_live_members(4321, proc_root))
+            stat.write_text("123 (fixture child) Z 1 4321 4321 0")
+            self.assertFalse(judge_process._group_has_live_members(4321, proc_root))
+
     @patch.object(judge_process.os, "killpg")
     def test_cleanup_rejects_non_finite_timeouts_before_signaling(self, killpg):
         process = fake_process()
@@ -179,6 +192,7 @@ class CollectionTests(unittest.TestCase):
         result, set_blocking, os_read, terminate = self.collect()
 
         self.assertEqual((result.stdout, result.stderr), (b"abc", b"12"))
+        self.assertEqual(result.termination_reason, "output_limit")
         self.assertTrue(result.output_limit_exceeded)
         self.assertFalse(result.timed_out)
         self.assertTrue(result.pipes_drained)
@@ -210,10 +224,105 @@ class CollectionTests(unittest.TestCase):
             )
 
         self.assertTrue(result.timed_out)
+        self.assertEqual(result.termination_reason, "timeout")
         self.assertFalse(result.output_limit_exceeded)
         self.assertTrue(result.pipes_drained)
         self.assertAlmostEqual(self.selector.timeouts[0], 2.0)
         terminate.assert_called_once()
+
+    def test_elapsed_stops_at_timeout_before_cleanup_and_drain(self):
+        self.process = fake_process(returncode=-signal.SIGKILL)
+        self.process.poll.return_value = None
+        self.selector = FakeSelector([[], [self.process.stdout, self.process.stderr]])
+        reads = {10: [b""], 11: [b""]}
+        # Timeout is observed at 2.1. Cleanup and pipe draining advance the
+        # clock, but candidate elapsed time must retain the first trigger.
+        clock = iter([0.0, 0.0, 0.0, 2.1, 2.2, 4.0, 4.1, 4.2])
+
+        with (
+            patch.object(judge_process.selectors, "DefaultSelector", return_value=self.selector),
+            patch.object(judge_process.os, "set_blocking"),
+            patch.object(judge_process.os, "read", side_effect=lambda fd, size: reads[fd].pop(0)),
+            patch.object(judge_process.time, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(judge_process, "terminate_process_group"),
+        ):
+            result = judge_process.collect_bounded_output(
+                self.process, timeout_seconds=2, output_limit_bytes=100
+            )
+
+        self.assertEqual(result.termination_reason, "timeout")
+        self.assertAlmostEqual(result.elapsed_seconds, 2.1)
+
+    def test_timeout_first_keeps_bounded_diagnostic_without_becoming_ole(self):
+        self.process = fake_process(returncode=-signal.SIGKILL)
+        self.process.poll.return_value = None
+        self.selector = FakeSelector(
+            [[], [self.process.stdout], [self.process.stdout, self.process.stderr]]
+        )
+        reads = {10: [b"abcdef", b""], 11: [b""]}
+        clock = iter([0.0, 0.0, 0.0, 2.1, 2.2, 2.3, 2.4, 2.5])
+
+        with (
+            patch.object(judge_process.selectors, "DefaultSelector", return_value=self.selector),
+            patch.object(judge_process.os, "set_blocking"),
+            patch.object(judge_process.os, "read", side_effect=lambda fd, size: reads[fd].pop(0)),
+            patch.object(judge_process.time, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(judge_process, "terminate_process_group"),
+        ):
+            result = judge_process.collect_bounded_output(
+                self.process, timeout_seconds=2, output_limit_bytes=3
+            )
+
+        self.assertEqual(result.stdout, b"abc")
+        self.assertEqual(result.termination_reason, "timeout")
+        self.assertTrue(result.timed_out)
+        self.assertFalse(result.output_limit_exceeded)
+
+    def test_selector_wake_at_deadline_beats_ready_output_overflow(self):
+        self.process = fake_process(returncode=-signal.SIGKILL)
+        self.process.poll.return_value = None
+        self.selector = FakeSelector(
+            [[self.process.stdout], [self.process.stdout, self.process.stderr]]
+        )
+        reads = {10: [b"abcdef", b""], 11: [b""]}
+        clock = iter([0.0, 0.0, 2.1, 2.2, 2.3, 2.4, 2.5])
+
+        with (
+            patch.object(judge_process.selectors, "DefaultSelector", return_value=self.selector),
+            patch.object(judge_process.os, "set_blocking"),
+            patch.object(judge_process.os, "read", side_effect=lambda fd, size: reads[fd].pop(0)),
+            patch.object(judge_process.time, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(judge_process, "terminate_process_group"),
+        ):
+            result = judge_process.collect_bounded_output(
+                self.process, timeout_seconds=2, output_limit_bytes=3
+            )
+
+        self.assertEqual(result.termination_reason, "timeout")
+        self.assertTrue(result.timed_out)
+        self.assertFalse(result.output_limit_exceeded)
+
+    def test_normal_exit_elapsed_is_not_overwritten_by_drain_overflow(self):
+        self.process = fake_process(returncode=0)
+        self.selector = FakeSelector(
+            [[self.process.stdout], [self.process.stdout, self.process.stderr]]
+        )
+        reads = {10: [b"abcdef", b""], 11: [b""]}
+        clock = iter([0.0, 0.1, 2.0, 2.1, 3.0, 3.1, 3.2])
+
+        with (
+            patch.object(judge_process.selectors, "DefaultSelector", return_value=self.selector),
+            patch.object(judge_process.os, "set_blocking"),
+            patch.object(judge_process.os, "read", side_effect=lambda fd, size: reads[fd].pop(0)),
+            patch.object(judge_process.time, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(judge_process, "terminate_process_group"),
+        ):
+            result = judge_process.collect_bounded_output(
+                self.process, timeout_seconds=10, output_limit_bytes=3
+            )
+
+        self.assertEqual(result.termination_reason, "output_limit")
+        self.assertAlmostEqual(result.elapsed_seconds, 0.1)
 
     def test_parent_exit_also_cleans_descendants_before_pipe_drain(self):
         self.process = fake_process(returncode=0)

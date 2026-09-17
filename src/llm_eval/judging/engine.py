@@ -1,15 +1,26 @@
-import subprocess
 import sys
+import time
 from pathlib import Path
-from time import perf_counter
+
+from llm_eval.judging.process import (
+    ProcessCleanupError,
+    collect_bounded_output,
+    spawn_isolated,
+)
+
+
+OUTPUT_LIMIT_BYTES = 10 * 1024 * 1024
+JUDGE_POLICY = {
+    "version": 1,
+    "per_test_output_limit_bytes": OUTPUT_LIMIT_BYTES,
+    "output_limit_scope": "combined_stdout_stderr_bytes",
+    "resource_verdict_precedence": "first_trigger",
+}
 
 
 def run_test_case(
     code_path: Path, input_path: Path, output_path: Path, time_limit_seconds: float
 ):
-    with open(input_path, mode="r", encoding="utf-8") as f:
-        input_text = f.read()
-
     with open(output_path, "r", encoding="utf-8") as f:
         expected_output = f.read()
 
@@ -19,35 +30,36 @@ def run_test_case(
     # print("EXPECTED:")
     # print(expected_output)
 
-    start = perf_counter()
-    try:
-        completed = subprocess.run(
+    with open(input_path, "rb") as input_stream:
+        started_at = time.monotonic()
+        process = spawn_isolated(
             [sys.executable, str(code_path)],
-            input=input_text,
-            text=True,
-            capture_output=True,
-            timeout=time_limit_seconds,
+            stdin=input_stream,
         )
-    except subprocess.TimeoutExpired:
-        elapsed = perf_counter() - start
-        # print("판정: TLE")
-        # print("실행 시간:", elapsed)
-        return {
-            "status": "TLE",
-            "elapsed_seconds": elapsed,
-            "return_code": None,
-            "stdout": "",
-            "stderr": "",
-        }
+        completed = collect_bounded_output(
+            process,
+            timeout_seconds=time_limit_seconds,
+            output_limit_bytes=OUTPUT_LIMIT_BYTES,
+            started_at=started_at,
+        )
 
-    elapsed = perf_counter() - start
+    if not completed.pipes_drained:
+        raise ProcessCleanupError("candidate pipes did not reach EOF after cleanup")
+
+    resource_verdict = {
+        "timeout": "TLE",
+        "output_limit": "OLE",
+    }.get(completed.termination_reason)
+    decode_errors = "replace" if resource_verdict is not None else "strict"
+    stdout = completed.stdout.decode("utf-8", errors=decode_errors)
+    stderr = completed.stderr.decode("utf-8", errors=decode_errors)
 
     # print("실행 결과:", completed.stdout)
     # print("정답:", expected_output)
     # print("return code:", completed.returncode)
     # print("실행 시간:", elapsed)
 
-    actual_tokens = completed.stdout.split()
+    actual_tokens = stdout.split()
     expected_tokens = expected_output.split()
 
     # if actual_tokens == expected_tokens:
@@ -55,7 +67,9 @@ def run_test_case(
     # else:
     #     status = "WA"
 
-    if completed.returncode != 0:
+    if resource_verdict is not None:
+        status = resource_verdict
+    elif completed.returncode != 0:
         status = "RE"
     elif actual_tokens == expected_tokens:
         status = "AC"
@@ -68,10 +82,14 @@ def run_test_case(
 
     return {
         "status": status,
-        "elapsed_seconds": elapsed,
+        "elapsed_seconds": completed.elapsed_seconds,
         "return_code": completed.returncode,
-        "stdout": completed.stdout,
-        "stderr": completed.stderr,
+        "stdout": stdout,
+        "stderr": stderr,
+        "timed_out": completed.timed_out,
+        "output_limit_exceeded": completed.output_limit_exceeded,
+        "pipes_drained": completed.pipes_drained,
+        "termination_reason": completed.termination_reason,
     }
 
 
