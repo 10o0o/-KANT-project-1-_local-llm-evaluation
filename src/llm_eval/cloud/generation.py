@@ -8,15 +8,15 @@ from llm_eval.cloud.client import (
     request_options,
 )
 from llm_eval.cloud.metrics import measured_metrics
-from llm_eval.shared.code_extraction import extract_python_code
-from llm_eval.shared.storage import write_json, write_text
 from llm_eval.shared.artifacts import (
     generation_complete,
     generation_dir,
     read_generation_record,
     validate_artifacts,
 )
+from llm_eval.shared.code_extraction import extract_python_code
 from llm_eval.shared.problems import load_problems, problem_prompt, select_problems
+from llm_eval.shared.storage import write_json, write_text
 from llm_eval.shared.workloads import workload
 
 
@@ -92,7 +92,9 @@ def build_record(problem, request, selected_problem_ids, round_number=1):
     return {
         "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
         "experiment": {
-            "type": "cloud", "round": round_number, "planned_attempts": 20,
+            "type": "cloud",
+            "round": round_number,
+            "planned_attempts": 20,
         },
         "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
         "model": {
