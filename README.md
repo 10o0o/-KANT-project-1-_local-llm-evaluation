@@ -153,7 +153,7 @@ results/evaluation/<평가 ID>/
 ├── results/                 # 실행하면 생기는 결과군
 ├── src/llm_eval/            # 단일 CLI와 local/cloud/judging/shared 패키지
 ├── tests/                   # 책임별 mock·fixture와 합성 경계 테스트
-├── AGENTS.md                # 작업 경계와 보존 규칙
+├── AGENTS.md                # 저장소 작업 규칙과 보존 규칙
 ├── STATE.md                 # 확인된 진행 상태와 다음 한 작업
 ├── pyproject.toml           # package와 llm-eval console script
 ├── uv.lock                  # 고정 의존성
@@ -171,10 +171,6 @@ results/evaluation/<평가 ID>/
 지표도 서로 다른 것을 섞지 않습니다. 요청 전체 경과 시간, llama.cpp 내부 생성 속도, GPU 사용량 관측, Cloud 토큰·비용 추정은 각각 다른 값입니다. 특히 GPU 사용량은 장치 전체 관측값이고 프로세스별 값은 조회되지 않아 사유와 함께 `null`로 남아 있으므로, 모델 단독 사용량으로 읽으면 안 됩니다.
 
 Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제한을 적용합니다. **메모리 제한 강제·RSS 측정·MLE 판정은 구현하지 않았습니다.** 따라서 AC는 보유한 테스트를 통과했다는 뜻이지 메모리 제한 준수를 증명하지 않습니다. 기록의 의미와 한계는 [기록 구현 점검](docs/operations/recording.md)을 참고합니다.
-
-## 작업 경계
-
-조사·구현·실험·채점·평가는 직접 수행합니다. AI에는 명시적으로 맡긴 범위만 맡기며, 그 범위에서 나온 문서·코드·모의 검증을 실제 실험 완료의 근거로 쓰지 않습니다. 자세한 규칙은 [AGENTS.md](AGENTS.md)를 따릅니다.
 
 ## 문서 지도
 
@@ -194,7 +190,7 @@ Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제�
 | [생성 기록 진단](docs/history/generation-diagnostics.md) | reasoning 반복, 회차 중복, 후보 코드 결함 유형 |
 | [모델 후보 조사](docs/project/model-candidates.md) | 후보 비교표, Model Card·License, 제외한 후보 이력 |
 | [발제 원문](docs/project/assignment.md) · [평가표](docs/project/assignment-rubric.md) | 과제 기준과 사용자 정의 조건의 구분 |
-| [단계별 학습 안내](docs/project/learning-guide.md) | 직접 수행 순서와 완료 근거 |
+| [단계별 학습 안내](docs/project/learning-guide.md) | STEP 1~8 진행 순서와 완료 근거 |
 | [결과 안내](results/README.md) | 결과군 이름·집계 제외·채점 세션 의미 |
 | [정리 이력](docs/history/README.md) | 이전 경로와 Git 복원 정보 |
 | [유지보수 인계](docs/maintenance-handoff.md) | 통합·검증 기록과 인계 사항 |

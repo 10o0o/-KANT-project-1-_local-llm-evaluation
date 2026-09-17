@@ -15,13 +15,13 @@
 | EVAL-05 | 보고서 생성 | 완료 | `20260917_134421_178261Z_7affc20f`, `complete=true`·`local_comparison_ready=true` |
 | DOC-01 | 발제 산출물 3종 | 완료 | 평가 질문, Local–Cloud 비교, 최종 선정 보고서 |
 | DOC-02 | 생성 기록 진단 | 완료 | reasoning 반복, 회차 중복, 후보 코드 결함 유형 |
-| LEARN | 개인 필수 실습 4개 | 직접 수행 대기 | 세 번째 로컬 모델, Transformers, 양자화 비교, 임베딩 |
+| LEARN | 발제 선택 실습 4개 | 진행하지 않음 | 발제 원문대로 선택 항목이며 필수 완료 기준 밖 |
 
 검증: 봉인 source(`results/benchmark`·`results/judging`·`data/coci`)의 SHA-256이 작업 전후 동일하고 원본 `candidate.py`는 덮어쓰지 않았다. 수정본은 저장소 루트 `repairs/`에 따로 두고 평가가 스냅샷·diff·해시를 `attempts/`에 남겼다.
 
 제약상 로컬 모델 재생성은 하지 못했다. 이 기기에 GGUF와 llama.cpp 런타임이 없어 Gemma 반복의 원인(모델 특성 / reasoning 예산 / 서버 설정)을 분리하지 못했고, 진단은 저장된 원본 기록에 근거한 관측으로 남겼다.
 
-다음 한 행동: **개인 필수 실습 4개를 직접 수행**.
+필수 범위는 모두 마쳤다.
 
 ## 이전 확인: 평가 기반 구현
 

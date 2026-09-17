@@ -179,7 +179,7 @@ src/llm_eval/
 | `docs/operations/evaluation.md` | 기준 세션·제한 재평가·보조 수정·설명 리뷰·보고서 절차 |
 | `docs/project/assignment.md` | 보존한 발제 원문과 필수 산출물 |
 | `docs/project/assignment-rubric.md` | 보존한 수행 평가 기준 |
-| `docs/project/learning-guide.md` | 직접 수행하는 학습 단계와 완료 근거 |
+| `docs/project/learning-guide.md` | STEP 1~8 학습 단계와 완료 근거 |
 | `docs/project/model-candidates.md` | 모델 후보 조사와 제외 근거 |
 | `docs/project/requirements.md` | 사용자 정의 입력·반복·채점·선정 기준 |
 | `docs/maintenance-handoff.md` | 유지보수 완료 근거·미확인 사항·후속 작업 |

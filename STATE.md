@@ -21,7 +21,7 @@
 
 원본 `results/benchmark`·`results/judging`과 `data/coci`는 작업 전후 SHA-256이 같다.
 
-다음 한 작업: **[발제 선택·개인 필수 실습 4개](docs/project/learning-guide.md#발제-선택사용자-필수)를 직접 수행**. 기본 과제는 완료했고 개인 전체 학습 완료에는 이 4개가 남는다.
+발제 [선택 실습 4개](docs/project/learning-guide.md#발제-선택-실습--진행하지-않음)는 원문대로 선택으로 남기고 진행하지 않는다. 필수 완료 기준에 포함되지 않는다.
 
 ## 이전 확인: 2026-09-17 평가 기반 구현
 
