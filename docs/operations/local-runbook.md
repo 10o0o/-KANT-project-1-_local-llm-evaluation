@@ -1,6 +1,6 @@
 # 로컬 벤치마크 실행 안내
 
-[README](../../README.md)의 Python·테스트 데이터 준비 후 현재 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`의 저장소 루트에서 직접 실행한다. 현재 실행 상태와 종료 후 작업은 [STATE](../../STATE.md), [문서 정리 인계](../maintenance-handoff.md)를 따른다. 현재 전달된 기록은 35건으로 계획 60회와 구분한다. 이 안내의 명령을 정리한 것만으로 실행 완료를 뜻하지 않는다.
+[README](../../README.md)의 Python·테스트 데이터 준비 후 현재 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`의 저장소 루트에서 직접 실행한다. 현재 실행 상태와 종료 후 작업은 [STATE](../../STATE.md), [문서 정리 인계](../maintenance-handoff.md)를 따른다. 현재 전체 계획은 네 모델×10문항×2회인 80회이며, 이전 60회 계획은 계획 변경 이력으로 구분한다. 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다. 이 안내의 명령을 정리한 것만으로 실행 완료를 뜻하지 않는다.
 
 수동 실행과 자동 큐 중 한 경로를 사용한다. 진행 중인 로컬 작업이 있으면 별도의 로컬 생성·워밍업·큐·채점을 시작하지 않는다. [Cloud 10문항×2회](cloud-runbook.md)는 로컬 생성·워밍업·큐·서버와 어느 순서로든 병행할 수 있다. 전체 생성과 서버 종료 후 별도로 채점한다.
 
@@ -88,9 +88,9 @@ tmux attach -t local-benchmark
 
 프로세스·포트 검사는 시작 시 충돌을 확인한다. 로컬 생성·워밍업·큐는 `logs/.workload.lock`, Cloud 생성은 `logs/.cloud-workload.lock`을 사용한다. 일괄 채점·단일 후보 실행은 로컬→Cloud 순서로 두 잠금을 확보하며, 두 번째 획득 실패 시 첫 잠금을 반환한다. 서버는 잠금을 직접 획득하지 않고 프로세스 검사로 감지한다. 큐의 로컬 생성·워밍업 자식만 잠금 FD를 상속하고 파일 정체성·잠금 소유를 확인하며, 자식은 부모 잠금을 해제하지 않는다. 현재 root CLI와 이미 실행 중인 구형 script 이름, 서버를 검사하되 Cloud와 로컬 작업의 병행은 허용한다. 큐는 기존 로컬 작업·채점·서버·사용 중인 포트와 충돌하면 중단하며 발견한 프로세스에 신호를 보내지 않는다. 구형 script 감지는 제거된 명령을 다시 실행하거나 호환하는 기능이 아니다. 다른 checkout이나 구형 잠금을 사용하지 않는 작업의 동시 시작까지는 완전히 차단하지 않으며, 실제 FD 경쟁·상속·해제는 임시 저장소의 합성 프로세스로 검증했다. 큐 실행 중 별도 로컬 생성·채점은 시작하지 않는다. Cloud 생성은 병행할 수 있다. 전원을 연결하고 절전·최대 절전을 끈 상태에서 `Win+L`로 잠근다. tmux는 Windows 절전·재시작을 막지 않는다. 이 명령을 직접 실행하기 전에는 예약이 시작되지 않는다.
 
-## 전체 생성 완료 후 일괄 채점
+## 전체 생성 완료 후 기준 채점
 
-로컬·Cloud 생성이 모두 끝나면 모델 서버 터미널에서 서버를 종료한 뒤 실행한다. 실행 중인 생성기·서버는 이 스크립트가 자동 종료하지 않는다. 현재 소스의 생성 실행기는 채점하지 않는다. 생성·채점 분리 변경 전에 시작한 프로세스는 당시 코드를 사용하므로 현재 파일만으로 실행 중 동작을 소급 판단하지 않는다.
+로컬·Cloud 생성이 모두 끝나면 모델 서버 터미널에서 서버를 종료한 뒤 기준 채점을 실행한다. 실행 중인 생성기·서버는 이 명령이 자동 종료하지 않는다. 기준 `judge batch`는 생성 원본을 공식 1배 시간 제한으로 채점하는 기준 세션이며, 이후 제한 재평가·보조 수정은 별도 평가 명령으로 실행한다. 생성·채점 분리 변경 전에 시작한 프로세스는 당시 코드를 사용하므로 현재 파일만으로 실행 중 동작을 소급 판단하지 않는다.
 
 ```bash
 uv run llm-eval judge batch --problems all --models all --rounds all
@@ -98,15 +98,33 @@ uv run llm-eval judge batch --problems all --models all --rounds all
 
 예전 `scripts/run_benchmark.py`, `scripts/run_judge.py`와 표준 script 이름은 제거됐다. 새 실행은 [architecture](../architecture.md)의 `uv run llm-eval` 명령만 사용한다. workload process 감지는 이미 실행 중인 구형 프로세스를 식별할 수 있지만, 제거된 script를 다시 호출하거나 호환하는 기능은 제공하지 않는다.
 
-`--problems`는 `all` 또는 전체 문제 ID, `--models`는 `all` 또는 `qwen36,gemma4,luna`, `--rounds`는 `all` 또는 `1,2`를 받는다. 예를 들어 Tezina만 선택하려면 `--problems coci_2025_2026_c5_tezina`를 사용한다. Luna도 round 1·2를 대상으로 한다. 일괄 채점의 `--rounds` 기본값은 `all`이며 두 회차를 모두 선택한다.
+`--problems`는 `all` 또는 전체 문제 ID, `--models`는 `all` 또는 `qwen36,gemma4,luna,motif3`, `--rounds`는 `all` 또는 `1,2`를 받는다. 예를 들어 Tezina만 선택하려면 `--problems coci_2025_2026_c5_tezina`를 사용한다. Luna와 Motif-3도 round 1·2를 대상으로 한다. 일괄 채점의 `--rounds` 기본값은 `all`이며 두 회차를 모두 선택한다.
 
 기존 판정 유무와 관계없이 저장된 원본 후보를 순차 채점한다. 후보가 `extracted_code`와 다르거나 생성 폴더가 불완전하면 시작 전에 중단한다. 수정본 한 개의 검증에는 `uv run llm-eval judge candidate --code <path> --problem <id>`를 사용한다.
 
 정상 저장을 마친 생성 기록은 `record_complete=true`, `judge=null`로 저장한다. 후처리가 실패하면 가능한 범위에서 `record_complete=false`와 오류 단계를 남긴다. 생성 기록 완료는 모델의 정답 또는 API 응답의 완전한 종료를 뜻하지 않는다. 동일 입력·설정의 구형 채점 완료 기록과 새 생성 완료 기록, 호출 실패는 재호출하지 않는다.
 
-채점 결과는 `results/judging/<세션 ID>/<문제>/<모델>/round_<회차>/judge.json`과 세션 `manifest.json`에 저장한다. 재실행마다 새 세션을 만들며 생성 원본과 이전 채점 결과는 덮어쓰지 않는다. 상세 필드와 미생성·중단 처리는 [결과 안내](../../results/README.md#일괄-채점-세션)를 따른다.
+채점 결과는 `results/judging/<세션 ID>/<문제>/<모델>/round_<회차>/judge.json`과 세션 `manifest.json`에 저장한다. 재실행마다 새 세션을 만들며 생성 원본과 이전 채점 결과는 덮어쓰지 않는다. 상세 필드와 미생성·중단 처리는 [결과 안내](../../results/README.md#일괄-채점-세션)를 따른다. 이 기준 세션 자체에는 유효 제한 2배나 설명 점수를 반영하지 않는다.
 
 채점 중에는 새로운 생성 작업이나 다른 무거운 작업을 시작하지 않는다. 채점 CLI는 저장소별 로컬·Cloud 잠금을 모두 사용하고 Linux/WSL의 `/proc`에서 root CLI, 이미 실행 중인 구형 script 이름과 `llama-server`를 검사한다. 잠금을 모르는 외부 작업이나 다른 저장소가 동시에 시작되는 경우까지 완전히 차단하지는 않는다. 별도 Windows 프로세스나 다른 실행 방식의 부하까지 검증하지는 않는다. 각 테스트는 실제 경과 시간과 stdout·stderr 합산 10 MiB 출력 한도를 적용하며 먼저 발생한 자원을 `TLE` 또는 `OLE`로 기록한다. 채점 인프라·처리 예외는 `JUDGE_ERROR`로 기록한다.
+
+## 프로젝트 평가 후처리
+
+기준 채점 세션을 만든 뒤 [평가 실행 안내](evaluation.md)의 순서로 평가를 진행한다. 평가 기준은 생성 시작 후 확정됐으므로 사전등록으로 표시하지 않는다. 열 문항 모두 공식 1배 제한의 원본 평가와 최소 수정 보조 대상이다. 기준 세션의 개별 테스트 중 `TLE`가 있으면 해당 문항 전체를 유효 2배 제한으로 다시 실행한다. 네 개의 scoring 문항의 2배 결과는 scoring에 반영하고, 나머지 여섯 문항의 2배 결과는 diagnostic으로 보존한다. 생성 프롬프트의 공식 시간·메모리 제한은 바꾸지 않는다.
+
+```bash
+uv run llm-eval evaluate prepare --baseline <세션 ID>
+uv run llm-eval evaluate run --evaluation <평가 ID> --kind limits
+```
+
+각 `review.json`에 설명 점수와 보조 수정 판단을 직접 입력한 뒤, 필요할 때만 수정 실행을 이어 간다.
+
+```bash
+uv run llm-eval evaluate run --evaluation <평가 ID> --kind repairs
+uv run llm-eval evaluate report --evaluation <평가 ID>
+```
+
+성공 호출의 `response_elapsed_seconds` 평균은 코드 유무와 무관하게 계산하고, `CALL_ERROR`의 실패 시간은 별도 n으로 기록한다. `NO_CODE`는 정상 수신 응답이면 설명 평가에 포함한다. 평가 결과·리뷰·보고서는 `results/evaluation/<평가 ID>/`에 새로 저장하며 기준 세션과 생성 원본을 수정하지 않는다.
 
 ## 중단과 재개
 

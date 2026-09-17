@@ -13,12 +13,15 @@ uv run llm-eval queue              [--startup-timeout-seconds <seconds>]
 uv run llm-eval warmup             --model <qwen36|gemma4>
 uv run llm-eval judge batch        [--problems ...] [--models ...] [--rounds ...]
 uv run llm-eval judge candidate    --code <path> --problem <id>
+uv run llm-eval evaluate prepare    --baseline <session-id>
+uv run llm-eval evaluate run        --evaluation <evaluation-id> --kind <limits|repairs>
+uv run llm-eval evaluate report     --evaluation <evaluation-id>
 uv run llm-eval validate
 uv run llm-eval diagnose response
 uv run llm-eval diagnose generation-limit --model <qwen36|gemma4>
 ```
 
-로컬과 Cloud 모두 `--model`은 필수다. 로컬 `--round`는 필수이며 Cloud `--round`의 기본값은 1이다. Cloud `--model`의 값은 결과 경로의 모델 폴더 이름이자 `judge batch --models`의 선택 이름과 같다. 두 회차는 이전 답변을 입력으로 사용하지 않는 독립 요청이다. `results/benchmark/<problem>/<model>/round_<n>/`의 경로와 생성 기록의 회차·모델·문제 식별자는 유지한다.
+로컬과 Cloud 모두 `--model`은 필수다. 로컬 `--round`는 필수이며 Cloud `--round`의 기본값은 1이다. Cloud `--model`의 값은 결과 경로의 모델 폴더 이름이자 `judge batch --models`의 선택 이름과 같다. 두 회차는 이전 답변을 입력으로 사용하지 않는 독립 요청이다. `results/benchmark/<problem>/<model>/round_<n>/`의 경로와 생성 기록의 회차·모델·문제 식별자는 유지한다. `judge batch`는 공식 1배 시간 제한 기준 세션을 만들고, `evaluate prepare`가 그 세션에 연결된 평가 ID와 정책을 만든다. `evaluate run`만 판정·후보 실행을 수행해 judge workload로 분류하며, `prepare`와 `report`는 파일을 읽고 쓰는 준비·집계 명령이다.
 
 아래 표는 제거된 명령의 역사적 매핑이다. 현재는 호환 wrapper나 `scripts/` 파일을 제공하지 않으며, 표의 이전 명령을 다시 실행하지 않는다. 이미 실행 중인 구형 프로세스를 workload 검사에서 식별할 수는 있지만 그것은 CLI 호환을 뜻하지 않는다.
 
@@ -38,7 +41,7 @@ uv run llm-eval diagnose generation-limit --model <qwen36|gemma4>
 | `uv run python scripts/run_benchmark.py ...` | 위 local 명령 | legacy local alias |
 | `uv run python scripts/run_judge.py ...` | 위 batch 명령 | legacy judge alias |
 
-`llm-eval`는 `shared/workloads.py`가 프로세스 목록에서 하위 명령을 읽을 수 있어야 한다. `generate local`, `warmup`, `queue`는 로컬 잠금, `generate cloud`는 Cloud 잠금, `judge`는 두 잠금를 사용한다. 진단 중 로컬 서버를 부르는 명령도 로컬 작업으로 감지한다. `validate`는 모델 작업이 아니다. 작업 검사는 이미 실행 중인 이전 script 이름을 보존한 감지 항목이 있지만, 현재 실행 진입점은 root CLI 하나다.
+`llm-eval`는 `shared/workloads.py`가 프로세스 목록에서 하위 명령을 읽을 수 있어야 한다. `generate local`, `warmup`, `queue`는 로컬 잠금, `generate cloud`는 Cloud 잠금, `judge`와 `evaluate run`은 두 잠금를 사용한다. `evaluate prepare`와 `evaluate report`는 모델·후보를 실행하지 않는다. 진단 중 로컬 서버를 부르는 명령도 로컬 작업으로 감지한다. `validate`는 모델 작업이 아니다. 작업 검사는 이미 실행 중인 이전 script 이름을 보존한 감지 항목이 있지만, 현재 실행 진입점은 root CLI 하나다.
 
 ```mermaid
 flowchart TD
@@ -48,6 +51,7 @@ flowchart TD
     CLI --> W[local.client: warmup 무저장]
     CLI --> D[diagnostics: 별도 진단]
     CLI --> J[judging.workflow]
+    CLI --> EV[judging.evaluation/reporting]
     Q --> L
     Q --> W
     L --> B[results/benchmark]
@@ -56,6 +60,7 @@ flowchart TD
     B --> J
     J --> E[judging.engine → execution]
     J --> R[results/judging]
+    EV --> R2[results/evaluation]
 ```
 
 
@@ -83,7 +88,9 @@ src/llm_eval/
 │   ├── __init__.py
 │   ├── workflow.py
 │   ├── engine.py
-│   └── execution.py
+│   ├── execution.py
+│   ├── evaluation.py
+│   └── reporting.py
 └── shared/
     ├── __init__.py
     ├── problems.py
@@ -113,9 +120,11 @@ src/llm_eval/
 | `judging/workflow.py` | `MODEL_IDS`, `CLOUD_MODELS`, `collect`, `build_manifest`, `process_entry`, `finish_manifest`, `run_batch_judging`, `run_candidate_check`: 채점 대상 모델 등록부·수집·세션 기록·채점 조율 | `cli.dispatch` | `tests/judging/test_workflow.py` |
 | `judging/engine.py` | `run_test_case`, `judge_problem`: 테스트별 판정과 AC/WA/TLE/OLE/RE/JUDGE_ERROR 집계 | `judging/workflow.py` | `tests/judging/test_engine.py`, `tests/judging/test_workflow.py` |
 | `judging/execution.py` | `spawn_isolated`, `collect_bounded_output`, `terminate_process_group`: 프로세스 그룹·출력 수집·시간/출력 제한·정리 | `judging/engine.py` | `tests/judging/test_execution.py`, `tests/judging/test_engine.py` |
+| `judging/evaluation.py` | 기준 채점 세션에 평가 정책을 봉인하고 scoring 제한 재평가·보조 수정 시도를 append-only로 실행; `baseline_1x`·`limit_2x`·`pending_limits` 출처를 관리 | `cli.dispatch`의 `evaluate` | `tests/judging/test_evaluation.py`, `tests/judging/evaluation_helpers.py` |
+| `judging/reporting.py` | 평가 리뷰·원본 지표·판정의 누락을 보존한 채 모델별 원본 정답률·보조 통과·설명·응답 시간과 JSON/Markdown 보고서 집계 | `cli.dispatch`의 `evaluate report` | `tests/judging/test_reporting.py` |
 | `shared/problems.py` | `load_problems`, `select_problems`, `problem_prompt`, `build_problem_prompt`, `validate_dataset`: 문제 입력·선택·프롬프트·데이터 검증 | `cli.dispatch`, `local/generation.py`, `cloud/generation.py`, `judging/workflow.py` | `tests/shared/test_conditions.py`, `tests/shared/test_commands.py` |
 | `shared/artifacts.py` | `RESPONSE_FIELDS`, `generation_dir`, `read_generation_record`, `generation_complete`, `validate_artifacts`: 결과 경로·JSON 읽기·runtime별 원본 대조 필드와 파일 일관성 | `local/generation.py`, `cloud/generation.py`, `judging/workflow.py` | `tests/shared/test_artifacts.py`, `tests/cloud/test_motif.py` |
-| `shared/storage.py` | `write_text`, `write_json`: 임시 파일과 교체를 통한 원자적 저장 | `local/generation.py`, `cloud/generation.py`, `local/queue.py`, `judging/workflow.py` | `tests/shared/test_storage.py` |
+| `shared/storage.py` | `write_bytes`, `write_text`, `write_json`: 임시 파일과 교체를 통한 원자적 저장 | `local/generation.py`, `cloud/generation.py`, `local/queue.py`, `judging/workflow.py` | `tests/shared/test_storage.py` |
 | `shared/code_extraction.py` | `extract_python_code`: 최종 응답의 코드 블록에서 Python 후보 추출 | `local/generation.py`, `cloud/generation.py`, `diagnostics.py` | `tests/local/test_generation.py`, `tests/cloud/test_generation.py` |
 | `shared/workloads.py` | `workload`, `active_workloads`, `ensure_workload_safe`: 프로세스 감지·로컬/Cloud 잠금·FD 상속 | `local/client.py`, `local/generation.py`, `local/queue.py`, `cloud/generation.py`, `judging/workflow.py`, `diagnostics.py` | `tests/shared/test_workloads.py`, `tests/shared/test_workload_lock.py`, `tests/integration/test_workload.py` |
 | `src/llm_eval/__init__.py` | 최상위 패키지 표시; 독립 실행 기능 없음 | Python import | `tests/test_cli.py`의 package import |
@@ -146,6 +155,7 @@ src/llm_eval/
 | `uv.lock` | 고정 의존성 목록; `uv sync --locked`가 읽는다 |
 | `configs/llama.cpp/qwen36.sh` | Qwen 서버 실행 인자; 수동 실행과 큐가 사용하며 이번 구조 변경에서 보존 |
 | `configs/llama.cpp/gemma4.sh` | Gemma 서버 실행 인자; fit-target 0·load/lazy auto 등 원본 튜닝 보존 |
+| `configs/evaluation.json` | 생성 시작 후 확정된 평가 정책·모델 4개·20회 분모·12/20 로컬 통과선·네 scoring 문제의 유효 제한 |
 | `data/coci/problems.json` | 선정 문제 metadata·문제문/테스트 경로·시간/메모리 제한; 생성·채점·검증이 읽는다 |
 | `.agents/skills/kant-notion-journal/SKILL.md` | 명시적으로 요청한 Notion 활동 일지 작성 절차 |
 | `.agents/skills/kant-notion-journal/agents/openai.yaml` | 저장소 스킬 표시 정보와 암묵적 호출 금지 설정 |
@@ -165,6 +175,7 @@ src/llm_eval/
 | `docs/operations/cloud-runbook.md` | Cloud 독립 회차·키 로드·비용·채점 절차 |
 | `docs/operations/environment.md` | 장비·버전·서버 설정의 관측 시점과 근거 |
 | `docs/operations/recording.md` | 지표 의미·누락값·응답 저장·채점의 한계 |
+| `docs/operations/evaluation.md` | 기준 세션·제한 재평가·보조 수정·설명 리뷰·보고서 절차 |
 | `docs/project/assignment.md` | 보존한 발제 원문과 필수 산출물 |
 | `docs/project/assignment-rubric.md` | 보존한 수행 평가 기준 |
 | `docs/project/learning-guide.md` | 직접 수행하는 학습 단계와 완료 근거 |
@@ -200,6 +211,9 @@ src/llm_eval/
 | `tests/judging/test_engine.py` | 테스트별 판정·시간/출력 제한·오류 처리 |
 | `tests/judging/test_execution.py` | 프로세스 그룹·출력 수집·제한·후손 정리 |
 | `tests/judging/test_workflow.py` | 채점 대상·원본 해시·누락·세션 manifest |
+| `tests/judging/test_evaluation.py` | 평가 정책 봉인·제한 재평가·보조 시도·재실행 중복 차단 |
+| `tests/judging/test_reporting.py` | 원본/평가 출처·누락·응답 시간·설명·보조 통과 집계와 보고서 저장 |
+| `tests/judging/evaluation_helpers.py` | 평가 모의 fixture·기준 세션·합성 원본 생성 보조 |
 | `tests/local/__init__.py` | 테스트 패키지 표시; 독립 실행 기능 없음 |
 | `tests/local/test_generation.py` | 로컬 기록·호출 실패·후처리 실패·재개 |
 | `tests/local/test_metrics.py` | 시간·토큰 속도·메모리 관측·누락값 |
@@ -225,6 +239,7 @@ src/llm_eval/
 | --- | --- | --- |
 | `results/benchmark/<problem>/<model>/round_<n>/` | local/cloud generation | `response.json`: 원본 응답, `candidate.py`: 추출 코드, `result.json`: 요청·상태·지표 |
 | `results/judging/<session>/` | judging workflow | `manifest.json`: 대상·정책·원본 해시, `judge.json`: 후보별 판정 |
+| `results/evaluation/<evaluation>/` | evaluation workflow/reporting | `manifest.json`·`policy.json`: 봉인된 기준·정책, `reviews/`: 사람 입력, `attempts/`: 제한/보조 스냅샷·판정, `reports/<unique>/`: report JSON/Markdown·review snapshot |
 | `results/pilot/`, `results/calibration/`, `results/diagnostics/`, `results/archive/` | 과거 실험 | 본 실험에서 제외하거나 별도로 해석 |
 | `logs/.workload.lock`, `logs/.cloud-workload.lock` | shared workloads | 실행 잠금; 획득 중인 파일을 삭제하지 않음 |
 | `logs/local_queue/<session>/` | local queue | 큐 상태와 자신이 시작한 프로세스 로그 |

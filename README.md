@@ -17,7 +17,7 @@
 
 ## 실험 범위
 
-모델당 10문항 × 2회 = 20회, 네 모델 합쳐 **80회**가 계획입니다. 두 회차는 같은 문제문과 제공자별 설정으로 새로 요청하며 이전 답변이나 채점 결과를 넘기지 않는 독립 반복입니다.
+모델당 10문항 × 2회 = 20회, 네 모델 합쳐 **80회**가 현재 계획입니다. 로컬 두 모델은 40회, Cloud의 Luna·Motif-3도 각각 20회씩 수행한다. 두 회차는 같은 문제문과 제공자별 설정으로 새로 요청하며 이전 답변이나 채점 결과를 넘기지 않는 독립 반복입니다. 이전 60회 계획은 계획 변경 이력으로 남기며, 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다.
 
 네 모델이 공유하는 것은 문제 목록·반복 수·독립성뿐입니다. 제공자마다 API 계열과 생성 설정이 달라 토큰 예산이나 temperature까지 같은 조건이라고 적지 않습니다. Luna와 Motif-3도 각각 20회의 분모를 따로 두고 하나의 Cloud 집계로 합치지 않습니다.
 
@@ -95,6 +95,19 @@ uv run llm-eval judge batch --problems all --models all --rounds all
 uv run llm-eval judge candidate --code path/to/candidate.py --problem <problem-id>
 ```
 
+### 평가와 보고
+
+`judge batch`는 생성 원본을 공식 1배 시간 제한으로 채점하는 기준 세션이다. 네 모델·10문항·두 회차가 모두 끝나고 로컬 서버를 종료한 뒤 기준 세션을 만든다. 열 문항은 모두 공식 1배 제한의 원본 평가와 최소 수정 보조 대상이다. 네 개의 scoring 문항은 개별 테스트 TLE가 있을 때 2배 제한으로 전체 재평가해 scoring에 반영하고, 나머지 여섯 문항의 2배 재평가는 diagnostic으로 남긴다. 문제문에 넣은 공식 시간·메모리 제한과 생성 프롬프트는 바꾸지 않는다.
+
+```bash
+uv run llm-eval evaluate prepare --baseline <세션 ID>
+uv run llm-eval evaluate run --evaluation <평가 ID> --kind limits
+uv run llm-eval evaluate run --evaluation <평가 ID> --kind repairs
+uv run llm-eval evaluate report --evaluation <평가 ID>
+```
+
+평가 기준과 파일 형식은 [평가 실행 안내](docs/operations/evaluation.md)에 둔다. 평가 기준은 생성이 시작된 뒤 확정된 것이므로 사전등록된 기준으로 표시하지 않는다. `CALL_ERROR`는 설명 점수에서 제외하고, `NO_CODE`를 포함한 정상 응답은 직접 설명 점수를 매긴다. 보조 수정본은 원본 정답률에 합치지 않는다.
+
 ### 진단
 
 단일 응답 확인과 생성 한도 진단은 본 실험 집계와 분리합니다.
@@ -115,6 +128,13 @@ results/benchmark/<문제>/<모델>/round_<회차>/
 results/judging/<세션 ID>/
 ├── manifest.json
 └── <문제>/<모델>/round_<회차>/judge.json
+
+results/evaluation/<평가 ID>/
+├── manifest.json, policy.json
+├── reviews/<문제>/<모델>/round_<회차>/review.json
+├── attempts/<문제>/<모델>/round_<회차>/<attempt-id>/
+│   ├── attempt.json, attempt.seal, candidate.py, candidate.diff
+└── reports/<unique>/report.json, report.md, review-snapshot.json
 ```
 
 모델 폴더는 `qwen36`·`gemma4`·`luna`·`motif3`입니다. `result.json`에는 응답만이 아니라 요청 messages와 생성 설정, 호출 성공·실패 상태까지 함께 남깁니다. 나중에 "이 결과가 어떤 조건에서 나왔는지"를 파일만 보고 알 수 있게 하기 위해서입니다.
@@ -165,6 +185,7 @@ Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제�
 | [Cloud 비교 안내](docs/operations/cloud-runbook.md) | Luna·Motif-3 실행 조건, 모델별 키 로드, 비용 경계 |
 | [실행 환경](docs/operations/environment.md) | 장비·버전·서버 설정의 관측 범위와 미확인 항목 |
 | [기록 구현 점검](docs/operations/recording.md) | 지표·저장·누락값·Judge 한계 |
+| [평가 실행 안내](docs/operations/evaluation.md) | 기준 세션·제한 재평가·보조 수정·설명·집계 |
 | [요구사항과 평가 기준](docs/project/requirements.md) | 사용 사례, 60% 통과선, 선정 순서, 설명 정확성 기준 |
 | [모델 후보 조사](docs/project/model-candidates.md) | 후보 비교표, Model Card·License, 제외한 후보 이력 |
 | [발제 원문](docs/project/assignment.md) · [평가표](docs/project/assignment-rubric.md) | 과제 기준과 사용자 정의 조건의 구분 |
