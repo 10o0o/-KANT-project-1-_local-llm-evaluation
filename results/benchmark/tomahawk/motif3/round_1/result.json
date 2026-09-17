@@ -1,0 +1,125 @@
+{
+  "run_id": "20260917_074213_498663Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 20
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "motif/motif-3",
+    "name": "motif3",
+    "runtime": "openai_chat_completions",
+    "response_model": "motif/motif-3"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c4_tomahawk",
+    "name": "tomahawk",
+    "season": "2025_2026",
+    "contest": 4,
+    "difficulty": 4,
+    "difficulty_reason": "n이 매우 커 전체 행렬을 만들 수 없으며, 각 조작 후 최대·최소 온도가 발생할 수 있는 소수의 후보 위치만 추적할 수 있다는 관찰이 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest4/testdata/tomahawk",
+    "statement_path": "data/coci/2025_2026/contest4/statements/tomahawk.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Tomahawk"
+  },
+  "request": {
+    "model": "motif/motif-3",
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nThe chef at the most famous restaurant in Poland is preparing tomahawk steaks for a group of young and cheerful (and very hungry) programmers!\n\nThe steak can be represented as an $n \\times n$ matrix. Initially, the temperature of the whole steak is 0 degrees. During the cooking process, the temperature in different parts of the steak (i.e., different cells in the matrix) will increase.\n\nIn order to prepare the perfect tomahawk steak, the chef lifts the steak and puts it back on the grill $q$ times. Each time, the chef can place the steak on one of three sides: left, right, or down. He will then let the steak cook on that side for $x$ seconds.\n\nWhen the steak is being baked on its down side, it can be baked for at most $n$ seconds. After this, the temperature of all the cells in the $n$-th row in the matrix will increase by $x$, the temperature of the cells in the $n-1$-st row will increase by $x-1$, the temperature of the $n-2$-nd row will increase by $x-2$, ..., the temperature of the cells in row number $n-x+1$ will increase by 1.\n\nWhen the tomahawk steak is being baked on its right side, it can be baked for at most $\\lfloor \\frac{n+1}{2} \\rfloor$ seconds. After this, the temperature of all the cells in the $n$-th column in the matrix will increase by $x$, the temperature of the cells in the $n-1$-st column will increase by $x-1$, the temperature of the $n-2$-nd column will increase by $x-2$, ..., the temperature of the cells in column number $n-x+1$ will increase by 1.\n\nSimilarly, when the tomahawk steak is being baked on its left side, it can be baked for at most $\\lfloor \\frac{n+1}{2} \\rfloor$ seconds. After this, the temperature of all the cells in the first column in the matrix will increase by $x$, the temperature of the cells in the second column will increase by $x-1$, the temperature of the third column will increase by $x-2$, ..., the temperature of the cells in column number $x$ will increase by 1.\n\nWe know that the tastiness of the tomahawk is closely related to the contrast of temperatures, that’s why the chef wants to find out the difference between the coldest and the hottest part of the steak!\n\n## Input\n\nIn the first line, there are two natural numbers $n$ and $q$ ($1 \\le n \\le 10^9$, $1 \\le q \\le 10^5$), the size of the steak and the number of times the chef lifts the steak.\n\nIn each of the following $q$ lines, there is a single letter $s$ and a natural number $x$. The letter $s$ indicates the side of the tomahawk steak: \"L\" – left, \"R\" – right, or \"D\" – down. If $s = \\text{”D”}$, then $1 \\le x \\le n$. Otherwise, $1 \\le x \\le \\lfloor \\frac{n+1}{2} \\rfloor$.\n\n## Output\n\nIn the first and only line, print a single number - the difference in degrees between the coldest and hottest cell on the steak.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 2\nL 2\nR 1\n```\n\nOutput\n\n```text\n2\n```\n\n### Example 2\n\nInput\n\n```text\n3 3\nR 2\nD 3\nR 2\n```\n\nOutput\n\n```text\n6\n```\n\n### Clarification of the first example:\n\n$$\n\\begin{bmatrix}\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0 \\\\\n0 & 0 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0 \\\\\n2 & 1 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1 \\\\\n2 & 1 & 0 & 1\n\\end{bmatrix}\n$$\n\n### Clarification of the second example:\n\n$$\n\\begin{bmatrix}\n0 & 0 & 0 \\\\\n0 & 0 & 0 \\\\\n0 & 0 & 0\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n0 & 1 & 2 \\\\\n0 & 1 & 2 \\\\\n0 & 1 & 2\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n1 & 2 & 3 \\\\\n2 & 3 & 4 \\\\\n3 & 4 & 5\n\\end{bmatrix}\n\\to\n\\begin{bmatrix}\n1 & 3 & 5 \\\\\n2 & 4 & 6 \\\\\n3 & 5 & 7\n\\end{bmatrix}\n$$"
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "motif/motif-3",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies",
+    "max_tokens": null,
+    "max_tokens_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "chatcmpl-72f8fee0-3e38-43b2-a74b-ac1492b29d90",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "이 문제를 해결하기 위해서는 일련의 요리 작업 후 n x n 행렬에서 가장 추운 부분과 가장 뜨거운 부분의 온도 차이를 결정해야 합니다. 각 작업은 특정 행 또는 열에 특정 패턴을 따라 온도를 증가시키며, 제약 조건(n이 최대 10^9, q가 최대 10^5)을 고려하여 모든 셀을 명시적으로 처리하지 않고 효율적으로 최소 및 최대 온도를 계산하는 것이 핵심입니다.\n\n### 접근 방법\n1. **문제 분석**: 행렬은 모든 온도가 0에서 시작합니다. 각 작업(\"D\"는 아래쪽, \"R\"은 오른쪽, \"L\"은 왼쪽)은 특정 패턴을 따라 특정 행 또는 열의 온도를 증가시킵니다. 큰 n에 대해 모든 셀을 시뮬레이션하지 않고 모든 작업 후 최소 및 최대 온도를 계산하는 것이 과제입니다.\n\n2. **핵심 통찰**: 각 셀 (i, j)의 온도는 행과 열의 기여로 분리될 수 있습니다:\n   - **행 기여 (f(i))**: \"D\" 작업에서만 발생하며, `max(0, x0 - (n-1 - i))`의 합입니다.\n   - **열 기여 (g(j))**: \"R\"과 \"L\" 작업에서 발생하며, `max(0, x0 - (n-1 - j))`(오른쪽 작업)와 `max(0, x0 - j)`(왼쪽 작업)의 합입니다.\n\n3. **효율적인 계산**:\n   - **행 기여 (f(i))**: 이 함수는 i에 대해 비감소합니다. 따라서 최소값은 `i=0`(`count_n`으로 계산, `n`과 같은 \"D\" 작업 수)에서, 최대값은 `i=n-1`(`sumD`로 계산, 모든 \"D\" 작업 값의 합)에서 발생합니다. 차이는 `sumD - count_n`입니다.\n   - **열 기여 (g(j))**: 이 함수는 비단조적입니다. 우리는 분할점(함수가 바뀌는 지점, \"L\" 및 \"R\" 작업의 `x0`와 `n-1 - x0`에서 파생됨)을 식별하고 이러한 지점에서 함수를 평가합니다. 최소값과 최대값은 이러한 평가 지점 또는 끝점(0 및 n-1)에서 발생합니다.\n\n4. **알고리즘**:\n   - **작업 전처리**: 작업을 \"D\", \"R\", \"L\" 작업으로 분리합니다.\n   - **행 차이 계산**: `sumD`(모든 \"D\" 작업 값의 합)와 `count_n`(`n`과 같은 \"D\" 작업 수)을 계산합니다. 행 차이(`diff_f`)는 `sumD - count_n`입니다.\n   - **열 차이 계산**:\n     - **분할점 수집**: \"R\"의 경우 `n-1 - x0`, \"L\"의 경우 `x0`인 지점(그리고 [0, n-1] 범위 내)을 수집합니다.\n     - **접두사 및 접미사 배열**: 분할점에 대해 접두사 합(오른쪽 작업용)과 접미사 합(왼쪽 작업용)을 미리 계산합니다.\n     - **평가**: 각 분할점에서 오른쪽 및 왼쪽 작업의 기여를 계산하고 결합된 값(g_val)을 찾습니다. 최소 및 최대 g_val을 추적합니다.\n   - **결과 계산**: 답은 `diff_f`와 열 기여의 차이(`max_g - min_g`)의 합입니다.\n\n### 해결 코드\n```python\nimport sys\nimport bisect\n\ndef main():\n    data = sys.stdin.read().splitlines()\n    if not data:\n        print(0)\n        return\n    n, q = map(int, data[0].split())\n    D_ops = []\n    R_ops = []\n    L_ops = []\n    for i in range(1, 1 + q):\n        parts = data[i].split()\n        if not parts:\n            continue\n        s = parts[0]\n        x = int(parts[1])\n        if s == 'D':\n            D_ops.append(x)\n        elif s == 'R':\n            R_ops.append(x)\n        elif s == 'L':\n            L_ops.append(x)\n    \n    sumD = sum(D_ops)\n    count_n = sum(1 for x in D_ops if x == n)\n    diff_f = sumD - count_n\n\n    events = set()\n    events.add(0)\n    events.add(n - 1)\n    for x in L_ops:\n        if 0 <= x <= n - 1:\n            events.add(x)\n    for x in R_ops:\n        cand = n - 1 - x\n        if 0 <= cand <= n - 1:\n            events.add(cand)\n    events = sorted(events)\n    \n    A = [n - 1 - x for x in R_ops]\n    A_sorted = sorted(A)\n    prefixA = [0] * (len(A_sorted) + 1)\n    for i in range(1, len(A_sorted) + 1):\n        prefixA[i] = prefixA[i - 1] + A_sorted[i - 1]\n    \n    B_sorted = sorted(L_ops)\n    suffixB = [0] * (len(B_sorted) + 1)\n    for i in range(len(B_sorted) - 1, -1, -1):\n        suffixB[i] = suffixB[i + 1] + B_sorted[i]\n    \n    min_g = float('inf')\n    max_g = float('-inf')\n    \n    for j in events:\n        idxA = bisect.bisect_left(A_sorted, j)\n        countA = idxA\n        sumA = prefixA[idxA]\n        hR = j * countA - sumA\n        \n        idxB = bisect.bisect_right(B_sorted, j)\n        countB = len(B_sorted) - idxB\n        sumB = suffixB[idxB]\n        hL = sumB - j * countB\n        \n        g_val = hR + hL\n        if g_val < min_g:\n            min_g = g_val\n        if g_val > max_g:\n            max_g = g_val\n    \n    diff_g = max_g - min_g\n    ans = diff_f + diff_g\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()\n```\n\n### 설명\n1. **입력 읽기**: 큰 제약 조건을 고려하여 효율성을 위해 입력을 한 번에 읽습니다.\n2. **작업 처리**: 작업을 \"D\", \"R\", \"L\" 작업으로 분리하여 개별 처리를 용이하게 합니다.\n3. **행 기여 계산**: 행 기여의 최소값과 최대값은 \"D\" 작업에서 파생됩니다. 차이(`diff_f`)는 모든 \"D\" 작업 값의 합에서 `n`과 같은 작업 수를 뺀 값으로 계산됩니다.\n4. **열 기여 계산**:\n   - **분할점 식별**: 열 함수가 바뀌는 지점, \"L\" 작업의 `x0`와 \"R\" 작업의 `n-1 - x0`에서 파생됩니다.\n   - **접두사 및 접미사 배열**: 이러한 배열은 분할점에서 열 기여의 빠른 계산을 위해 미리 계산됩니다.\n   - **평가**: 각 분할점에서 오른쪽 및 왼쪽 작업의 기여를 계산하고 결합된 값(g_val)을 업데이트하여 최소 및 최대 값을 추적합니다.\n5. **결과 계산**: 최종 결과는 행 차이(`diff_f`)와 열 차이(`diff_g`)의 합으로, 모든 작업 후 가장 추운 부분과 가장 뜨거운 부분의 온도 차이를 제공합니다.\n\n이 접근 방식은 작업의 분리된 특성과 분할 기반 평가를 활용하여 큰 제약 조건을 효율적으로 처리합니다.",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "completion_tokens": 22537,
+      "prompt_tokens": 1153,
+      "total_tokens": 23690,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null,
+        "created_cache_tokens": 1152,
+        "multimodal_tokens": null
+      }
+    },
+    "service_tier": null,
+    "finish_reason": "stop"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 308.52499478299796,
+    "prompt_tokens": 1153,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 22537,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": null,
+    "reasoning_tokens_reason": "Usage unavailable or invalid",
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": null,
+    "cache_write_tokens_reason": "Usage unavailable or invalid",
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": null,
+      "reason": "No verified public price table for motif/motif-3",
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": null,
+      "source": null,
+      "checked_at": null,
+      "pricing_model": null
+    }
+  },
+  "extracted_code": "import sys\nimport bisect\n\ndef main():\n    data = sys.stdin.read().splitlines()\n    if not data:\n        print(0)\n        return\n    n, q = map(int, data[0].split())\n    D_ops = []\n    R_ops = []\n    L_ops = []\n    for i in range(1, 1 + q):\n        parts = data[i].split()\n        if not parts:\n            continue\n        s = parts[0]\n        x = int(parts[1])\n        if s == 'D':\n            D_ops.append(x)\n        elif s == 'R':\n            R_ops.append(x)\n        elif s == 'L':\n            L_ops.append(x)\n    \n    sumD = sum(D_ops)\n    count_n = sum(1 for x in D_ops if x == n)\n    diff_f = sumD - count_n\n\n    events = set()\n    events.add(0)\n    events.add(n - 1)\n    for x in L_ops:\n        if 0 <= x <= n - 1:\n            events.add(x)\n    for x in R_ops:\n        cand = n - 1 - x\n        if 0 <= cand <= n - 1:\n            events.add(cand)\n    events = sorted(events)\n    \n    A = [n - 1 - x for x in R_ops]\n    A_sorted = sorted(A)\n    prefixA = [0] * (len(A_sorted) + 1)\n    for i in range(1, len(A_sorted) + 1):\n        prefixA[i] = prefixA[i - 1] + A_sorted[i - 1]\n    \n    B_sorted = sorted(L_ops)\n    suffixB = [0] * (len(B_sorted) + 1)\n    for i in range(len(B_sorted) - 1, -1, -1):\n        suffixB[i] = suffixB[i + 1] + B_sorted[i]\n    \n    min_g = float('inf')\n    max_g = float('-inf')\n    \n    for j in events:\n        idxA = bisect.bisect_left(A_sorted, j)\n        countA = idxA\n        sumA = prefixA[idxA]\n        hR = j * countA - sumA\n        \n        idxB = bisect.bisect_right(B_sorted, j)\n        countB = len(B_sorted) - idxB\n        sumB = suffixB[idxB]\n        hL = sumB - j * countB\n        \n        g_val = hR + hL\n        if g_val < min_g:\n            min_g = g_val\n        if g_val > max_g:\n            max_g = g_val\n    \n    diff_g = max_g - min_g\n    ans = diff_f + diff_g\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": null,
+  "record_complete": true
+}

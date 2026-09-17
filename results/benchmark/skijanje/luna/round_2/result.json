@@ -1,0 +1,146 @@
+{
+  "run_id": "20260917_051438_922750Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 2,
+    "planned_attempts": 20
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_skijanje",
+    "name": "skijanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 9,
+    "difficulty_reason": "트리 경로의 목적식을 일차함수 질의 형태로 변환하고 subtree·깊이 제한까지 함께 처리해야 한다. 효율적인 전체 해결에는 Li Chao tree 또는 이에 준하는 CHT 계열 자료구조와 트리 순서 처리가 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/skijanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/skijanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Skijanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nSkier Mia spent a day at an unusual ski resort. The resort consists of $n$ apres-ski locations (hereafter: apres) connected by slopes such that they form a connected tree rooted at the apres labeled 1. Each slope is directed from the apres with a smaller number to the apres with a larger number.\n\nThe tree is defined as follows: for each apres $i>1$, it is known from which apres $p_i$ ($p_i<i$) one arrives at it, i.e., its parent in the tree is known. This uniquely determines all slopes (slope $i$ leads to the apres labeled $i$).\n\nDuring the day, Mia skied each slope exactly once and for each slope remembered its fun factor $z_i$ and speed $b_i$.\n\nAt the end of the day, Mia wants to ski down once more. Since Mia is very tired from skiing all day, she will choose a run consisting of at most $k$ consecutive slopes. The run must follow the direction of the slopes (from apres with smaller numbers to those with larger numbers). After finishing the run, a helicopter will pick her up and take her home.\n\nFor any chosen run, we define its hecticness as follows. Let:\n\n- $z_{\\mathrm{first}}$ be the fun factor of the first slope in the run\n- $z_{\\mathrm{last}}$ be the fun factor of the last slope in the run\n- $b_i$ be the speeds of all slopes in that run\n\nThen the hecticness of the run is: $z_{\\mathrm{last}} \\cdot (z_{\\mathrm{last}} + \\sum b_i) + z_{\\mathrm{first}}^2$. In the case $k=1$, the formula remains unchanged, and $first=last$ holds.\n\nYour task is to determine the maximum hecticness of a run that Mia can ski.\n\n## Input\n\nThe first line contains natural numbers $n,k$ ($1 \\le k \\le n \\le 3 \\cdot 10^5$), as described in the problem statement.\n\nThe second line contains $n-1$ integers, where the $i$-th number represents from which apres one can reach the apres labeled $i+1$ ($1 \\le p_i \\le i$).\n\nThe third line contains $n-1$ integers, where the $i$-th number represents the fun factor of the $(i+1)$-th slope ($1 \\le z_i \\le 10^5$).\n\nThe fourth line contains $n-1$ integers, where the $i$-th number represents the speed of the $(i+1)$-th slope ($-10^5 \\le b_i \\le 10^5$).\n\n## Output\n\nIn the first and only line, output a single number - the maximum hecticness of a run that Mia can ski.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n5 1\n1 2 2 1\n5 4 8 7\n6 3 9 3\n```\n\nOutput\n\n```text\n200\n```\n\n### Example 2\n\nInput\n\n```text\n9 2\n1 2 1 1 4 3 6 5\n1 3 7 8 4 1 8 2\n1 -7 -1 -6 3 8 -1 6\n```\n\nOutput\n\n```text\n120\n```\n\n### Clarification of the first example:\n\nSince $k=1$, it follows that the maximum hecticness of a run is equal to the maximum hecticness among the individual slopes. The slopes have hecticness values of 80, 44, 200, and119. The maximum hecticness is 200."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_008ab42f471435e6016aab773f59a087d084efe39e467066a3",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "## 풀이 방법\n\n각 apres를 정점으로 보고, 정점 `i` (`i > 1`)로 들어오는 간선을 `i`번 간선이라고 하겠습니다.\n\n### 1. 구간의 식 변형\n\n루트에서 정점 `v`까지의 속도 누적합을 다음과 같이 정의합니다.\n\n- `S[1] = 0`\n- `S[v] = S[parent[v]] + b_v`\n\n첫 번째 간선이 `f`, 마지막 간선이 `v`인 주행을 생각하면 속도 합은\n\n`S[v] - S[parent[f]]`\n\n입니다.\n\n따라서 해당 주행의 hecticness는\n\n`z_v * (z_v + S[v] - S[parent[f]]) + z_f^2`\n\n이고, 다음과 같이 정리할 수 있습니다.\n\n`(z_v^2 + z_v*S[v]) + (-S[parent[f]]) * z_v + z_f^2`\n\n즉, 마지막 간선 `v`가 정해졌을 때 첫 간선 `f`는 다음 직선을 평가하는 문제가 됩니다.\n\n- 기울기: `m_f = -S[parent[f]]`\n- 절편: `c_f = z_f^2`\n- 평가값: `m_f * z_v + c_f`\n\n따라서 각 정점 `v`에 대해, `v`에서 최대 `k`개 간선 거리 이내의 조상 간선들 중 직선값의 최댓값을 구하면 됩니다.\n\n---\n\n### 2. DFS 순서와 유효 구간\n\nDFS 선순회 순서로 각 정점에 시간을 부여합니다. 정점 하나당 질의 하나가 존재합니다.\n\n어떤 간선 `f`가 정점 `v`의 주행에 사용될 수 있는 조건은 다음과 같습니다.\n\n- `f`가 `v`의 조상 경로 위에 있어야 함\n- `v`와 `f` 사이의 간선 수가 `k` 이하\n\nDFS를 진행하면서 현재 경로에 포함된 최근 `k`개의 간선만 활성 상태로 유지합니다.\n\n정점에 진입할 때:\n\n1. 현재 간선을 추가합니다.\n2. 경로 길이가 `k`를 초과하면 가장 오래된 간선을 제거합니다.\n3. 현재 정점에 대한 질의를 처리합니다.\n\n정점에서 빠져나올 때는 위 연산을 역순으로 복구합니다.\n\n이 과정을 통해 각 간선은 DFS 시간축에서 자신이 활성인 여러 개의 연속 구간으로 표현됩니다. 전체 구간 개수는 `O(n)`입니다.\n\n---\n\n### 3. 시간 세그먼트 트리\n\n각 간선의 활성 구간 `[l, r]`을 시간 세그먼트 트리에 넣습니다.\n\n어떤 시간 `t`에서 활성인 간선들은, `t` 리프에서 루트까지의 경로에 있는 세그먼트 트리 노드들의 목록을 합친 것과 정확히 같습니다.\n\n각 세그먼트 트리 노드에는 여러 직선이 저장됩니다.\n\n---\n\n### 4. 볼록 껍질과 단조 포인터\n\n직선들을 기울기 오름차순으로 넣으면, 각 세그먼트 트리 노드의 직선 목록은 이미 기울기 순서가 됩니다.\n\n각 노드에서 불필요한 직선을 제거해 upper convex hull을 만듭니다.\n\n질의값 `z_v`를 오름차순으로 처리하면, 어떤 convex hull에서 최댓값을 주는 직선의 위치는 절대 왼쪽으로 이동하지 않습니다. 따라서 각 hull마다 포인터 하나만 유지하면서 다음 직선이 더 좋을 때 오른쪽으로 이동할 수 있습니다.\n\n이렇게 하면 직선 평가마다 이분 탐색을 하지 않고도 전체적으로 선형 시간에 hull을 순회할 수 있습니다.\n\n---\n\n## 정당성 증명\n\n- 첫 번째 간선 `f`와 마지막 간선 `v`에 대한 hecticness는 위의 직선 평가식으로 정확히 변형됩니다.\n- DFS 중 활성 상태로 유지되는 간선은 현재 경로 위에서 마지막 `k`개 간선과 정확히 일치합니다.\n- 따라서 각 시간의 활성 간선 집합은 시간 세그먼트 트리의 해당 리프 경로에 저장된 직선들의 합과 같습니다.\n- 각 세그먼트 트리 노드의 convex hull은 그 노드에 저장된 모든 직선의 최댓값을 정확히 표현합니다.\n- 그러므로 리프 시간 `t`에서 경로상의 모든 hull 중 최댓값을 취하면 해당 마지막 간선에 대한 최적의 첫 간선을 얻습니다.\n- 마지막으로 `z_v^2 + z_v*S[v]`를 더하면 해당 정점에서 끝나는 모든 길이 `1..k` 주행 중 최댓값이 됩니다.\n- 모든 정점에 대해 이를 수행하므로 전체 최댓값을 출력합니다.\n\n---\n\n## 복잡도\n\n활성 구간의 총 개수는 `O(n)`이고, 각 구간을 시간 세그먼트 트리에 넣는 데 `O(log n)`이 걸립니다.\n\n- 시간 복잡도: `O(n log n)`\n- 공간 복잡도: `O(n log n)`\n\n```python\nimport sys\n\n\ndef solve():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n\n    n = data[0]\n    k = data[1]\n\n    if n == 1:\n        sys.stdout.write(\"0\")\n        return\n\n    parent = [-1] * n\n    depth = [0] * n\n    first_child = [-1] * n\n    next_sibling = [-1] * n\n\n    idx = 2\n    for v in range(1, n):\n        p = data[idx] - 1\n        idx += 1\n\n        parent[v] = p\n        depth[v] = depth[p] + 1\n\n        next_sibling[v] = first_child[p]\n        first_child[p] = v\n\n    z = [0] * n\n    for v in range(1, n):\n        z[v] = data[idx]\n        idx += 1\n\n    prefix_speed = [0] * n\n    slope = [0] * n\n    intercept = [0] * n\n\n    for v in range(1, n):\n        p = parent[v]\n        b = data[idx]\n        idx += 1\n\n        prefix_speed[v] = prefix_speed[p] + b\n        zv = z[v]\n\n        slope[v] = -prefix_speed[p]\n        intercept[v] = zv * zv\n\n    del data\n\n    # DFS 시간축에서의 질의값과 기본값\n    total_queries = n - 1\n    query_x = []\n    base_value = []\n\n    # 각 간선의 활성 구간을 [l, r, l, r, ...] 형태로 저장\n    intervals = [None] * n\n    active_start = [-1] * n\n    expired_edge = [-1] * n\n\n    path_edges = []\n    stack = []\n\n    child = first_child[0]\n    while child != -1:\n        stack.append(child)\n        child = next_sibling[child]\n\n    current_time = 0\n\n    while stack:\n        event = stack.pop()\n\n        if event >= 0:\n            v = event\n            path_edges.append(v)\n\n            d = depth[v]\n            if d > k:\n                old_edge = path_edges[d - k - 1]\n\n                start = active_start[old_edge]\n                if start >= 0:\n                    if start < current_time:\n                        arr = intervals[old_edge]\n                        if arr is None:\n                            intervals[old_edge] = [start, current_time - 1]\n                        else:\n                            arr.append(start)\n                            arr.append(current_time - 1)\n                    active_start[old_edge] = -1\n            else:\n                old_edge = -1\n\n            expired_edge[v] = old_edge\n            active_start[v] = current_time\n\n            zv = z[v]\n            query_x.append(zv)\n            base_value.append(intercept[v] + zv * prefix_speed[v])\n            current_time += 1\n\n            # 종료 이벤트\n            stack.append(~v)\n\n            child = first_child[v]\n            while child != -1:\n                stack.append(child)\n                child = next_sibling[child]\n\n        else:\n            v = ~event\n\n            start = active_start[v]\n            if start >= 0:\n                if start < current_time:\n                    arr = intervals[v]\n                    if arr is None:\n                        intervals[v] = [start, current_time - 1]\n                    else:\n                        arr.append(start)\n                        arr.append(current_time - 1)\n                active_start[v] = -1\n\n            old_edge = expired_edge[v]\n            if old_edge != -1:\n                active_start[old_edge] = current_time\n\n            path_edges.pop()\n\n    # DFS 구조에 필요한 배열은 더 이상 필요 없음\n    del parent, depth, first_child, next_sibling\n    del active_start, expired_edge, path_edges\n    del z, prefix_speed\n\n    # 시간 세그먼트 트리\n    size = 1\n    while size < total_queries:\n        size <<= 1\n\n    events = [None] * (size << 1)\n\n    # 직선들을 기울기 순으로 처리하면 각 이벤트 노드의 목록도 기울기 순이 된다.\n    line_order = list(range(1, n))\n    line_order.sort(key=slope.__getitem__)\n\n    for line_id in line_order:\n        arr = intervals[line_id]\n        if arr is None:\n            continue\n\n        j = 0\n        arr_len = len(arr)\n\n        while j < arr_len:\n            left = arr[j] + size\n            right = arr[j + 1] + size + 1\n            j += 2\n\n            while left < right:\n                if left & 1:\n                    current = events[left]\n                    if current is None:\n                        events[left] = [line_id]\n                    else:\n                        current.append(line_id)\n                    left += 1\n\n                if right & 1:\n                    right -= 1\n                    current = events[right]\n                    if current is None:\n                        events[right] = [line_id]\n                    else:\n                        current.append(line_id)\n\n                left >>= 1\n                right >>= 1\n\n    del intervals, line_order\n\n    # 각 이벤트 노드의 upper convex hull 구성\n    for node in range(1, len(events)):\n        hull = events[node]\n        if hull is None:\n            continue\n\n        original_len = len(hull)\n        write = 0\n        read = 0\n\n        while read < original_len:\n            line_id = hull[read]\n            read += 1\n\n            # 같은 기울기에서는 절편이 가장 큰 직선만 유지\n            if write > 0:\n                last_id = hull[write - 1]\n                if slope[last_id] == slope[line_id]:\n                    if intercept[line_id] > intercept[last_id]:\n                        write -= 1\n                    else:\n                        continue\n\n            # 가운데 직선이 절대 최댓값이 될 수 있으면 제거\n            while write >= 2:\n                first_id = hull[write - 2]\n                second_id = hull[write - 1]\n\n                left_cross = (\n                    (intercept[first_id] - intercept[second_id])\n                    * (slope[line_id] - slope[second_id])\n                )\n                right_cross = (\n                    (intercept[second_id] - intercept[line_id])\n                    * (slope[second_id] - slope[first_id])\n                )\n\n                if left_cross >= right_cross:\n                    write -= 1\n                else:\n                    break\n\n            hull[write] = line_id\n            write += 1\n\n        if write < original_len:\n            del hull[write:]\n\n    # z값 오름차순으로 질의 처리\n    query_order = list(range(total_queries))\n    query_order.sort(key=query_x.__getitem__)\n\n    pointer = [0] * (size << 1)\n    negative_infinity = -10**30\n\n    for t in query_order:\n        x = query_x[t]\n        best_line_value = negative_infinity\n\n        node = t + size\n        while node:\n            hull = events[node]\n\n            if hull is not None:\n                pos = pointer[node]\n                last_pos = len(hull) - 1\n\n                while pos < last_pos:\n                    current_id = hull[pos]\n                    next_id = hull[pos + 1]\n\n                    current_value = slope[current_id] * x + intercept[current_id]\n                    next_value = slope[next_id] * x + intercept[next_id]\n\n                    if next_value >= current_value:\n                        pos += 1\n                    else:\n                        break\n\n                pointer[node] = pos\n                line_id = hull[pos]\n                value = slope[line_id] * x + intercept[line_id]\n\n                if value > best_line_value:\n                    best_line_value = value\n\n            node >>= 1\n\n        base_value[t] += best_line_value\n\n    sys.stdout.write(str(max(base_value)))\n\n\nif __name__ == \"__main__\":\n    solve()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 978,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 85188,
+      "output_tokens_details": {
+        "reasoning_tokens": 82360
+      },
+      "total_tokens": 86166
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 987.9688118819977,
+    "prompt_tokens": 978,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 85188,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 82360,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.1024212,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 978,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 85188
+      }
+    }
+  },
+  "extracted_code": "import sys\n\n\ndef solve():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n\n    n = data[0]\n    k = data[1]\n\n    if n == 1:\n        sys.stdout.write(\"0\")\n        return\n\n    parent = [-1] * n\n    depth = [0] * n\n    first_child = [-1] * n\n    next_sibling = [-1] * n\n\n    idx = 2\n    for v in range(1, n):\n        p = data[idx] - 1\n        idx += 1\n\n        parent[v] = p\n        depth[v] = depth[p] + 1\n\n        next_sibling[v] = first_child[p]\n        first_child[p] = v\n\n    z = [0] * n\n    for v in range(1, n):\n        z[v] = data[idx]\n        idx += 1\n\n    prefix_speed = [0] * n\n    slope = [0] * n\n    intercept = [0] * n\n\n    for v in range(1, n):\n        p = parent[v]\n        b = data[idx]\n        idx += 1\n\n        prefix_speed[v] = prefix_speed[p] + b\n        zv = z[v]\n\n        slope[v] = -prefix_speed[p]\n        intercept[v] = zv * zv\n\n    del data\n\n    # DFS 시간축에서의 질의값과 기본값\n    total_queries = n - 1\n    query_x = []\n    base_value = []\n\n    # 각 간선의 활성 구간을 [l, r, l, r, ...] 형태로 저장\n    intervals = [None] * n\n    active_start = [-1] * n\n    expired_edge = [-1] * n\n\n    path_edges = []\n    stack = []\n\n    child = first_child[0]\n    while child != -1:\n        stack.append(child)\n        child = next_sibling[child]\n\n    current_time = 0\n\n    while stack:\n        event = stack.pop()\n\n        if event >= 0:\n            v = event\n            path_edges.append(v)\n\n            d = depth[v]\n            if d > k:\n                old_edge = path_edges[d - k - 1]\n\n                start = active_start[old_edge]\n                if start >= 0:\n                    if start < current_time:\n                        arr = intervals[old_edge]\n                        if arr is None:\n                            intervals[old_edge] = [start, current_time - 1]\n                        else:\n                            arr.append(start)\n                            arr.append(current_time - 1)\n                    active_start[old_edge] = -1\n            else:\n                old_edge = -1\n\n            expired_edge[v] = old_edge\n            active_start[v] = current_time\n\n            zv = z[v]\n            query_x.append(zv)\n            base_value.append(intercept[v] + zv * prefix_speed[v])\n            current_time += 1\n\n            # 종료 이벤트\n            stack.append(~v)\n\n            child = first_child[v]\n            while child != -1:\n                stack.append(child)\n                child = next_sibling[child]\n\n        else:\n            v = ~event\n\n            start = active_start[v]\n            if start >= 0:\n                if start < current_time:\n                    arr = intervals[v]\n                    if arr is None:\n                        intervals[v] = [start, current_time - 1]\n                    else:\n                        arr.append(start)\n                        arr.append(current_time - 1)\n                active_start[v] = -1\n\n            old_edge = expired_edge[v]\n            if old_edge != -1:\n                active_start[old_edge] = current_time\n\n            path_edges.pop()\n\n    # DFS 구조에 필요한 배열은 더 이상 필요 없음\n    del parent, depth, first_child, next_sibling\n    del active_start, expired_edge, path_edges\n    del z, prefix_speed\n\n    # 시간 세그먼트 트리\n    size = 1\n    while size < total_queries:\n        size <<= 1\n\n    events = [None] * (size << 1)\n\n    # 직선들을 기울기 순으로 처리하면 각 이벤트 노드의 목록도 기울기 순이 된다.\n    line_order = list(range(1, n))\n    line_order.sort(key=slope.__getitem__)\n\n    for line_id in line_order:\n        arr = intervals[line_id]\n        if arr is None:\n            continue\n\n        j = 0\n        arr_len = len(arr)\n\n        while j < arr_len:\n            left = arr[j] + size\n            right = arr[j + 1] + size + 1\n            j += 2\n\n            while left < right:\n                if left & 1:\n                    current = events[left]\n                    if current is None:\n                        events[left] = [line_id]\n                    else:\n                        current.append(line_id)\n                    left += 1\n\n                if right & 1:\n                    right -= 1\n                    current = events[right]\n                    if current is None:\n                        events[right] = [line_id]\n                    else:\n                        current.append(line_id)\n\n                left >>= 1\n                right >>= 1\n\n    del intervals, line_order\n\n    # 각 이벤트 노드의 upper convex hull 구성\n    for node in range(1, len(events)):\n        hull = events[node]\n        if hull is None:\n            continue\n\n        original_len = len(hull)\n        write = 0\n        read = 0\n\n        while read < original_len:\n            line_id = hull[read]\n            read += 1\n\n            # 같은 기울기에서는 절편이 가장 큰 직선만 유지\n            if write > 0:\n                last_id = hull[write - 1]\n                if slope[last_id] == slope[line_id]:\n                    if intercept[line_id] > intercept[last_id]:\n                        write -= 1\n                    else:\n                        continue\n\n            # 가운데 직선이 절대 최댓값이 될 수 있으면 제거\n            while write >= 2:\n                first_id = hull[write - 2]\n                second_id = hull[write - 1]\n\n                left_cross = (\n                    (intercept[first_id] - intercept[second_id])\n                    * (slope[line_id] - slope[second_id])\n                )\n                right_cross = (\n                    (intercept[second_id] - intercept[line_id])\n                    * (slope[second_id] - slope[first_id])\n                )\n\n                if left_cross >= right_cross:\n                    write -= 1\n                else:\n                    break\n\n            hull[write] = line_id\n            write += 1\n\n        if write < original_len:\n            del hull[write:]\n\n    # z값 오름차순으로 질의 처리\n    query_order = list(range(total_queries))\n    query_order.sort(key=query_x.__getitem__)\n\n    pointer = [0] * (size << 1)\n    negative_infinity = -10**30\n\n    for t in query_order:\n        x = query_x[t]\n        best_line_value = negative_infinity\n\n        node = t + size\n        while node:\n            hull = events[node]\n\n            if hull is not None:\n                pos = pointer[node]\n                last_pos = len(hull) - 1\n\n                while pos < last_pos:\n                    current_id = hull[pos]\n                    next_id = hull[pos + 1]\n\n                    current_value = slope[current_id] * x + intercept[current_id]\n                    next_value = slope[next_id] * x + intercept[next_id]\n\n                    if next_value >= current_value:\n                        pos += 1\n                    else:\n                        break\n\n                pointer[node] = pos\n                line_id = hull[pos]\n                value = slope[line_id] * x + intercept[line_id]\n\n                if value > best_line_value:\n                    best_line_value = value\n\n            node >>= 1\n\n        base_value[t] += best_line_value\n\n    sys.stdout.write(str(max(base_value)))\n\n\nif __name__ == \"__main__\":\n    solve()",
+  "judge": null,
+  "record_complete": true
+}

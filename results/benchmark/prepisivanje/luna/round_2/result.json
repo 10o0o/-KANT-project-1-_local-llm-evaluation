@@ -1,0 +1,146 @@
+{
+  "run_id": "20260917_044918_178259Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 2,
+    "planned_attempts": 20
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_prepisivanje",
+    "name": "prepisivanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 7,
+    "difficulty_reason": "좌석을 체커보드 색으로 나눠 충돌 관계를 이분 그래프로 모델링하고, 최대 독립 집합을 최소 정점 커버와 최대 이분 매칭으로 환원해야 한다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/prepisivanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/prepisivanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Prepisivanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nOn the eve of an important Croatian language exam, the classroom is already prepared. We can view it as a matrix of dimension $n \\times m$, where each cell represents one seat. Each cell of the matrix can have one of three values:\n\n- 2 denotes a seat already occupied by well-behaved students. They are responsible and the teacher is not concerned about them.\n- 1 denotes a seat that the teacher has marked as forbidden. No one will sit in those seats.\n- 0 denotes an empty seat where mischievous students can sit.\n\nThe mischievous students have not arrived yet, but they will come soon. The teacher can decide which empty seats the mischievous students will occupy.\n\nWell-behaved students never cheat, but they can cause mischievous students to cheat if they are adjacent to them. A mischievous student will cheat if they have at least one neighboring student (in one of the four directions: up, down, left, right), whether well-behaved or mischievous.\n\nDetermine the maximum total number of students that can be seated in the classroom (including both well-behaved and mischievous students) such that no cheating occurs during the exam.\n\n## Input\n\nThe first line contains natural numbers $n,m$ ($1 \\le n,m \\le 80$), as described in the problem statement.\n\nEach of the next $n$ lines contains $m$ characters, each being 0, 1, or 2, representing the matrix described in the problem.\n\n## Output\n\nIn the first and only line, output a single number - the maximum total number of students that can be seated in the classroom such that no cheating occurs during the exam.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 4\n0100\n0202\n1000\n2120\n```\n\nOutput\n\n```text\n6\n```\n\n### Example 2\n\nInput\n\n```text\n4 4\n0000\n0000\n0000\n0000\n```\n\nOutput\n\n```text\n8\n```\n\n### Clarification of the second example:\n\nThe teacher will seat students in the first and third rows in odd-numbered columns, and in the second and fourth rows in even-numbered columns. This way, she will ensure that no student can cheat."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_0214ea41e6dc27e6016aab714e9fd087d0b4fa5792b9afe648",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 풀이 접근\n\n이미 `2`인 칸에는 반드시 모범생이 앉아 있으므로 모두 결과에 포함된다.\n\n어떤 `0` 칸이 `2` 칸과 인접하면, 그 자리에 장난꾸러기 학생이 앉는 순간 모범생 때문에 부정행위를 하게 된다. 따라서 이러한 `0` 칸은 선택할 수 없다.\n\n이제 다음과 같이 그래프를 만든다.\n\n- 정점: `2`와 인접하지 않은 `0` 칸\n- 간선: 상하좌우로 인접한 두 정점 사이에 연결\n\n선택한 두 `0` 칸이 서로 인접하면 두 학생 모두 이웃 학생 때문에 부정행위를 하므로, 선택된 정점들은 독립 집합이어야 한다.\n\n격자 그래프는 칸의 `(행 + 열)`의 홀짝으로 나누면 이분 그래프가 된다. 이분 그래프에서 다음이 성립한다.\n\n- 최대 독립 집합 크기 = 정점 수 - 최소 정점 커버 크기\n- 쾨니그 정리에 의해 최소 정점 커버 크기 = 최대 매칭 크기\n\n따라서 최대 선택 가능한 장난꾸러기 학생 수는 다음과 같다.\n\n`사용 가능한 0의 개수 - 최대 매칭의 크기`\n\n여기에 이미 앉아 있는 모범생 수를 더하면 정답이다.\n\n### 정당성 증명\n\n사용 가능한 `0`만 고려한다. 이들은 `2`와 인접하지 않으므로, 선택된 `0`들끼리 인접하지 않다면 어떤 장난꾸러기 학생도 이웃 학생을 갖지 않는다.\n\n반대로 선택된 `0`들 중 인접한 두 칸이 있으면, 두 학생 모두 이웃 장난꾸러기 학생 때문에 부정행위를 하므로 조건을 만족하지 못한다. 따라서 유효한 배치는 그래프의 독립 집합과 정확히 대응한다.\n\n격자 그래프는 이분 그래프이므로 쾨니그 정리에 따라 최대 독립 집합의 크기는 전체 정점 수에서 최대 매칭 크기를 뺀 값이다. 여기에 고정된 모범생 수를 더했으므로 알고리즘이 구한 값은 가능한 총 학생 수의 최댓값이다.\n\n### 시간 및 공간 복잡도\n\n정점 수를 \\(V\\), 간선 수를 \\(E\\)라 하면 격자 그래프에서 \\(V=O(nm)\\), \\(E=O(nm)\\)이다.\n\n- 전처리: \\(O(nm)\\)\n- 홉크로프트-카프 최대 매칭: \\(O(E\\sqrt{V})\\)\n- 공간 복잡도: \\(O(V+E)=O(nm)\\)\n\n```python\nimport sys\nfrom collections import deque\n\nsys.setrecursionlimit(1_000_000)\n\n\ndef maximum_matching(adjacency, right_count):\n    left_count = len(adjacency)\n    pair_left = [-1] * left_count\n    pair_right = [-1] * right_count\n    distance = [0] * left_count\n\n    INF = 10 ** 9\n    matching = 0\n\n    while True:\n        queue = deque()\n\n        for u in range(left_count):\n            if pair_left[u] == -1:\n                distance[u] = 0\n                queue.append(u)\n            else:\n                distance[u] = INF\n\n        distance_nil = INF\n\n        while queue:\n            u = queue.popleft()\n\n            if distance[u] >= distance_nil:\n                continue\n\n            next_distance = distance[u] + 1\n\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    if next_distance < distance_nil:\n                        distance_nil = next_distance\n                elif distance[matched_left] == INF:\n                    distance[matched_left] = next_distance\n                    queue.append(matched_left)\n\n        if distance_nil == INF:\n            return matching\n\n        def dfs(u):\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    if distance[u] + 1 != distance_nil:\n                        continue\n\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n                if (\n                    distance[matched_left] == distance[u] + 1\n                    and dfs(matched_left)\n                ):\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n            distance[u] = INF\n            return False\n\n        for u in range(left_count):\n            if pair_left[u] == -1 and distance[u] < distance_nil:\n                if dfs(u):\n                    matching += 1\n\n\ndef main():\n    input = sys.stdin.readline\n\n    n, m = map(int, input().split())\n    grid = [list(map(int, input().strip())) for _ in range(n)]\n\n    directions = ((1, 0), (-1, 0), (0, 1), (0, -1))\n\n    usable = [[False] * m for _ in range(n)]\n    right_id = [[-1] * m for _ in range(n)]\n\n    left_cells = []\n    right_count = 0\n    fixed_students = 0\n\n    for i in range(n):\n        for j in range(m):\n            value = grid[i][j]\n\n            if value == 2:\n                fixed_students += 1\n            elif value == 0:\n                can_use = True\n\n                for di, dj in directions:\n                    ni = i + di\n                    nj = j + dj\n\n                    if (\n                        0 <= ni < n\n                        and 0 <= nj < m\n                        and grid[ni][nj] == 2\n                    ):\n                        can_use = False\n                        break\n\n                if can_use:\n                    usable[i][j] = True\n\n                    if ((i + j) & 1) == 0:\n                        left_cells.append((i, j))\n                    else:\n                        right_id[i][j] = right_count\n                        right_count += 1\n\n    adjacency = [[] for _ in range(len(left_cells))]\n\n    for u, (i, j) in enumerate(left_cells):\n        for di, dj in directions:\n            ni = i + di\n            nj = j + dj\n\n            if 0 <= ni < n and 0 <= nj < m and usable[ni][nj]:\n                v = right_id[ni][nj]\n                if v != -1:\n                    adjacency[u].append(v)\n\n    matching = maximum_matching(adjacency, right_count)\n    usable_zero_count = len(left_cells) + right_count\n\n    answer = fixed_students + usable_zero_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 666,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 22635,
+      "output_tokens_details": {
+        "reasoning_tokens": 21175
+      },
+      "total_tokens": 23301
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 238.0946360779999,
+    "prompt_tokens": 666,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 22635,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 21175,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0272952,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 666,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 22635
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom collections import deque\n\nsys.setrecursionlimit(1_000_000)\n\n\ndef maximum_matching(adjacency, right_count):\n    left_count = len(adjacency)\n    pair_left = [-1] * left_count\n    pair_right = [-1] * right_count\n    distance = [0] * left_count\n\n    INF = 10 ** 9\n    matching = 0\n\n    while True:\n        queue = deque()\n\n        for u in range(left_count):\n            if pair_left[u] == -1:\n                distance[u] = 0\n                queue.append(u)\n            else:\n                distance[u] = INF\n\n        distance_nil = INF\n\n        while queue:\n            u = queue.popleft()\n\n            if distance[u] >= distance_nil:\n                continue\n\n            next_distance = distance[u] + 1\n\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    if next_distance < distance_nil:\n                        distance_nil = next_distance\n                elif distance[matched_left] == INF:\n                    distance[matched_left] = next_distance\n                    queue.append(matched_left)\n\n        if distance_nil == INF:\n            return matching\n\n        def dfs(u):\n            for v in adjacency[u]:\n                matched_left = pair_right[v]\n\n                if matched_left == -1:\n                    if distance[u] + 1 != distance_nil:\n                        continue\n\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n                if (\n                    distance[matched_left] == distance[u] + 1\n                    and dfs(matched_left)\n                ):\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n            distance[u] = INF\n            return False\n\n        for u in range(left_count):\n            if pair_left[u] == -1 and distance[u] < distance_nil:\n                if dfs(u):\n                    matching += 1\n\n\ndef main():\n    input = sys.stdin.readline\n\n    n, m = map(int, input().split())\n    grid = [list(map(int, input().strip())) for _ in range(n)]\n\n    directions = ((1, 0), (-1, 0), (0, 1), (0, -1))\n\n    usable = [[False] * m for _ in range(n)]\n    right_id = [[-1] * m for _ in range(n)]\n\n    left_cells = []\n    right_count = 0\n    fixed_students = 0\n\n    for i in range(n):\n        for j in range(m):\n            value = grid[i][j]\n\n            if value == 2:\n                fixed_students += 1\n            elif value == 0:\n                can_use = True\n\n                for di, dj in directions:\n                    ni = i + di\n                    nj = j + dj\n\n                    if (\n                        0 <= ni < n\n                        and 0 <= nj < m\n                        and grid[ni][nj] == 2\n                    ):\n                        can_use = False\n                        break\n\n                if can_use:\n                    usable[i][j] = True\n\n                    if ((i + j) & 1) == 0:\n                        left_cells.append((i, j))\n                    else:\n                        right_id[i][j] = right_count\n                        right_count += 1\n\n    adjacency = [[] for _ in range(len(left_cells))]\n\n    for u, (i, j) in enumerate(left_cells):\n        for di, dj in directions:\n            ni = i + di\n            nj = j + dj\n\n            if 0 <= ni < n and 0 <= nj < m and usable[ni][nj]:\n                v = right_id[ni][nj]\n                if v != -1:\n                    adjacency[u].append(v)\n\n    matching = maximum_matching(adjacency, right_count)\n    usable_zero_count = len(left_cells) + right_count\n\n    answer = fixed_students + usable_zero_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": null,
+  "record_complete": true
+}

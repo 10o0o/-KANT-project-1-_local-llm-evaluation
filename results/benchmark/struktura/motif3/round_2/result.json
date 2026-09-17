@@ -1,0 +1,125 @@
+{
+  "run_id": "20260917_083007_929752Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 2,
+    "planned_attempts": 20
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "motif/motif-3",
+    "name": "motif3",
+    "runtime": "openai_chat_completions",
+    "response_model": "motif/motif-3"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c5_struktura",
+    "name": "struktura",
+    "season": "2025_2026",
+    "contest": 5,
+    "difficulty": 5,
+    "difficulty_reason": "조건을 뒤집어 |π(i)-i|≤1인 순열의 개수로 환원하고, 이를 고정점과 인접 전치의 조합으로 보아 Fibonacci 수열을 도출해야 한다. n≤10^9이므로 fast doubling과 모듈러 역수 계산까지 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest5/testdata/struktura",
+    "statement_path": "data/coci/2025_2026/contest5/statements/struktura.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Struktura"
+  },
+  "request": {
+    "model": "motif/motif-3",
+    "messages": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nPetar and Ivana are bored during a long winter afternoon, so they decided to invent a game with numbers.\n\nPetar takes a sheet of paper and randomly writes down $n$ numbers. Each number is chosen **completely at random and independently** among the integers from $1$ to $k$. Using this procedure, Petar creates an array $a$ of $n$ numbers.\n\nIvana says that she especially likes some arrays because they have a “hidden balance”, and she calls them structures. An array is a structure if the following conditions are satisfied:\n\n- Every number from $1$ to $n$ appears in the array exactly once.\n- For every index $i$ ($1 \\le i \\le n$), it holds that $|a_i+i-n-1| \\le 1$.\n\nIvana is interested in the probability that Petar, choosing the numbers completely at random, constructs an array that is a structure.\n\nIt can be proven that the answer can always be represented as a fraction $\\frac{P}{Q}$, where $P$ is an integer and $Q$ is a positive integer not divisible by $10^9+7$. In that case, output $P \\cdot Q^{-1} \\pmod{10^9+7}$.\n\n## Input\n\nThe first line contains the natural numbers $n$ and $k$ ($1 \\le n,k \\le 10^9$), the numbers from the problem statement.\n\n## Output\n\nOutput a single number, the answer to the question from the problem statement.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n2 1\n```\n\nOutput\n\n```text\n0\n```\n\n### Example 2\n\nInput\n\n```text\n2 2\n```\n\nOutput\n\n```text\n500000004\n```\n\n### Example 3\n\nInput\n\n```text\n7 94\n```\n\nOutput\n\n```text\n100976822\n```\n\n### Clarification of the second example:\n\nThe arrays $a$ that Petar can construct are: $(1,1)$, $(1,2)$, $(2,1)$, $(2,2)$. The arrays that are structures are $(1,2)$ and $(2,1)$. The probability that Petar completely at random obtains an array that is a structure is $\\frac{2}{4}$, i.e. $500000004 \\pmod{10^9+7}$."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "motif/motif-3",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies",
+    "max_tokens": null,
+    "max_tokens_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "chatcmpl-01c1a660-acd1-434c-9430-ad4a077207ff",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "이 문제를 해결하기 위해서는 Petar가 무작위로 배열을 구성했을 때 Ivana가 \"구조\"라고 부르는 조건을 만족할 확률을 구해야 합니다. 배열은 두 가지 조건을 만족해야 합니다: 1부터 n까지의 모든 숫자가 정확히 한 번씩 나타나야 하며, 각 요소 \\(a_i\\)에 대해 \\(|a_i + i - n - 1| \\leq 1\\)이어야 합니다.\n\n### 접근 방법\n1. **문제 분석**:\n   - **구조 조건**: 배열은 1부터 n까지의 순열이어야 합니다. 또한 각 요소 \\(a_i\\)에 대해 \\(|a_i + i - n - 1| \\leq 1\\)을 만족해야 합니다.\n   - **제약 조건 처리**: \\(k < n\\)인 경우 1부터 n까지의 모든 다른 숫자를 가질 수 없으므로 확률은 0입니다.\n   - **작은 경우 처리**:\n     - \\(n = 1\\)인 경우 유일한 가능한 배열은 [1]이며 조건을 만족합니다.\n     - \\(n = 2\\)인 경우 유효한 배열은 (1,2)와 (2,1)로, 총 2개의 유효한 경우가 있습니다.\n   - **큰 \\(n\\)에 대한 행렬 거듭제곱**:\n     - \\(n \\geq 3\\)인 경우 유효한 배열을 세는 것을 상태 전이 문제로 모델링합니다. 상태는 마지막 두 요소의 값(\\{-1, 0, 1\\}로 변환)에 기반합니다.\n     - 중간 단계(3부터 \\(n-1\\)까지)에 대한 전이 행렬 \\(T\\)는 인접 및 두 칸 건너뛰기 제약 조건을 적용하도록 구축됩니다.\n     - 상태 \\(c_1\\)과 \\(c_2\\)에 대한 초기 상태 벡터 \\(v_0\\)가 설정됩니다.\n     - 상태 벡터는 \\(T\\)를 \\(n-3\\) 제곱하여 초기 단계에서 단계 \\(n-1\\)까지 전이됩니다.\n     - 마지막 요소(\\(c_n\\)에 대해)는 인접 및 두 칸 건너뛰기 제약 조건을 확인하여 처리됩니다.\n\n2. **복잡도 분석**:\n   - **시간 복잡도**: 행렬 거듭제곱 단계로 인해 \\(O(\\log n)\\) 시간이 소요됩니다. 행렬 곱셈은 \\(9 \\times 9\\) 행렬에 대해 \\(O(1)\\)입니다.\n   - **공간 복잡도**: 상태와 행렬 저장에 \\(O(1)\\)이 필요합니다.\n\n### 해결 코드\n```python\nmod = 10**9 + 7\n\ndef matrix_mult(A, B, mod):\n    n = len(A)\n    m = len(B[0])\n    p = len(B)\n    C = [[0] * m for _ in range(n)]\n    for i in range(n):\n        for k in range(p):\n            if A[i][k]:\n                for j in range(m):\n                    C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % mod\n    return C\n\ndef matrix_power(matrix, power, mod):\n    n = len(matrix)\n    result = [[1 if i == j else 0 for j in range(n)] for i in range(n)]\n    base = matrix\n    while power:\n        if power & 1:\n            result = matrix_mult(result, base, mod)\n        base = matrix_mult(base, base, mod)\n        power //= 2\n    return result\n\ndef main():\n    import sys\n    data = sys.stdin.read().split()\n    n = int(data[0])\n    k = int(data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    if n == 1:\n        denom = pow(k, 1, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = 1 * inv_denom % mod\n        print(ans)\n    elif n == 2:\n        denom = pow(k, 2, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = 2 * inv_denom % mod\n        print(ans)\n    else:\n        T = [[0] * 9 for _ in range(9)]\n        for a in (-1, 0, 1):\n            for b in (-1, 0, 1):\n                i = (a + 1) * 3 + (b + 1)\n                for c in (-1, 0, 1):\n                    if (b, c) == (-1, 0) or (b, c) == (0, 1):\n                        continue\n                    if (a, c) == (-1, 1):\n                        continue\n                    j = (b + 1) * 3 + (c + 1)\n                    T[i][j] = (T[i][j] + 1) % mod\n        \n        v0 = [0] * 9\n        for c1 in (-1, 0):\n            for c2 in (-1, 0, 1):\n                if (c1, c2) == (-1, 0) or (c1, c2) == (0, 1):\n                    continue\n                idx = (c1 + 1) * 3 + (c2 + 1)\n                v0[idx] = (v0[idx] + 1) % mod\n        \n        exp = n - 3\n        if exp > 0:\n            T_exp = matrix_power(T, exp, mod)\n            v = [0] * 9\n            for j in range(9):\n                for i in range(9):\n                    v[j] = (v[j] + v0[i] * T_exp[i][j]) % mod\n        else:\n            v = v0\n        \n        S = 0\n        for idx in range(9):\n            if v[idx] == 0:\n                continue\n            a1 = idx // 3\n            b1 = idx % 3\n            a = a1 - 1\n            b = b1 - 1\n            for c in [0, 1]:\n                if (b, c) == (-1, 0) or (b, c) == (0, 1):\n                    continue\n                if (a, c) == (-1, 1):\n                    continue\n                S = (S + v[idx]) % mod\n        \n        denom = pow(k, n, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = S * inv_denom % mod\n        print(ans)\n\nif __name__ == '__main__':\n    main()\n```\n\n### 설명\n1. **행렬 곱셈 및 거듭제곱**: `matrix_mult` 및 `matrix_power` 함수는 \\(9 \\times 9\\) 행렬에 대해 행렬 곱셈과 지수 연산을 모듈로 \\(10^9 + 7\\)로 수행합니다.\n2. **초기 확인**: 메인 함수는 \\(k < n\\)인지 확인하고, 참이면 즉시 0을 출력합니다. \\(n = 1\\) 또는 \\(n = 2\\)인 경우 직접 확률을 계산합니다.\n3. **전이 행렬**: \\(n \\geq 3\\)인 경우 전이 행렬 \\(T\\)를 구축하여 유효한 상태 전이를 인코딩합니다. 각 상태는 두 연속된 요소의 값에 기반합니다(\\{-1, 0, 1\\}로 변환).\n4. **초기 상태 벡터**: 초기 상태 벡터 \\(v_0\\)는 \\(i = 1\\) 및 \\(i = 2\\)에 대한 제약 조건을 기반으로 설정됩니다.\n5. **상태 전이**: 상태 벡터는 \\(T\\)를 \\(n-3\\) 제곱하여 단계 2에서 단계 \\(n-1\\)까지 전이됩니다.\n6. **마지막 요소 처리**: 마지막 요소 \\(c_n\\)은 인접 및 두 칸 건너뛰기 제약 조건을 확인하여 처리됩니다.\n7. **확률 계산**: 유효한 배열의 수 \\(S\\)가 \\(k^{-n} \\mod 10^9 + 7\\)로 곱해져 결과를 얻습니다.\n\n이 접근 방식은 행렬 거듭제곱을 활용하여 큰 제약 조건을 처리하며, 유효한 배열에 대한 상태 전이를 모델링하여 확률을 효율적으로 계산합니다.",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "completion_tokens": 33087,
+      "prompt_tokens": 596,
+      "total_tokens": 33683,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null,
+        "created_cache_tokens": 528,
+        "multimodal_tokens": null
+      }
+    },
+    "service_tier": null,
+    "finish_reason": "stop"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 407.37075006300074,
+    "prompt_tokens": 596,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 33087,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": null,
+    "reasoning_tokens_reason": "Usage unavailable or invalid",
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": null,
+    "cache_write_tokens_reason": "Usage unavailable or invalid",
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": null,
+      "reason": "No verified public price table for motif/motif-3",
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": null,
+      "source": null,
+      "checked_at": null,
+      "pricing_model": null
+    }
+  },
+  "extracted_code": "mod = 10**9 + 7\n\ndef matrix_mult(A, B, mod):\n    n = len(A)\n    m = len(B[0])\n    p = len(B)\n    C = [[0] * m for _ in range(n)]\n    for i in range(n):\n        for k in range(p):\n            if A[i][k]:\n                for j in range(m):\n                    C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % mod\n    return C\n\ndef matrix_power(matrix, power, mod):\n    n = len(matrix)\n    result = [[1 if i == j else 0 for j in range(n)] for i in range(n)]\n    base = matrix\n    while power:\n        if power & 1:\n            result = matrix_mult(result, base, mod)\n        base = matrix_mult(base, base, mod)\n        power //= 2\n    return result\n\ndef main():\n    import sys\n    data = sys.stdin.read().split()\n    n = int(data[0])\n    k = int(data[1])\n    \n    if k < n:\n        print(0)\n        return\n        \n    if n == 1:\n        denom = pow(k, 1, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = 1 * inv_denom % mod\n        print(ans)\n    elif n == 2:\n        denom = pow(k, 2, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = 2 * inv_denom % mod\n        print(ans)\n    else:\n        T = [[0] * 9 for _ in range(9)]\n        for a in (-1, 0, 1):\n            for b in (-1, 0, 1):\n                i = (a + 1) * 3 + (b + 1)\n                for c in (-1, 0, 1):\n                    if (b, c) == (-1, 0) or (b, c) == (0, 1):\n                        continue\n                    if (a, c) == (-1, 1):\n                        continue\n                    j = (b + 1) * 3 + (c + 1)\n                    T[i][j] = (T[i][j] + 1) % mod\n        \n        v0 = [0] * 9\n        for c1 in (-1, 0):\n            for c2 in (-1, 0, 1):\n                if (c1, c2) == (-1, 0) or (c1, c2) == (0, 1):\n                    continue\n                idx = (c1 + 1) * 3 + (c2 + 1)\n                v0[idx] = (v0[idx] + 1) % mod\n        \n        exp = n - 3\n        if exp > 0:\n            T_exp = matrix_power(T, exp, mod)\n            v = [0] * 9\n            for j in range(9):\n                for i in range(9):\n                    v[j] = (v[j] + v0[i] * T_exp[i][j]) % mod\n        else:\n            v = v0\n        \n        S = 0\n        for idx in range(9):\n            if v[idx] == 0:\n                continue\n            a1 = idx // 3\n            b1 = idx % 3\n            a = a1 - 1\n            b = b1 - 1\n            for c in [0, 1]:\n                if (b, c) == (-1, 0) or (b, c) == (0, 1):\n                    continue\n                if (a, c) == (-1, 1):\n                    continue\n                S = (S + v[idx]) % mod\n        \n        denom = pow(k, n, mod)\n        inv_denom = pow(denom, mod - 2, mod)\n        ans = S * inv_denom % mod\n        print(ans)\n\nif __name__ == '__main__':\n    main()",
+  "judge": null,
+  "record_complete": true
+}
