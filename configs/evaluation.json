@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "decision_phase": "during_generation",
+  "preregistered": false,
+  "planned_attempts_per_model": 20,
+  "minimum_valid_originals": 12,
+  "local_models": ["qwen36", "gemma4"],
+  "models": ["qwen36", "gemma4", "luna", "motif3"],
+  "rounds": [1, 2],
+  "diagnostic_multiplier": 2,
+  "effective_limit_overrides": {
+    "coci_2025_2026_c5_tezina": {"official_seconds": 2, "effective_seconds": 4},
+    "coci_2025_2026_c5_pet": {"official_seconds": 1, "effective_seconds": 2},
+    "coci_2025_2026_c6_ucionica": {"official_seconds": 1.5, "effective_seconds": 3},
+    "coci_2025_2026_c6_skijanje": {"official_seconds": 1, "effective_seconds": 2}
+  }
+}

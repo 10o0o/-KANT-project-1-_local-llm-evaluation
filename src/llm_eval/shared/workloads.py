@@ -107,7 +107,7 @@ def _runner_kind(argv: list[str]) -> str | None:
             return "queue"
         if command[0] == "warmup":
             return "warmup"
-        if head in {("judge", "batch"), ("judge", "candidate")}:
+        if head in {("judge", "batch"), ("judge", "candidate"), ("evaluate", "run")}:
             return "judge"
         if head in {("diagnose", "response"), ("diagnose", "generation-limit")}:
             return "local"

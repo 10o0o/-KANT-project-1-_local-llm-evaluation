@@ -11,10 +11,18 @@ from llm_eval.shared import workloads as processes
 
 
 class ProcessScannerTests(unittest.TestCase):
+    def test_evaluation_execution_is_judge_but_preparation_and_reports_are_not(self):
+        for command in ('llm-eval', '/tmp/checkout/.venv/bin/llm-eval'):
+            self.assertEqual(processes._runner_kind([command, 'evaluate', 'run', '--evaluation', 'id', '--kind', 'limits']), 'judge')
+            for action in ('prepare', 'report'):
+                self.assertIsNone(processes._runner_kind([command, 'evaluate', action]))
+
     def test_unified_cli_forms_classify_all_workloads(self):
         commands = [
             (["generate", "local"], "local"), (["generate", "cloud"], "cloud"),
             (["queue"], "queue"), (["warmup"], "warmup"),
+            (["evaluate", "run"], "judge"), (["evaluate", "prepare"], None),
+            (["evaluate", "report"], None), (["evaluate", "run", "--help"], None),
             (["judge", "batch"], "judge"), (["judge", "candidate"], "judge"),
             (["diagnose", "response"], "local"),
             (["diagnose", "generation-limit"], "local"), (["validate"], None),

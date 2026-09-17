@@ -37,6 +37,15 @@ def parse_args(argv=None):
     candidate = modes.add_parser("candidate", help="지정한 수정 후보 확인")
     candidate.add_argument("--code", type=Path, required=True)
     candidate.add_argument("--problem", required=True)
+    evaluate = commands.add_parser("evaluate", help="원본·시간 완화·최소 수정 평가 기록")
+    evaluations = evaluate.add_subparsers(dest="evaluation_action", required=True)
+    prepare = evaluations.add_parser("prepare", help="공식 채점 세션에 연결한 검토 파일 준비")
+    prepare.add_argument("--baseline", required=True, help="results/judging 아래 세션 ID")
+    run = evaluations.add_parser("run", help="시간 재평가 또는 직접 수정한 후보 채점")
+    run.add_argument("--evaluation", required=True)
+    run.add_argument("--kind", choices=("limits", "repairs"), required=True)
+    report = evaluations.add_parser("report", help="검토 누락 확인과 비교표 저장")
+    report.add_argument("--evaluation", required=True)
     commands.add_parser("validate", help="문제 목록·문제문·테스트 파일 검증")
     diagnose = commands.add_parser("diagnose", help="본 실험과 분리한 로컬 진단")
     probes = diagnose.add_subparsers(dest="probe", required=True)
@@ -86,6 +95,18 @@ def dispatch(root, args):
         if args.mode == "batch":
             return run_batch_judging(root, args.problems, args.models, args.rounds)
         return run_candidate_check(root, args.code, args.problem)
+    if args.command == "evaluate":
+        if args.evaluation_action == "prepare":
+            from llm_eval.judging.evaluation import prepare_evaluation
+            path = prepare_evaluation(root, args.baseline)
+        elif args.evaluation_action == "run":
+            from llm_eval.judging.evaluation import run_evaluation
+            path = run_evaluation(root, args.evaluation, args.kind)
+        else:
+            from llm_eval.judging.reporting import report_evaluation
+            path = report_evaluation(root, args.evaluation)
+        print(f"평가 기록: {path}")
+        return path
     if args.command == "diagnose":
         from llm_eval.diagnostics import run_generation_limit_probe, run_response_probe
 

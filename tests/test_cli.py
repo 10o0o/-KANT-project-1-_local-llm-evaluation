@@ -13,7 +13,8 @@ class CommandTests(unittest.TestCase):
         commands = [[], ['generate'], ['generate', 'local'], ['generate', 'cloud'],
                     ['queue'], ['warmup'], ['judge'], ['judge', 'batch'],
                     ['judge', 'candidate'], ['validate'], ['diagnose'],
-                    ['diagnose', 'response'], ['diagnose', 'generation-limit']]
+                    ['diagnose', 'response'], ['diagnose', 'generation-limit'],
+                    ['evaluate'], ['evaluate', 'prepare'], ['evaluate', 'run'], ['evaluate', 'report']]
         for command in commands:
             with self.subTest(command=command), patch.object(cli, 'project_root') as root, \
                     patch.object(cli, 'dispatch') as dispatch, \
@@ -22,6 +23,28 @@ class CommandTests(unittest.TestCase):
             self.assertEqual(exit.exception.code, 0)
             root.assert_not_called()
             dispatch.assert_not_called()
+
+    def test_evaluation_arguments(self):
+        args = cli.parse_args(['evaluate', 'prepare', '--baseline', 'b1'])
+        self.assertEqual((args.command, args.evaluation_action, args.baseline), ('evaluate', 'prepare', 'b1'))
+        args = cli.parse_args(['evaluate', 'run', '--evaluation', 'e1', '--kind', 'repairs'])
+        self.assertEqual((args.evaluation, args.kind), ('e1', 'repairs'))
+        for argv in (['evaluate'], ['evaluate', 'prepare'],
+                     ['evaluate', 'run', '--evaluation', 'e1'],
+                     ['evaluate', 'run', '--evaluation', 'e1', '--kind', 'all'],
+                     ['evaluate', 'report']):
+            with self.subTest(argv=argv), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                cli.parse_args(argv)
+
+    def test_evaluation_dispatch(self):
+        for args, target, expected in (
+            (['prepare', '--baseline', 'b1'], 'llm_eval.judging.evaluation.prepare_evaluation', ('b1',)),
+            (['run', '--evaluation', 'e1', '--kind', 'limits'], 'llm_eval.judging.evaluation.run_evaluation', ('e1', 'limits')),
+            (['report', '--evaluation', 'e1'], 'llm_eval.judging.reporting.report_evaluation', ('e1',)),
+        ):
+            with self.subTest(args=args), patch(target) as call, contextlib.redirect_stdout(io.StringIO()):
+                cli.dispatch(Path('/checkout'), cli.parse_args(['evaluate', *args]))
+                call.assert_called_once_with(Path('/checkout'), *expected)
 
     def test_argument_contracts(self):
         cloud = cli.parse_args(['generate', 'cloud', '--model', 'luna', '--problems', 'all'])
