@@ -41,6 +41,12 @@ Qwen에서 변경한 64k·60k·52k(k=1024)를 Gemma 셸과 공통 Python 기본�
 
 시간·메모리 제한은 문제 바로 위에 제공한다. Judge는 시간 제한만 적용하며 코드 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않는다. 기존 응답 후 모델 VRAM 관측은 별개로 유지한다.
 
+## Gemma 서버 최적화 설정 동기화: 2026-09-17
+
+Gemma 서버 셸을 직접 최적화한 값으로 정리했다. GPU layers는 `auto`, fit은 `on`, fit target은 `1536`, generation threads는 `16`, batch threads는 `24`다. Context `65536`, 기본 출력 `61440`, reasoning `53248`, temperature `0`과 공통 Python 요청값은 유지했다. AI는 현재 셸과 문서의 일치를 확인했으며, 이번 문서 동기화에서 모델을 실행하거나 최적화 전후 성능을 재측정하지 않았다.
+
+단일 요청 진단 파일은 `scripts/diagnose.py`로 이름을 바꾸고 현재 대상 모델을 `gemma4`로 설정했다. 이 진단의 출력 `1024`·reasoning `512`는 본 실험의 공통 요청값과 별개다.
+
 ## 변경 전 설정값과 실제 적용 근거
 
 서버 설정 원본은 [Qwen 셸](../configs/llama.cpp/qwen36.sh)·[Gemma 셸](../configs/llama.cpp/gemma4.sh), 공통 설정표는 [README](../README.md#3-서버-실행)에 있다. Context는 서버 설정이고, temperature·출력 한도·reasoning·cache_prompt는 요청에도 명시한다.

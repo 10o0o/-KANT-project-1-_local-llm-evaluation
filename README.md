@@ -66,12 +66,13 @@ bash configs/llama.cpp/gemma4.sh
 | 기본 출력 / reasoning / temperature | 61440 / 53248 / 0 | 61440 / 53248 / 0 |
 | Parallel / Flash Attention | 1 / on | 1 / on |
 | GPU layers | all | auto |
+| Fit / fit target | 미지정 / 미지정 | on / 1536 |
 | CPU MoE layers | 32 | 미지정 |
-| Generation / batch threads | 16 / 24 | 미지정 |
+| Generation / batch threads | 16 / 24 | 16 / 24 |
 | Load mode | none | 미지정 |
 | RAM prompt cache | 0 MiB (비활성) | 0 MiB (비활성) |
 
-미지정 옵션은 런타임 기본값을 따른다. `--fit`은 미지정이다. 이후 Qwen 진단의 로그 인용에는 기본 fit 수행과 parameter 변경 없음이 보고됐으며 [환경 근거](docs/environment.md)에 구분해 기록했다. 표는 설정값이며 실제 적재 상태·VRAM 적합성은 직접 실행해서 확인한다.
+미지정 옵션은 런타임 기본값을 따른다. Gemma는 직접 최적화한 `--gpu-layers auto --fit on --fit-target 1536 --threads 16 --threads-batch 24`를 사용한다. Qwen의 `--fit`은 미지정이다. 이후 Qwen 진단의 로그 인용에는 기본 fit 수행과 parameter 변경 없음이 보고됐으며 [환경 근거](docs/environment.md)에 구분해 기록했다. 표는 설정값이며 실제 적재 상태·VRAM 적합성은 직접 실행해서 확인한다.
 
 ### 4. 워밍업 후 두 회차 평가
 

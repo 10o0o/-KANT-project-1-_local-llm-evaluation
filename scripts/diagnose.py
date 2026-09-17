@@ -8,7 +8,8 @@ client = OpenAI(
 )
 
 r = client.chat.completions.create(
-    model="qwen36",
+    # model="qwen36",
+    model="gemma4",
     messages=[
         {
             "role": "user",
