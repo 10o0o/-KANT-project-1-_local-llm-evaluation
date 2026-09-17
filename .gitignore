@@ -24,5 +24,3 @@ logs/local_queue/
 
 logs/.workload.lock
 logs/.cloud-workload.lock
-
-.mcp.json
