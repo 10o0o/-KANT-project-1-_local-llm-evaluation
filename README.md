@@ -188,6 +188,10 @@ Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제�
 | [기록 구현 점검](docs/operations/recording.md) | 지표·저장·누락값·Judge 한계 |
 | [평가 실행 안내](docs/operations/evaluation.md) | 기준 세션·제한 재평가·보조 수정·설명·집계 |
 | [요구사항과 평가 기준](docs/project/requirements.md) | 사용 사례, 60% 통과선, 선정 순서, 설명 정확성 기준 |
+| [평가 질문 10개](docs/project/evaluation-questions.md) | 문항별 기대 결과, 정상·경계 사례 구분, 동일 조건과 차이 |
+| [최종 선정 보고서](docs/project/model-selection-report.md) | 선정 결과와 근거, 대표 실패 사례, 한계 |
+| [Local–Cloud 비교](docs/project/local-cloud-comparison.md) | 품질·속도·비용·보안·운영 실측과 운영 권고 |
+| [생성 기록 진단](docs/history/generation-diagnostics.md) | reasoning 반복, 회차 중복, 후보 코드 결함 유형 |
 | [모델 후보 조사](docs/project/model-candidates.md) | 후보 비교표, Model Card·License, 제외한 후보 이력 |
 | [발제 원문](docs/project/assignment.md) · [평가표](docs/project/assignment-rubric.md) | 과제 기준과 사용자 정의 조건의 구분 |
 | [단계별 학습 안내](docs/project/learning-guide.md) | 직접 수행 순서와 완료 근거 |
