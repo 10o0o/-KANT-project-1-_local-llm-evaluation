@@ -73,7 +73,7 @@ uv run python scripts/validate_dataset.py
 ### 3. 생성과 채점
 
 1. [로컬 실행 안내](docs/operations/local-runbook.md): 서버·워밍업·독립 두 회차를 수동 실행하거나 자동 큐를 사용한다.
-2. [Cloud 비교 안내](docs/operations/cloud-runbook.md): 로컬 측정 종료 후 Luna 10문항을 두 회차 독립 실행한다. 키 로드 방법과 로컬과의 설정 차이는 해당 안내를 따른다.
+2. [Cloud 비교 안내](docs/operations/cloud-runbook.md): Luna 10문항을 두 회차 독립 실행한다. 로컬 생성·워밍업·큐·서버와 실행 순서에 관계없이 병행할 수 있다. 키 로드 방법과 로컬과의 설정 차이는 해당 안내를 따른다.
 3. [일괄 채점 절차](docs/operations/local-runbook.md#전체-생성-완료-후-일괄-채점): 로컬·Cloud 전체 생성과 모델 서버 종료 후 직접 채점한다.
 
 생성·채점의 표준 진입점은 `scripts/run_local_benchmark.py`와 `scripts/run_batch_judge.py`다. 기존 `run_benchmark.py`·`run_judge.py` 명령은 이전 사용자를 위한 호환 진입점로 유지하며 새 절차에서는 표준 진입점을 사용한다.

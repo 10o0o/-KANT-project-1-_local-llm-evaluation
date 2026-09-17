@@ -1,0 +1,6 @@
+interface:
+  display_name: "KANT 개인 작업 일지"
+  short_description: "사용자가 요청한 KANT 활동을 Notion 일지에 기록"
+  default_prompt: "사용자가 명시한 활동 기록 요청을 기존 KANT Notion 일지에 기록합니다."
+policy:
+  allow_implicit_invocation: false

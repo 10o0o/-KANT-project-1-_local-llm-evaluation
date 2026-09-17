@@ -15,7 +15,7 @@
 - 학습 진행, 현재 단계, 다음 작업을 판단할 때는 [README](README.md)와 [STATE](STATE.md)를 먼저 읽고 관련 사용자 파일과 실행 근거를 확인한다.
 - 코드·설정 유지보수는 대상 소스, 인접 테스트, 해당 실행 안내를 먼저 읽는다. 구조 개선·병합·분리본 작업은 [유지보수 인계](docs/maintenance-handoff.md)도 확인한다. README·STATE는 그 작업이 사용법이나 확인된 상태를 바꿀 때만 갱신 대상으로 검토한다.
 - 과제 범위와 완료 기준은 [발제 원문](docs/project/assignment.md), [단계별 안내](docs/project/learning-guide.md), [사용자 정의 기준](docs/project/requirements.md)의 해당 절을 작업별로 읽는다. 발제 필수, 발제 선택·사용자 필수, 사용자 정의 기준, 추가 학습·방법 제안을 서로 바꾸지 않는다.
-- Notion 일지 작성 요청에는 `kant-notion-journal` 스킬을 사용한다. 스킬을 사용할 수 없을 때는 [원격 작성 안내](https://app.notion.com/p/3dbde5bf907481059282f5ee3c95fe22)를 따른다.
+- 사용자가 명시적으로 Notion 활동 기록을 요청할 때만 [저장소 일지 스킬](.agents/skills/kant-notion-journal/SKILL.md)을 사용한다. 일반 질문·리뷰와 AI 중간 인계·메모리 기록·STATE/README/문서 갱신·실습/과제 수행에는 사용하지 않는다. Notion에는 실제 활동·결정·검증 결과만 남기고 AI의 중간 계획·체크포인트·임시 경로·재개 지시는 저장하지 않는다. STATE·[유지보수 인계](docs/maintenance-handoff.md)는 실행 근거·재개 작업을 관리한다. 스킬을 사용할 수 없을 때는 [원격 작성 안내](https://app.notion.com/p/3dbde5bf907481059282f5ee3c95fe22)를 따른다.
 
 ## 학습 진행
 
