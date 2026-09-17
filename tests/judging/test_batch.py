@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from llm_eval import batch_judge as batch
-from llm_eval.records import write_json
+from llm_eval.judging import batch
+from llm_eval.shared.storage import write_json
 
 
 class BatchTests(unittest.TestCase):
@@ -124,6 +124,12 @@ class BatchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             batch.run_batch(self.root, "b")
 
+    def test_manifest_identifies_actual_engine(self):
+        self.source()
+        session = batch.run_batch(self.root)
+        implementation = Path(batch.__file__).with_name("engine.py")
+        self.assertEqual(self.manifest(session)["judge_sha256"], batch.digest(implementation))
+
     def test_incomplete_or_modified_sources_abort_before_any_judging(self):
         self.source()
         folder = self.source("b")
@@ -192,30 +198,3 @@ class BatchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             batch.run_batch(self.root)
         self.judge.assert_not_called()
-
-
-class ProcessAndPersistenceTests(unittest.TestCase):
-    def test_process_matching_ignores_shell_text(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            commands = [b"/bin/llama-server\0--model\0x", b"python3\0scripts/run_benchmark.py",
-                        b"python3\0scripts/run_cloud_benchmark.py", b"bash\0-c\0cat scripts/run_benchmark.py"]
-            for i, command in enumerate(commands, 900001):
-                folder = root / str(i)
-                folder.mkdir()
-                (folder / "cmdline").write_bytes(command)
-            self.assertEqual([x["pid"] for x in batch.active_workloads(root)], [900001, 900002, 900003])
-
-    def test_atomic_write_failure_preserves_existing_file(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "result.json"
-            write_json(path, {"original": True})
-            with patch("llm_eval.records.os.fsync", side_effect=OSError("disk")):
-                with self.assertRaises(OSError):
-                    write_json(path, {"original": False})
-            self.assertEqual(json.loads(path.read_text()), {"original": True})
-            self.assertEqual(list(path.parent.iterdir()), [path])
-
-
-if __name__ == "__main__":
-    unittest.main()

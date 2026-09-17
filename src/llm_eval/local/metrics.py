@@ -1,11 +1,8 @@
-"""Best-effort GPU snapshots and response metrics; no environment files."""
-
 import csv
 import math
-import os
 import subprocess
 from datetime import UTC, datetime
-from pathlib import Path
+from llm_eval.local.server import find_server_pid
 
 LOAD_REASON = "Persistent llama.cpp does not expose per-request model load duration."
 
@@ -14,52 +11,10 @@ def now():
     return datetime.now(UTC).isoformat()
 
 
+
 def observation(value=None, reason=None, **details):
     return {"value": value, "reason": reason, **details}
 
-
-def owns_server_port(pid):
-    """Prove this process owns the listening socket, not only a live PID."""
-    sockets = set()
-    for fd in (Path("/proc") / str(pid) / "fd").iterdir():
-        try:
-            target = os.readlink(fd)
-        except FileNotFoundError:
-            continue
-        if target.startswith("socket:["):
-            sockets.add(target[8:-1])
-    for table in ("tcp", "tcp6"):
-        for line in (Path("/proc/net") / table).read_text().splitlines()[1:]:
-            fields = line.split()
-            if (
-                fields[3] == "0A"
-                and int(fields[1].split(":")[1], 16) == 8080
-                and fields[9] in sockets
-            ):
-                return True
-    return False
-
-
-def find_server_pid(model):
-    """Find the local listening llama-server, without a saved session record."""
-    matches = []
-    for proc in Path("/proc").iterdir():
-        if not proc.name.isdigit():
-            continue
-        try:
-            if (proc / "exe").resolve(strict=True).name != "llama-server":
-                continue
-            args = (proc / "cmdline").read_bytes().decode().rstrip("\0").split("\0")
-            if model is not None and (
-                "--alias" not in args or args[args.index("--alias") + 1] != model
-            ):
-                continue
-            pid = int(proc.name)
-            if owns_server_port(pid):
-                matches.append(pid)
-        except (OSError, ValueError, IndexError, UnicodeError):
-            continue
-    return matches[0] if len(matches) == 1 else None
 
 
 def command_output(args):
@@ -68,11 +23,13 @@ def command_output(args):
     ).strip()
 
 
+
 def memory_mib(value):
     result = float(value)
     if not math.isfinite(result) or result < 0:
         raise ValueError("Unavailable or invalid GPU memory")
     return result
+
 
 
 def observe_memory(pid, phase):
@@ -145,6 +102,7 @@ def observe_memory(pid, phase):
     return result
 
 
+
 def safe_memory(pid, phase, model=None):
     try:
         if pid is None:
@@ -164,6 +122,7 @@ def safe_memory(pid, phase, model=None):
                 reason="Observation failed", unit="MiB", scope="whole_device"
             ),
         }
+
 
 
 def measured_metrics(elapsed, usage, timings, memory):

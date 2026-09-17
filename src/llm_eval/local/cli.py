@@ -1,9 +1,10 @@
 import argparse
 from pathlib import Path
 
-from llm_eval.benchmark.runner import run_problem
-from llm_eval.llama_cpp import create_client
-from llm_eval.problems import load_problems, select_problems
+from llm_eval.local.runner import run_problem
+from llm_eval.local.client import create_client
+from llm_eval.shared.problems import load_problems, select_problems
+from llm_eval.shared.processes import workload
 
 
 def parse_args():
@@ -38,19 +39,20 @@ def parse_args():
 
 def main(project_root: Path):
     args = parse_args()
-    problems = load_problems(project_root)
-    selected_problems = select_problems(problems, args.problems)
+    with workload(project_root, "local", allow_inherited=True):
+        problems = load_problems(project_root)
+        selected_problems = select_problems(problems, args.problems)
 
-    print("선택한 문제:")
-    for problem in selected_problems:
-        print("-", problem["id"])
-
-    with create_client() as client:
+        print("선택한 문제:")
         for problem in selected_problems:
-            run_problem(
-                project_root=project_root,
-                problem=problem,
-                model=args.model,
-                round_number=args.round,
-                client=client,
-            )
+            print("-", problem["id"])
+
+        with create_client() as client:
+            for problem in selected_problems:
+                run_problem(
+                    project_root=project_root,
+                    problem=problem,
+                    model=args.model,
+                    round_number=args.round,
+                    client=client,
+                )

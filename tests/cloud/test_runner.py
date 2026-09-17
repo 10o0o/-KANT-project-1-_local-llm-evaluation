@@ -7,70 +7,15 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import httpx
+import httpx2 as httpx
 from openai import APITimeoutError, AuthenticationError
 
-from llm_eval.benchmark.prompts import build_round1_prompt
+from llm_eval.shared.prompts import build_problem_prompt
 from llm_eval.cloud import client, runner
 from llm_eval.cloud.metrics import estimated_cost
 
 
-def usage(inputs=1000, read=200, write=100, output=500):
-    return {
-        "input_tokens": inputs,
-        "input_tokens_details": {"cached_tokens": read, "cache_write_tokens": write},
-        "output_tokens": output,
-        "output_tokens_details": {"reasoning_tokens": 400},
-        "total_tokens": inputs + output,
-    }
-
-
-class CostTests(unittest.TestCase):
-    def cost(self, data):
-        return estimated_cost(data, client.MODEL, "default")
-
-    def test_read_write_and_reasoning_not_double_counted(self):
-        # 700*.20 + 200*.02 + 100*.25 + 500*1.20 = 769 microdollars.
-        result = self.cost(usage())
-        self.assertEqual(result["estimated_usd"], 0.000769)
-        self.assertEqual(result["billable_tokens"]["input"], 700)
-        self.assertIsNone(result["reason"])
-
-    def test_zero_is_not_missing(self):
-        self.assertEqual(self.cost(usage(0, 0, 0, 0))["estimated_usd"], 0)
-        self.assertIsNone(self.cost({})["estimated_usd"])
-
-    def test_invalid_or_unsupported_cost_has_reason(self):
-        cases = [usage(read=1001), usage(write=-1), usage(inputs=True), usage(inputs=272001)]
-        incomplete = usage()
-        incomplete["input_tokens_details"].pop("cache_write_tokens")
-        cases.append(incomplete)
-        for data in cases:
-            with self.subTest(data=data):
-                result = self.cost(data)
-                self.assertIsNone(result["estimated_usd"])
-                self.assertTrue(result["reason"])
-        for model, tier in [("unknown", "default"), (client.MODEL, "priority"), (None, None)]:
-            self.assertIsNone(estimated_cost(usage(), model, tier)["estimated_usd"])
-
-
-class ClientTests(unittest.TestCase):
-    @patch.dict(os.environ, {}, clear=True)
-    @patch("llm_eval.cloud.client.OpenAI")
-    def test_missing_key_does_not_create_client(self, sdk):
-        with self.assertRaises(SystemExit):
-            client.create_client()
-        sdk.assert_not_called()
-
-    @patch.dict(os.environ, {"openai_secret_key": "test-only-placeholder"}, clear=True)
-    @patch("llm_eval.cloud.client.OpenAI")
-    def test_client_configuration(self, sdk):
-        client.create_client()
-        self.assertEqual(sdk.call_args.kwargs, {
-            "api_key": "test-only-placeholder", "base_url": "https://api.openai.com/v1",
-            "timeout": 3600, "max_retries": 0,
-        })
-
+from .helpers import usage
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):
@@ -118,7 +63,7 @@ class RunnerTests(unittest.TestCase):
             "model": "gpt-5.6-luna", "reasoning": {"effort": "max"},
             "max_output_tokens": 128000, "tools": [], "tool_choice": "none",
             "store": False, "service_tier": "default",
-            "input": [{"role": "user", "content": build_round1_prompt("same statement", time_limit_seconds=1, memory_limit_mib=512)}],
+            "input": [{"role": "user", "content": build_problem_prompt("same statement", time_limit_seconds=1, memory_limit_mib=512)}],
         })
         record = self.record()
         self.assertIsNone(record["judge"])
@@ -133,6 +78,31 @@ class RunnerTests(unittest.TestCase):
         self.sdk.responses.create.assert_called_once()
         judge.assert_not_called()
         self.assertFalse((self.root / "results/cloud").exists())
+
+    def test_artifact_damage_aborts_without_recall(self):
+        self.response()
+        self.run_problem()
+        candidate = self.output / "candidate.py"
+        raw = self.output / "response.json"
+        for path, damaged in ((candidate, "tampered"), (raw, "[]"), (raw, None)):
+            original = path.read_bytes()
+            if damaged is None:
+                path.unlink()
+            else:
+                path.write_text(damaged)
+            with self.subTest(path=path, damaged=damaged), self.assertRaises(SystemExit):
+                self.run_problem()
+            path.write_bytes(original)
+        self.sdk.responses.create.assert_called_once()
+
+    def test_failed_response_still_requires_raw_artifact(self):
+        self.response("", "failed")
+        with self.assertRaises(SystemExit):
+            self.run_problem()
+        (self.output / "response.json").unlink()
+        with self.assertRaises(SystemExit):
+            self.run_problem()
+        self.sdk.responses.create.assert_called_once()
 
     def test_changed_limits_abort_without_second_call(self):
         self.response(content="no code")
@@ -247,6 +217,12 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue((self.output / "response.json").exists())
         judge.assert_not_called()
 
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_malformed_response_metadata_aborts_before_recall(self):
+        self.response()
+        self.run_problem()
+        record = self.record()
+        record["model"] = []
+        (self.output / "result.json").write_text(json.dumps(record))
+        with self.assertRaises(SystemExit):
+            self.run_problem()
+        self.sdk.responses.create.assert_called_once()

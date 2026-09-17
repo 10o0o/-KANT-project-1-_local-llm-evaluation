@@ -42,6 +42,7 @@ def main():
         errors.append("duplicate problem name found")
 
     for problem in problems:
+        errors_before = len(errors)
         problem_id = problem.get("id", "<unknown>")
         name = problem.get("name", "<unknown>")
 
@@ -86,8 +87,10 @@ def main():
         if missing_outputs:
             errors.append(f"{problem_id}: missing outputs: {missing_outputs}")
 
+        valid = len(errors) == errors_before and ids.count(problem_id) == 1 and names.count(name) == 1
+        label = "OK" if valid else "ERROR"
         print(
-            f"[OK] {problem_id:<35} "
+            f"[{label}] {problem_id:<35} "
             f"tests={len(input_files):>3} "
             f"difficulty={problem['difficulty']}"
         )

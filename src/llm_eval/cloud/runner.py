@@ -2,11 +2,13 @@ import json
 from datetime import UTC, datetime
 from time import perf_counter
 
-from llm_eval.benchmark.prompts import build_round1_prompt
+from llm_eval.shared.prompts import build_problem_prompt
+from llm_eval.shared.paths import generation_dir
 from llm_eval.cloud.client import MODEL, TIMEOUT_SECONDS, request_options
 from llm_eval.cloud.metrics import measured_metrics
-from llm_eval.code_extract import extract_python_code
-from llm_eval.records import write_json, generation_complete
+from llm_eval.shared.code_extraction import extract_python_code
+from llm_eval.shared.storage import write_json, write_text
+from llm_eval.shared.artifacts import generation_complete, validate_artifacts
 
 
 def completed_record(path, problem, request):
@@ -18,6 +20,7 @@ def completed_record(path, problem, request):
             raise SystemExit(
                 f"ABORT: 기존 Cloud 요청과 현재 입력·설정이 다릅니다: {path}"
             )
+        validate_artifacts(path.parent, record)
         return (
             generation_complete(record)
             and record["experiment"]["type"] == "cloud"
@@ -26,20 +29,14 @@ def completed_record(path, problem, request):
             and record["model"]["id"] == MODEL
             and record["call"]["status"] in {"success", "error"}
         )
-    except (OSError, ValueError, KeyError, TypeError):
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return False
 
 
 def run_problem(project_root, problem, client, selected_problem_ids=None):
-    result_dir = project_root / "results" / "benchmark" / problem["name"] / "luna" / "round_1"
+    result_dir = generation_dir(project_root, problem["name"], "luna", 1)
     result_path = result_dir / "result.json"
-    statement = (project_root / problem["statement_path"]).read_text(encoding="utf-8")
-    prompt = build_round1_prompt(
-        statement,
-        time_limit_seconds=problem["time_limit_seconds"],
-        memory_limit_mib=problem["memory_limit_mib"],
-    )
-    request = {**request_options(), "input": [{"role": "user", "content": prompt}]}
+    request = request_conditions(project_root, problem)
 
     if result_dir.exists():
         if completed_record(result_path, problem, request):
@@ -47,31 +44,7 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
             return
         raise SystemExit(f"ABORT: 불완전한 Cloud 결과를 확인하세요: {result_dir}")
 
-    record = {
-        "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
-        "experiment": {"type": "cloud", "round": 1, "planned_attempts": 10},
-        "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
-        "model": {
-            "id": MODEL,
-            "name": "luna",
-            "runtime": "openai_responses",
-            "response_model": None,
-        },
-        "problem": dict(problem),
-        "request": request,
-        "generation_config": {
-            **request_options(),
-            "temperature": None,
-            "temperature_reason": "Not sent; provider default applies",
-        },
-        "client_config": {"timeout_seconds": TIMEOUT_SECONDS, "max_retries": 0},
-        "call": {"status": None, "error": None},
-        "generation": None,
-        "metrics": None,
-        "extracted_code": None,
-        "judge": None,
-        "record_complete": False,
-    }
+    record = build_record(problem, request, selected_problem_ids)
     # Exclusive reservation prevents a second invocation from issuing the same paid request.
     result_dir.mkdir(parents=True, exist_ok=False)
     print(f"Cloud 요청: {problem['id']} / {MODEL}")
@@ -96,6 +69,50 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
             f"Cloud 호출 실패: {type(exc).__name__}; 실패 기록 후 중단"
         ) from None
     elapsed = perf_counter() - start
+    save_response(result_dir, record, response, elapsed)
+
+
+def request_conditions(project_root, problem):
+    statement = (project_root / problem["statement_path"]).read_text(encoding="utf-8")
+    prompt = build_problem_prompt(
+        statement,
+        time_limit_seconds=problem["time_limit_seconds"],
+        memory_limit_mib=problem["memory_limit_mib"],
+    )
+    return {**request_options(), "input": [{"role": "user", "content": prompt}]}
+
+
+def build_record(problem, request, selected_problem_ids):
+    return {
+        "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
+        "experiment": {"type": "cloud", "round": 1, "planned_attempts": 10},
+        "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
+        "model": {
+            "id": MODEL,
+            "name": "luna",
+            "runtime": "openai_responses",
+            "response_model": None,
+        },
+        "problem": dict(problem),
+        "request": request,
+        "generation_config": {
+            **request_options(),
+            "temperature": None,
+            "temperature_reason": "Not sent; provider default applies",
+        },
+        "client_config": {"timeout_seconds": TIMEOUT_SECONDS, "max_retries": 0},
+        "call": {"status": None, "error": None},
+        "generation": None,
+        "metrics": None,
+        "extracted_code": None,
+        "judge": None,
+        "record_complete": False,
+    }
+
+
+def save_response(result_dir, record, response, elapsed):
+    """Preserve received responses separately from transport failures."""
+    result_path = result_dir / "result.json"
     record["metrics"] = measured_metrics(elapsed, {})
     try:
         data = response.model_dump(mode="json")
@@ -124,7 +141,7 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
         record["extracted_code"] = code
         if code is not None:
             candidate = result_dir / "candidate.py"
-            candidate.write_text(code, encoding="utf-8")
+            write_text(candidate, code)
     except Exception as exc:
         record["processing_error"] = {"type": type(exc).__name__}
         record["record_complete"] = False
@@ -140,5 +157,5 @@ def run_problem(project_root, problem, client, selected_problem_ids=None):
     if record["call"]["status"] == "error":
         raise SystemExit("Cloud 응답의 비정상 상태를 저장하고 중단했습니다.")
     print(
-        f"Cloud 생성 완료·채점 대기: {problem['id']} / {status} / {elapsed:.2f}s"
+        f"Cloud 생성 완료·채점 대기: {record['problem']['id']} / {status} / {elapsed:.2f}s"
     )

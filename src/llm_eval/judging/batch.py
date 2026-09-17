@@ -5,19 +5,21 @@ import fcntl
 import hashlib
 import json
 import math
-import os
 import platform
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from llm_eval.judge import judge_problem
-from llm_eval.problems import load_problems
-from llm_eval.records import generation_complete, write_json
+from llm_eval.judging.engine import judge_problem
+from llm_eval.shared.problems import load_problems
+from llm_eval.shared.paths import generation_dir
+from llm_eval.shared.storage import write_json
+from llm_eval.shared.artifacts import generation_complete, validate_artifacts
+from llm_eval.shared.processes import workload, active_workloads
 
 MODEL_IDS = {"qwen36": "qwen36", "gemma4": "gemma4", "luna": "gpt-5.6-luna"}
-RUNNERS = {"run_benchmark.py", "run_cloud_benchmark.py", "run_warmup.py"}
+RUNNERS = {"run_benchmark.py", "run_local_benchmark.py", "run_judge.py", "run_batch_judge.py", "check_candidate.py", "run_cloud_benchmark.py", "run_warmup.py", "run_local_queue.py"}
 
 
 def now():
@@ -27,33 +29,6 @@ def now():
 def digest(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
-
-
-def active_workloads(proc_root=Path("/proc")):
-    if not proc_root.is_dir():
-        raise RuntimeError("프로세스 확인은 Linux/WSL에서 지원합니다.")
-    found = []
-    for proc in proc_root.iterdir():
-        if not proc.name.isdigit() or int(proc.name) == os.getpid():
-            continue
-        try:
-            argv = [part.decode(errors="replace") for part in
-                    (proc / "cmdline").read_bytes().split(b"\0") if part]
-        except (FileNotFoundError, ProcessLookupError):
-            continue
-        except PermissionError as exc:
-            raise RuntimeError(f"프로세스 확인 권한 없음: PID {proc.name}") from exc
-        if not argv:
-            continue
-        executable = Path(argv[0]).name
-        is_runner = (
-            (executable.startswith("python") or executable == "uv")
-            and "-c" not in argv
-            and bool({Path(arg).name for arg in argv[1:]} & RUNNERS)
-        )
-        if executable in {"llama-server", "llama-server.exe"} or is_runner:
-            found.append({"pid": int(proc.name), "name": Path(argv[0]).name})
-    return sorted(found, key=lambda item: item["pid"])
 
 
 def require_idle():
@@ -93,7 +68,7 @@ def collect(root, problems, models, rounds):
             for number in rounds:
                 if model == "luna" and number != "1":
                     continue
-                relative = Path("results/benchmark") / problem["name"] / model / f"round_{number}"
+                relative = generation_dir(root, problem["name"], model, number).relative_to(root)
                 folder = root / relative
                 if not folder.exists():
                     missing.append(str(relative))
@@ -119,17 +94,9 @@ def collect(root, problems, models, rounds):
                     code = record["extracted_code"]
                     candidate = folder / "candidate.py"
                     failed = record["call"]["status"] == "error"
-                    if not failed:
-                        raw = json.loads((folder / "response.json").read_text(encoding="utf-8"))
-                        if not isinstance(raw, dict):
-                            raise ValueError("원본 응답 형식 오류")
-                        if code is None:
-                            if candidate.exists():
-                                raise ValueError("코드 미추출 기록에 후보 파일 존재")
-                        elif not isinstance(code, str) or candidate.read_bytes() != code.encode("utf-8"):
-                            raise ValueError("후보 코드가 원본 extracted_code와 다름")
-                        if code is not None and problem["id"] not in datasets:
-                            datasets[problem["id"]] = test_identity(root, problem)
+                    validate_artifacts(folder, record)
+                    if not failed and code is not None and problem["id"] not in datasets:
+                        datasets[problem["id"]] = test_identity(root, problem)
                     entry = {
                         "problem_id": problem["id"], "problem_name": problem["name"],
                         "model": model, "model_id": record["model"]["id"], "round": int(number),
@@ -181,16 +148,7 @@ def run_batch(root, problem_selection="all", model_selection="all", round_select
         session_id = datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ") + "_" + uuid4().hex[:8]
         session = output_root / session_id
         session.mkdir(exist_ok=False)
-        manifest = {
-            "session_id": session_id, "started_at": now(), "finished_at": None,
-            "complete": False, "status": "running",
-            "selection": {"problems": ids, "models": models, "rounds": [int(n) for n in rounds]},
-            "timing": "wall_clock_subprocess_timeout_per_test",
-            "python": sys.version, "python_executable": sys.executable,
-            "platform": platform.platform(), "judge_sha256": digest(Path(__file__).with_name("judge.py")),
-            "missing": missing, "coverage_complete": not missing,
-            "test_data": datasets, "entries": entries,
-        }
+        manifest = build_manifest(session_id, ids, models, rounds, missing, datasets, entries)
         manifest_path = session / "manifest.json"
         write_json(manifest_path, manifest)
         print(f"채점 세션: {session}")
@@ -201,30 +159,7 @@ def run_batch(root, problem_selection="all", model_selection="all", round_select
                 require_idle()
                 if entry["status"] == "CALL_ERROR":
                     continue
-                problem = next(p for p in problems if p["id"] == entry["problem_id"])
-                files = datasets.get(problem["id"], []) if entry["candidate_path"] else []
-                verify_sources(root, entry, files)
-                if entry["candidate_path"]:
-                    result = judge_problem(
-                        code_path=root / entry["candidate_path"],
-                        problem_dir=root / problem["problem_dir"], problem_name=problem["name"],
-                        time_limit_seconds=entry["time_limit_seconds"],
-                    )
-                else:
-                    result = {"status": "NO_CODE", "passed_cases": 0, "total_cases": None,
-                              "max_case_seconds": None, "time_limit_seconds": entry["time_limit_seconds"],
-                              "test_results": []}
-                verify_sources(root, entry, files)
-                relative = Path(entry["problem_name"]) / entry["model"] / f"round_{entry['round']}" / "judge.json"
-                target = session / relative
-                target.parent.mkdir(parents=True, exist_ok=True)
-                write_json(target, {**result, "session_id": session_id, "judged_at": now(),
-                                    "source_run_id": entry["source_run_id"],
-                                    "source_result": entry["source_result"],
-                                    "source_sha256": entry["source_sha256"],
-                                    "candidate_sha256": entry["candidate_sha256"]})
-                entry["status"] = result["status"]
-                entry["judge_path"] = str(relative)
+                process_entry(root, session, session_id, entry, problems, datasets)
                 write_json(manifest_path, manifest)
             manifest["complete"] = True
             manifest["status"] = "completed_with_missing" if missing else "completed"
@@ -235,8 +170,7 @@ def run_batch(root, problem_selection="all", model_selection="all", round_select
                 current["status"] = "JUDGE_ERROR"
             raise
         finally:
-            manifest["finished_at"] = now()
-            write_json(manifest_path, manifest)
+            finish_manifest(manifest_path, manifest)
         return session
 
 
@@ -247,6 +181,50 @@ def main(root, argv=None):
     parser.add_argument("--rounds", default="all", help="all 또는 1,2")
     args = parser.parse_args(argv)
     try:
-        run_batch(root, args.problems, args.models, args.rounds)
+        with workload(root, "judge"):
+            run_batch(root, args.problems, args.models, args.rounds)
     except (OSError, ValueError, RuntimeError) as exc:
         raise SystemExit(f"ABORT: {exc}") from None
+
+def build_manifest(session_id, ids, models, rounds, missing, datasets, entries):
+    return {
+        "session_id": session_id, "started_at": now(), "finished_at": None,
+        "complete": False, "status": "running",
+        "selection": {"problems": ids, "models": models, "rounds": [int(n) for n in rounds]},
+        "timing": "wall_clock_subprocess_timeout_per_test",
+        "python": sys.version, "python_executable": sys.executable,
+        "platform": platform.platform(), "judge_sha256": digest(Path(__file__).with_name("engine.py")),
+        "missing": missing, "coverage_complete": not missing,
+        "test_data": datasets, "entries": entries,
+    }
+
+
+def process_entry(root, session, session_id, entry, problems, datasets):
+    problem = next(p for p in problems if p["id"] == entry["problem_id"])
+    files = datasets.get(problem["id"], []) if entry["candidate_path"] else []
+    verify_sources(root, entry, files)
+    if entry["candidate_path"]:
+        result = judge_problem(
+            code_path=root / entry["candidate_path"],
+            problem_dir=root / problem["problem_dir"], problem_name=problem["name"],
+            time_limit_seconds=entry["time_limit_seconds"],
+        )
+    else:
+        result = {"status": "NO_CODE", "passed_cases": 0, "total_cases": None,
+                  "max_case_seconds": None, "time_limit_seconds": entry["time_limit_seconds"],
+                  "test_results": []}
+    verify_sources(root, entry, files)
+    relative = Path(entry["problem_name"]) / entry["model"] / f"round_{entry['round']}" / "judge.json"
+    target = session / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_json(target, {**result, "session_id": session_id, "judged_at": now(),
+                        "source_run_id": entry["source_run_id"],
+                        "source_result": entry["source_result"],
+                        "source_sha256": entry["source_sha256"],
+                        "candidate_sha256": entry["candidate_sha256"]})
+    entry["status"] = result["status"]
+    entry["judge_path"] = str(relative)
+
+def finish_manifest(path, manifest):
+    manifest["finished_at"] = now()
+    write_json(path, manifest)

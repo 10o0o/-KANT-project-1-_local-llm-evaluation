@@ -1,4 +1,4 @@
-def build_round1_prompt(
+def build_problem_prompt(
     statement: str, *, time_limit_seconds: float, memory_limit_mib: int
 ) -> str:
     return f"""

@@ -6,11 +6,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from llm_eval.benchmark import runner
-from llm_eval.benchmark.prompts import build_round1_prompt
-from llm_eval.benchmark.utils import prepare_problem_context
+from llm_eval.local import runner
+from llm_eval.shared.prompts import build_problem_prompt
+from llm_eval.shared.paths import generation_dir
 from llm_eval.cloud import runner as cloud_runner
-from llm_eval.llama_cpp import REASONING_BUDGET_MESSAGE, chat
+from llm_eval.local.client import REASONING_BUDGET_MESSAGE, chat
 
 
 class BenchmarkConditionsTests(unittest.TestCase):
@@ -40,7 +40,7 @@ class BenchmarkConditionsTests(unittest.TestCase):
 
     def test_same_local_cloud_prompt_and_layout(self):
         self.run_local()
-        expected = build_round1_prompt(
+        expected = build_problem_prompt(
             'Problem body', time_limit_seconds=3, memory_limit_mib=512
         )
         self.assertIn('실행 제한:\n- 시간 제한: 3초\n- 메모리 제한: 512 MiB\n\n문제:\n\nProblem body', expected)
@@ -134,7 +134,7 @@ class BenchmarkConditionsTests(unittest.TestCase):
 
     def test_distinct_models_and_rounds(self):
         for model, number in [('qwen36', 1), ('qwen36', 2), ('gemma4', 1)]:
-            path = prepare_problem_context(self.root, self.problem, model, number)[-1]
+            path = generation_dir(self.root, self.problem["name"], model, number)
             self.assertEqual(path, self.root / f'results/benchmark/p/{model}/round_{number}')
 
     def test_request_and_saved_config_match(self):
@@ -147,7 +147,3 @@ class BenchmarkConditionsTests(unittest.TestCase):
         self.assertEqual(sent['extra_body']['reasoning_budget_tokens'], 53248)
         self.assertEqual(saved, {'temperature': sent['temperature'],
                                 'max_tokens': sent['max_tokens'], **sent['extra_body']})
-
-
-if __name__ == '__main__':
-    unittest.main()

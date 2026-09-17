@@ -1,4 +1,4 @@
-from llm_eval.llama_cpp import chat
+from llm_eval.local.client import chat
 
 WARMUP_PROMPT = "워밍업 요청입니다. 최종 답변으로 WARMUP_OK라고만 답하세요."
 WARMUP_TEMPERATURE = 0

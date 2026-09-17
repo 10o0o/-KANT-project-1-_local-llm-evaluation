@@ -19,3 +19,7 @@ data/coci/**/*.pdf
 data/coci/**/testdata/
 
 *.tmp
+
+logs/local_queue/
+
+logs/.workload.lock
