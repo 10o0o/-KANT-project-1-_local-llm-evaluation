@@ -172,6 +172,23 @@ results/evaluation/<평가 ID>/
 
 Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제한을 적용합니다. **메모리 제한 강제·RSS 측정·MLE 판정은 구현하지 않았습니다.** 따라서 AC는 보유한 테스트를 통과했다는 뜻이지 메모리 제한 준수를 증명하지 않습니다. 기록의 의미와 한계는 [기록 구현 점검](docs/operations/recording.md)을 참고합니다.
 
+## 재실행 확인
+
+2026-09-17에 **다른 기기에서 저장소를 새로 받아 전체 흐름을 재현**했다. 원래 작업하던 PC가 아니라 테스트 데이터도 가상환경도 없는 상태에서 시작했다.
+
+| 단계 | 결과 |
+| --- | --- |
+| `git clone` 후 `uv sync --locked` | Python 3.12.14 환경 복원 (`openai 3.8.0`, `httpx2 2.12.0`, `pydantic 2.13.5`) |
+| COCI 테스트 데이터 준비 | hsin.hr에서 contest 4·5·6 `testdata` 재다운로드 후 `problem_dir`에 배치 |
+| `uv run llm-eval validate` | 10문항 전부 `[OK]`, `Validation PASSED` |
+| `judge batch` | 80건 중 78건 판정, `coverage_complete=true` |
+| `evaluate prepare/run/report` | `complete=true`, `local_comparison_ready=true` |
+| 모의·합성 테스트 | `LLM_EVAL_RUN_PROCESS_TESTS=1 ... unittest discover` 181개 통과 |
+
+**테스트 수가 과거 채점 기록과 일치**해(Škare 41, Čokolada 75, Džeparac 104) 같은 데이터임을 확인했다. 이 과정에서 Judge가 후보 코드를 실행 중인 인터프리터로 돌린다는 점 때문에 `.python-version`을 `3.12.14`로 고정했다. 고정 전에는 이 기기의 Python 3.12가 없어 3.14가 잡혔고, 그대로 뒀다면 기록된 채점 조건과 달라졌을 것이다.
+
+재현에 필요한 외부 준비물은 모델 가중치·llama.cpp 런타임·API 키·COCI 테스트 데이터 네 가지이며 저장소에 넣지 않는다. 생성까지 재현하려면 앞의 두 개가 추가로 필요하고, 저장된 원본으로 채점·평가만 재현하는 데는 테스트 데이터만 있으면 된다.
+
 ## 문서 지도
 
 | 문서 | 역할 |
