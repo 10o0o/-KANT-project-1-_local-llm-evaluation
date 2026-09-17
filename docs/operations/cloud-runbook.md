@@ -1,5 +1,7 @@
 # Luna Cloud 비교 실행
 
+모든 `uv run llm-eval` 명령은 저장소 루트 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 실행한다. Cloud `--round`는 생략하면 1이며, 2를 선택하면 같은 입력·설정의 독립 회차를 새로 저장한다.
+
 ## 범위와 발제 대응
 
 [Notion 발제 STEP 5·7](https://app.notion.com/p/3ddde5bf9074809787d7f6a5a5a263e7)과 [수행 평가표](https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820)의 원래 기준은 Cloud 1개·공통 5문항·각 1회다. 발제 원문은 변경하지 않는다. 이번 사용자 수행 범위는 **기존 10문항 전체를 두 회차 독립 실행하는 10문항×2회=20회**다. 별도의 5문항 추가 실행이나 5문항 분모를 만들지 않는다. 일부 로컬 결과를 확인한 뒤 전체 10문항 적용을 결정한 경과를 밝히며 결과를 보기 전 5개를 선정했다고 소급하지 않는다.
@@ -36,18 +38,18 @@
 Cloud 생성은 `logs/.cloud-workload.lock`을 사용한다. 다른 Cloud 생성이나 채점이 실행 중이면 요청·회차가 달라도 시작을 차단한다. 로컬 생성·워밍업·큐는 기존 `logs/.workload.lock`을 유지한다. 모델 서버는 잠금을 직접 획득하지 않으며 프로세스 검사 대상이다. 일괄 채점과 단일 후보 실행은 로컬→Cloud 순서로 두 잠금을 획득하고, 전체 생성 완료·서버 종료 후 실행한다.
 
 ```bash
-uv run python scripts/run_cloud_benchmark.py --problems all --round 1
-uv run python scripts/run_cloud_benchmark.py --problems all --round 2
+uv run llm-eval generate cloud --problems all --round 1
+uv run llm-eval generate cloud --problems all --round 2
 ```
 
 기존 예제 저장소의 `.env`를 사용하려면 파일을 복사하지 않고 실행할 때만 로드한다. 예제 저장소가 현재 저장소의 형제 디렉터리인 경우다.
 
 ```bash
-uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchmark.py --problems all --round 1
-uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchmark.py --problems all --round 2
+uv run --env-file ../project1-python-start/.env llm-eval generate cloud --problems all --round 1
+uv run --env-file ../project1-python-start/.env llm-eval generate cloud --problems all --round 2
 ```
 
-`--round`를 생략하면 기존 명령과 같이 Round 1을 실행한다. Round 2는 Round 1이 없어도 실행할 수 있다.
+`--round`를 생략하면 표준 CLI의 기본값인 Round 1을 실행한다. Round 2는 Round 1이 없어도 실행할 수 있다.
 
 선택 실행은 `--problems`에 기존 문제 ID를 쉼표로 나열한다. 이번 명령에서 선택한 ID 목록을 invocation에 남기며 회차당 10회와 전체 계획 20회를 구분한다. 중복 ID는 거부한다. 키가 없으면 요청 전에 중단한다. 키 값은 문서·코드·결과에 저장하지 않는다.
 
@@ -70,10 +72,10 @@ uv run --env-file ../project1-python-start/.env python scripts/run_cloud_benchma
 로컬·Cloud 생성과 모델 서버를 모두 종료한 뒤 저장소 루트에서 실행한다.
 
 ```bash
-uv run python scripts/run_batch_judge.py --problems all --models all --rounds all
+uv run llm-eval judge batch --problems all --models all --rounds all
 ```
 
-Cloud만 선택하려면 `--models luna --rounds 1,2`를 사용한다. 모델 API나 인증키 없이 저장된 후보를 순차 실행한다. 각 실행은 새 `results/judging/<세션 ID>/`에 저장하며 기존 생성 결과는 변경하지 않는다. [채점 세션과 집계 기준](../../results/README.md#일괄-채점-세션)을 따른다. 기존 단일 후보 검증은 `scripts/check_candidate.py`를 그대로 사용한다. 기존 `scripts/run_judge.py`는 이전 명령과의 호환을 위한 호환 진입점이며 새 절차는 `run_batch_judge.py`를 사용한다.
+Cloud만 선택하려면 `--models luna --rounds 1,2`를 사용한다. 모델 API나 인증키 없이 저장된 후보를 순차 실행한다. 각 실행은 새 `results/judging/<세션 ID>/`에 저장하며 기존 생성 결과는 변경하지 않는다. [채점 세션과 집계 기준](../../results/README.md#일괄-채점-세션)을 따른다. 단일 후보 검증은 `uv run llm-eval judge candidate --code <path> --problem <id>`를 사용한다. 이전 script aliases는 제거됐으며, 이름 대응표는 [architecture](../architecture.md)에 역사적 기록으로 남아 있다.
 
 Judge는 테스트마다 경과 시간과 stdout·stderr 합산 출력 10 MiB(10,485,760 bytes)를 적용한다. 시간 초과와 출력 초과가 함께 관측되면 먼저 발생한 자원을 `TLE` 또는 `OLE`로 기록하며, 세션·처리 인프라 예외는 `JUDGE_ERROR`로 남긴다. `manifest.json`의 `judge_policy`에는 `version`, `per_test_output_limit_bytes`, `output_limit_scope`, `resource_verdict_precedence`를 저장한다. 이 정책 설명은 실제 채점 실행 완료를 뜻하지 않는다.
 

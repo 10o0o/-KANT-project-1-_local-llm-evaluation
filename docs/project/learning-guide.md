@@ -36,7 +36,7 @@ STEP 3에서는 조사할 수 있는 정보를 먼저 기록하고 설치 식별
 
 ## 현재 후보와 HyperCLOVA 제외 이력
 
-현재 후보와 실행·평가 진행 상태는 [STATE](../../STATE.md)를 따른다. 현재 표준 실행기는 `scripts/run_local_benchmark.py`이며 llama.cpp API를 사용한다. 기존 `scripts/run_benchmark.py`는 thin compatibility wrapper로 유지한다. 과거 Ollama 실습 코드는 [정리 전 Git 이력](../history/README.md)에, 응답은 결과 보관 폴더에 남긴다. llama.cpp 전환은 튜터에게 허락받았다. 2026-09-16 대화에서 확인한 경과이며 발제 원문의 Ollama 문구 자체는 유지한다.
+현재 후보와 실행·평가 진행 상태는 [STATE](../../STATE.md)를 따른다. 현재 표준 실행기는 저장소 루트의 `uv run llm-eval generate local`이며 llama.cpp API를 사용한다. 로컬 `--round`는 필수이고, 이전 `scripts/run_local_benchmark.py`와 `scripts/run_benchmark.py`는 제거됐다. 과거 Ollama 실습 코드는 [정리 전 Git 이력](../history/README.md)에, 응답은 결과 보관 폴더에 남긴다. llama.cpp 전환은 튜터에게 허락받았다. 2026-09-16 대화에서 확인한 경과이며 발제 원문의 Ollama 문구 자체는 유지한다. 전체 명령·파일 책임은 [architecture](../architecture.md)를 따른다.
 
 HyperCLOVA는 NAVER llama.cpp 실행 도구 예외로 진단했으나, 현재 구성의 지시 수행 성능 미달로 제외했다. [교체 전 조사와 진단 이력](model-candidates.md#제외-이력-hyperclova)은 보존하며 현재 후보의 필수 절차로 적용하지 않습니다. 로컬 본 실험 40회·워밍업 2회와 개인 필수 실습은 유지한다. 발제의 Cloud 5회는 이번 수행에서 전체 10문항×2회 독립 실행인 20회로 확장했다. 제외 전 연결 점검을 본 실험이나 세 번째 모델 비교 실습 완료로 집계하지 않습니다.
 
@@ -128,6 +128,6 @@ GitHub 저장소 하나에 사용자 코드·환경 정보·질문·원본 기�
 
 ## 현재 구현과 남은 확인
 
-`--round 1/2`는 동일 문제의 독립 반복이며 이전 답변을 읽지 않는다. 최종 통합 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 기본 회차는 1이며 두 회차를 선택할 수 있다. 현재 구현 검증·게시 상태는 [작업 인계](../maintenance-handoff.md#현재-상태와-다음-행동)의 현재 표를 따른다. [기록 구현 점검](../operations/recording.md)은 정적 동작과 한계를 설명하며 전체 실험의 실행 완료를 뜻하지 않는다.
+`--round 1/2`는 동일 문제의 독립 반복이며 이전 답변을 읽지 않는다. 최종 통합 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 로컬 생성은 `--round`를 명시하고, Cloud 생성은 생략하면 1회차를 사용한다. 일괄 채점의 `--rounds` 기본값은 `all`이다. 현재 구현 검증·게시 상태는 [작업 인계](../maintenance-handoff.md#현재-상태와-다음-행동)의 현재 표를 따른다. [기록 구현 점검](../operations/recording.md)은 정적 동작과 한계를 설명하며 전체 실험의 실행 완료를 뜻하지 않는다.
 
 질문별 기대 결과와 사례 범위·텍스트 적합성, 실제 워밍업·실행 조건·완료 범위의 확인 근거는 [STATE](../../STATE.md)와 [종료 후 인계](../maintenance-handoff.md#종료-후-확인과-직접-수행)를 따른다. 이미 시작한 실험을 미시작으로 돌리거나 사전 확정을 소급하지 않는다. 새 질문·추가 실험을 문서 정리만으로 강제하지 않는다.

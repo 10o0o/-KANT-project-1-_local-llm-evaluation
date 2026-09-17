@@ -46,7 +46,7 @@ Qwen에서 변경한 64k·60k·52k(k=1024)를 Gemma 셸과 공통 Python 기본�
 
 현재 Gemma 서버 셸의 값은 GPU layers `auto`, fit `on`, fit target `0`, load mode `auto`, lazy mode `auto`, generation threads `16`, batch threads `24`다. Context `65536`, 기본 출력 `61440`, reasoning `53248`, temperature `0`과 공통 Python 요청값은 유지한다. 과거 `fit target 1536`은 당시 기록으로 보존하며 현재 파일의 값만으로 과거 실행 설정을 확정하지 않는다. 이번 문서 동기화에서 모델을 실행하거나 최적화 전후 성능을 재측정하지 않았다.
 
-단일 요청 진단 파일은 `scripts/diagnostics/response_probe.py`로 두고 현재 대상 모델을 `gemma4`로 설정했다. 기존 `scripts/diagnose.py`는 이전 명령과의 호환을 위한 thin wrapper다. 이 진단의 출력 `1024`·reasoning `512`는 본 실험의 공통 요청값과 별개다.
+단일 요청 진단은 저장소 루트에서 `uv run llm-eval diagnose response`로 실행하며 현재 대상 모델은 `gemma4`로 둔다. 생성 한도 진단은 `uv run llm-eval diagnose generation-limit --model <qwen36|gemma4>`로 분리한다. 예전 `scripts/diagnose.py`와 `scripts/diagnostics/response_probe.py`는 제거됐고, 진단 구현은 `src/llm_eval/diagnostics.py`에 있다. 진단의 출력 `1024`·reasoning `512`는 본 실험의 공통 요청값과 별개다.
 
 ## 변경 전 설정값과 실제 적용 근거
 
