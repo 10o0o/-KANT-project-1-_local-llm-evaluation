@@ -34,7 +34,7 @@ PROVIDERS = {
         model="motif/motif-3",
         api="chat_completions",
         base_url="https://api-cbt.morphfactory.io/v1",
-        env_var="morph_api_key",
+        env_var="morph_secret_key",
         runtime="openai_chat_completions",
     ),
 }

@@ -54,7 +54,7 @@ uv run llm-eval generate local \
 uv run llm-eval queue
 ```
 
-Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있습니다. 비교 대상은 `luna`와 `motif3` 두 제공자이며 `--model`은 필수입니다. 두 Cloud 모델은 잠금을 공유하므로 순차로 실행합니다. `--round`를 생략하면 Cloud는 Round 1을 사용합니다. 키는 모델별 환경 변수(`openai_secret_key`, `morph_api_key`)에서 읽으며 값은 출력·문서·결과에 저장하지 않습니다.
+Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있습니다. 비교 대상은 `luna`와 `motif3` 두 제공자이며 `--model`은 필수입니다. 두 Cloud 모델은 잠금을 공유하므로 순차로 실행합니다. `--round`를 생략하면 Cloud는 Round 1을 사용합니다. 키는 모델별 환경 변수(`openai_secret_key`, `morph_secret_key`)에서 읽으며 값은 출력·문서·결과에 저장하지 않습니다.
 
 ```bash
 uv run --env-file ../project1-python-start/.env \

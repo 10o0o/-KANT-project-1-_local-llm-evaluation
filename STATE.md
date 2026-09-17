@@ -4,13 +4,13 @@
 
 Cloud 비교 대상을 Luna 하나에서 **Luna·Motif-3 두 제공자**로 확장했다. Motif-3는 OpenAI 호환 Chat Completions 엔드포인트(`https://api-cbt.morphfactory.io/v1`, 모델 `motif/motif-3`)이고 Luna는 기존 Responses API다. `cloud/client.py`에 제공자 등록부와 API 계열별 어댑터를 두고 요청 구성·전송·응답 정규화만 분기했다. 재개 검사·디렉터리 예약·원본 보존·실패 기록 규칙은 두 제공자가 같은 코드를 쓴다.
 
-생성 명령은 `uv run llm-eval generate cloud --model <luna|motif3> ...`로 `--model`이 필수가 됐다. 유료 호출의 대상을 기본값으로 추론하지 않기 위해서다. 결과는 `results/benchmark/<문제>/motif3/round_<회차>/`에 분리 저장하며 기존 Luna 결과·요청·기록 형식은 바꾸지 않았다. 채점은 `--models luna,motif3`로 선택한다. 키는 모델별 환경 변수(`openai_secret_key`, `morph_api_key`)에서 읽는다.
+생성 명령은 `uv run llm-eval generate cloud --model <luna|motif3> ...`로 `--model`이 필수가 됐다. 유료 호출의 대상을 기본값으로 추론하지 않기 위해서다. 결과는 `results/benchmark/<문제>/motif3/round_<회차>/`에 분리 저장하며 기존 Luna 결과·요청·기록 형식은 바꾸지 않았다. 채점은 `--models luna,motif3`로 선택한다. 키는 모델별 환경 변수(`openai_secret_key`, `morph_secret_key`)에서 읽는다.
 
 Motif-3에는 제공자 예제가 검증한 `model`과 `messages`만 보낸다. Luna의 reasoning=max·출력 한도 128000·tool 설정을 옮겨 적지 않았고, 두 모델의 토큰 예산을 동일 조건으로 표시하지 않는다. Motif-3는 **확인한 공개 단가표가 없어 예상 비용을 계산하지 않고 사유와 함께 null로 기록한다.** 임의 추정치를 넣지 않는다.
 
 모의 테스트 **152개 통과**(이전 138개 + Chat Completions 제공자 계약). 실제 Motif-3·Luna API 호출, 모델 실행, 후보 채점, GPU 조회는 하지 않았다. 따라서 Motif-3의 응답 구조·정답률·비용·소요 시간은 전부 미확인이며 Cloud 비교는 미완료다. 상세 조건은 [Cloud 안내](docs/operations/cloud-runbook.md), 확장 근거는 [확장 기준](docs/project/requirements.md#cloud-비교-확장-기준)을 따른다.
 
-다음 한 작업: **`morph_api_key`를 넣고 Motif-3 1문항만 먼저 호출해 `result.json`·`response.json` 구조를 직접 확인한 뒤 전체 실행 여부를 결정**.
+다음 한 작업: **`morph_secret_key`를 넣고 Motif-3 1문항만 먼저 호출해 `result.json`·`response.json` 구조를 직접 확인한 뒤 전체 실행 여부를 결정**.
 
 ## 이전 확인: 2026-09-17 단일 CLI·책임 통합
 

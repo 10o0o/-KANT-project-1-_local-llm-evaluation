@@ -32,7 +32,7 @@ Cloud 비교 대상은 **Luna와 Motif-3 두 제공자**다. Motif-3는 Luna 실
 | API 계열 | OpenAI Responses API | OpenAI 호환 Chat Completions |
 | 요청 모델 | gpt-5.6-luna | motif/motif-3 |
 | Endpoint | `https://api.openai.com/v1` | `https://api-cbt.morphfactory.io/v1` |
-| 환경 변수 | `openai_secret_key` | `morph_api_key` |
+| 환경 변수 | `openai_secret_key` | `morph_secret_key` |
 | Reasoning | effort=max | 제공자 파라미터 없음, 보내지 않음 |
 | 출력 한도 | max_output_tokens 128000, 추론과 최종 답변 합계 | 보내지 않음, 서비스 기본값 적용 |
 | Tools / tool_choice | 빈 목록 / none | 보내지 않음 |
@@ -50,7 +50,7 @@ Motif-3에는 검증한 예제가 보내는 `model`과 `messages`만 전송한�
 
 이 문서에서는 Cloud 호출이나 비밀 파일을 저장소에 복사하지 않는다. 아래 `.env` 상대 경로 명령은 최종 통합 저장소 루트에서 실행할 때만 사용한다.
 
-선택한 모델의 환경 변수(Luna는 `openai_secret_key`, Motif-3는 `morph_api_key`)가 실행 환경에 있으면 최종 통합 저장소 루트에서 다음 명령을 사용한다. 회차를 생략하면 기존 기본값인 Round 1을 실행한다.
+선택한 모델의 환경 변수(Luna는 `openai_secret_key`, Motif-3는 `morph_secret_key`)가 실행 환경에 있으면 최종 통합 저장소 루트에서 다음 명령을 사용한다. 회차를 생략하면 기존 기본값인 Round 1을 실행한다.
 
 Cloud 생성은 `logs/.cloud-workload.lock`을 사용한다. 다른 Cloud 생성이나 채점이 실행 중이면 요청·회차·모델이 달라도 시작을 차단한다. 두 Cloud 모델은 순차로 실행한다. 로컬 생성·워밍업·큐는 기존 `logs/.workload.lock`을 유지한다. 모델 서버는 잠금을 직접 획득하지 않으며 프로세스 검사 대상이다. 일괄 채점과 단일 후보 실행은 로컬→Cloud 순서로 두 잠금을 획득하고, 전체 생성 완료·서버 종료 후 실행한다.
 

@@ -1,21 +1,9 @@
-import contextlib
-import io
-import json
 import os
-import tempfile
 import unittest
-from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-import httpx2 as httpx
-from openai import APITimeoutError, AuthenticationError
+from llm_eval.cloud import client
 
-from llm_eval.shared.problems import build_problem_prompt
-from llm_eval.cloud import client, generation as runner
-from llm_eval.cloud.metrics import estimated_cost
-
-
-from .helpers import usage
 
 class ClientTests(unittest.TestCase):
     @patch.dict(os.environ, {}, clear=True)
@@ -29,20 +17,29 @@ class ClientTests(unittest.TestCase):
     @patch("llm_eval.cloud.client.OpenAI")
     def test_client_configuration(self, sdk):
         client.create_client()
-        self.assertEqual(sdk.call_args.kwargs, {
-            "api_key": "test-only-placeholder", "base_url": "https://api.openai.com/v1",
-            "timeout": 3600, "max_retries": 0,
-        })
+        self.assertEqual(
+            sdk.call_args.kwargs,
+            {
+                "api_key": "test-only-placeholder",
+                "base_url": "https://api.openai.com/v1",
+                "timeout": 3600,
+                "max_retries": 0,
+            },
+        )
 
-    @patch.dict(os.environ, {"morph_api_key": "motif-only-placeholder"}, clear=True)
+    @patch.dict(os.environ, {"morph_secret_key": "motif-only-placeholder"}, clear=True)
     @patch("llm_eval.cloud.client.OpenAI")
     def test_each_provider_uses_its_own_key_and_endpoint(self, sdk):
         client.create_client(client.PROVIDERS["motif3"])
-        self.assertEqual(sdk.call_args.kwargs, {
-            "api_key": "motif-only-placeholder",
-            "base_url": "https://api-cbt.morphfactory.io/v1",
-            "timeout": 3600, "max_retries": 0,
-        })
+        self.assertEqual(
+            sdk.call_args.kwargs,
+            {
+                "api_key": "motif-only-placeholder",
+                "base_url": "https://api-cbt.morphfactory.io/v1",
+                "timeout": 3600,
+                "max_retries": 0,
+            },
+        )
         sdk.reset_mock()
         # The Luna key is absent, so no Luna client is built from the Morph key.
         with self.assertRaises(SystemExit):
@@ -59,7 +56,10 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(luna["input"], [{"role": "user", "content": "prompt"}])
         self.assertNotIn("messages", luna)
         # Only the two fields the provider guide documents are sent.
-        self.assertEqual(motif, {
-            "model": "motif/motif-3",
-            "messages": [{"role": "user", "content": "prompt"}],
-        })
+        self.assertEqual(
+            motif,
+            {
+                "model": "motif/motif-3",
+                "messages": [{"role": "user", "content": "prompt"}],
+            },
+        )
