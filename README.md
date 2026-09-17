@@ -28,8 +28,8 @@
 모든 명령은 저장소 루트에서 실행합니다.
 
 ```bash
-git clone https://github.com/10o0o/-KANT-project-1-_local-llm-evaluation.git local-llm-evaluation
-cd -- local-llm-evaluation
+git clone https://github.com/10o0o/local-llm-evaluation.git
+cd local-llm-evaluation
 uv sync --locked
 ```
 
