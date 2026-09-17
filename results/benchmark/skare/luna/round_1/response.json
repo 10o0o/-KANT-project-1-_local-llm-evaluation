@@ -1,0 +1,106 @@
+{
+  "id": "resp_035a1fd25ea7342a016aaa5442c93887d09d8ec3aedabd0a9d",
+  "created_at": 1789547586.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "gpt-5.6-luna",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_035a1fd25ea7342a016aaa544396cc87d085c496d7de23f5d2",
+      "summary": [],
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqqlRLG_VS5Fz9JzQz9oUcF7Sbdik4CKlfJxDqq7ZTFQSL9uGCviOtrKY8WyCnZShH-KO5SYi9bvHw6R3QMVDUZZj29tuhAzc_zO8V-wAc_FWRRKzrOoqxqI_7iaVkkzTaoeVJsvriBEN1zTUTQAjEA4lSHxVDMoPxapa2SxPzoumZ5S6ecl3FqEBYRigp58QFQJ-E1DSfwCAdxVKAQ-t8nP40UQbGmjFxPvtviR9ZYV0FNusMwCR4wQA_QyKESkjcaQyFsZ5yxicdWnHLX7ZNS4L0--N4ZEhnEDxGHDyp0q9hOCKE0dXGb8ABye8xblCk7l8glSxO7BB4w8N4nZf-yepc_ib9BXW98CEFYpM9aeFw_TSdRis8LQWjaz3ADWps8ThK7VTitcvpkE1yu0NOUErmeh1HnESCLmA4m7gnVKl9nXvopMh936DW8XTnYcjuhs-KisYgfN3bpev6B0lGHrhTuv8L9fahJQd4IwZQAqwNz2bwU_PruaqrVlm9eDjFOBsy5UBa-mPaxPc7Lad3uRyXo8p-cWlppLUF0rBKlyAjG5Up_48cCxhJQ5_CKq6MaO7HyDM3_Kz-S1J5y1dhPf2ifWhyoXBQ90TKagk-1y1Guu4WtfEkRG0Od_h5L61gr_ckV8W8CpMKNsjbev34dCcwSsiWZG5ix_IZlWXHp4Il2E4jttyjpS8YsGTyJ_jjjKSU_rHsvrT8VCRXRgGG-Ba0yKG6lV0aLVikt0kG0NlLWkypOA2Bgh3n8TlamPJeakcaJHiuv5YliiDRAEGZbhxgEflCPj7UqC2wNSA4wRFnnrYm24kri60oHAPA9DjxQjjtcblViKCMnNCX5aRdbj69CP1u-JVrUQsE-cEi8yqT9m8SQwgDZliJxz_PhXjHAfG_eF-eGBfwiuRWJG1wl4FuXxsV8y6jV0zkAEO5jl63PXtGb9fZeWGFjHARW1VVBroB-ZELF7yRDbXB8kddTCZtymVvh9hSPMskgsQ2bBXjhrsJAhor2EjehIENyy1C_6VZKMY6P8CCWcsRmjby01khBwFpIbGkytzcCgGG6y2vjDZNsWpzb3IXvl1XwhqIUV-r90q-yXO-h8i8BztWkJAfH8tWz38pboO1mLSsMHVNNgVXtUsZnQriSsz8VFdnwVCTb2DdF0ZS3_-67DcfxULuzz38ZNsIM1q03_bLzn-lBScvDN5-6yn2tYBnRHu0VFEKKq7Cp8XDfMZ2nKJ7e3ul3A20S5YFTPrFgwG-AJ0l-9OJS_OW1weIWTrLskXjt3PwIe6dv3XjgbXeu8NUDGFPPIAQYwRIBc086ybcMpDS7RalUhTqBCqTdc5d4LuohTEJfjG5PE07gchNHg-zSGcxWOPJeTWg6qhpec9yA0RkSK6TYOiExcNjMqi0QqK-GGEBwwzvGR4tJy33UHRG_sjn9RaQ0XHyxzjT6slHnwR9YAgO64aJOmpKi2Ow-roDs37kqOmvuubdkWBwsM3X8hebh4LuPz7FzX4xflZFaR4RMoUv47jAU9WqCg4jUXkV2jctTX88xPm8Ei2ThMQCVGJnfWGainJw-0CLlDSPVcWJa9RrAvl01Gj-8359WYQg9Al7gaRTym3VlvghVlo1gdKzgjibe_k03QWK2-9DscmurOI_aH4bVSv0Y6va-Z_oDTgL7ddtD4B924j8pYXtsjHfSa6e-fEgGrtlHRR-q0WSssdRkFufsZUNS0MqMcFLjJYjqXY4x1wdVl-UCB_CjIj6LafszNrDV7D_lmK8QwJjjse6cqGukTNgTCabdGgS5IdeoTaEBvXuGfrwBTjX6wTmkZ7rzHPaajeB9G3bQAiP4o9lAKtRt9FRkgiTn1S96_1bCY6mHRvagNRYfVfTq2jHz8feFUC6fuhNXuW5UiCC8IsorgdTtGTdaN6d5JrhKIsO0HFyAk8gCWeyJrXVCBX5HdAK7C2OVUDF9CgIJXoGBA0mXaiPC55nzasm_n5G2HNY9hdkWcvap8iVdp1Dclma4kvyLgWbK5D12sAi51Z8iwM-l18kiaAPr52SEWa4F-1CfjMKsf8UeoMTdhr2ywNk8Zh_legVt-BBmtRYvwUds2Iy5cxjTm6CvCSqNPP3jn9PC4OJBuFwApf0Qp3XFsYO6wRyLMFZqaOm0xpwd-AMyKmVuwW5zA5DR1nsC_pBTBrlTspZ-V01XKsGCz3XR2VdTOgDtPHoOSmNfMPTmV59TbU8xTdDSkgWGefl8NL-r4xLYuDWLkbeWAb_VJohFhCGQplyWNSiXn-RdkNa5y_E7TZ6rzR9rduHxYeF4CkhCTPDzFS70DdbcL8hbA6kKranSHePQ36nseAQkI9lMXkAk88ZJ8EyAvhzGo8eXwjHIlp789dpAlwflGj_xc82aW909OYMzUT_sTKzUr3veXWm9lRr_Y6G2KVxKXTxVR-auArcIjaiop9SRdmfExHRMNzz95sTEzKdPlipxXLooGUJh9d1mesYqSrFE677C-hXEZWzCcXj1OtqGE_fW8NCQxWExXqlrYtYE9Pa5A5B7QYu2f4MVC1dhHm_KMtdAnOn7_l9xjNukUoYDP-gycdqRIMEiACkdMH2szSCdow2fn4tT1mZ2XpoEz1byzQLqvkAusMPPFefvfTJbsjN3l-7CgV69DARUNEX0kv1s-ZB4BMkMsh9RDzWMRAByySSMtWcFN77DuZv3l7f_e3NtUspqRkvsHK4lUVP9pphJY2nat2fkI62jhOB-q6B4MaVQliov7CzP9DUFr_gbH7KviqWCzxskU9px0Kp185OkmxXB-g3uCqzGZ649vRDP8xqKCd0ApZe11HPgURBQoa0Y7bCXf7iAZYuWuai1XOCZC9r6J8FZsE-Ei0IjOL7UoDtFq7K6fvZ7-91xyQXAxEAU56mU8OtjtAwW5l3-ajIyp_dJkDyr999JeQ_8ihR9-lnv_ceyIn9L3RftSXsGHaWGa9Cpm4cDr30D1Z6oIrBA298dsfmDYlMTlr3eyIKj-H-hgUszHzPJA4bgFFgl4yvBPKSqn5VWwNYQObWyIN6Z7Hqbaty6srkOjwOjtv-P6E5jVFfe3waHeYKmzfREr7LVoClpZ08GKE8Rw0E8xA5SPhH5j9gSt7g7NGfMuYuHh-JzUP2_8q1tCxOob4lf1gqYaPEGMjDKsn0iz-FEEbfk0T3x-WH_0Bi5RGGD9yEKabPRuuXJeKcNIFanJyT0rqZ0hCf0YO1YcRRSV_Ux-0G-L2WhNQywCG44HUQoSB7D3MSSO9OCZcxffKd44PunxLlPS9IpY3ZxQ-7EWwoXODUTqav9CLeoA7ChFRONaw1GM7Ib1kf2_torWZvf6EyaWy0ucNc6A1AUbhFGvyH3RP7aAr7Q4mWZHWh_Kl_UEllA0QkS0t-MS6FZYs-Rk4mRzCJmv8j5JTO67Fm4fZhPbfZ1xVxuCMNQDqlmi4fHajtrJsj5JgvxIyzd8hRzgaUNYNHMpEPPY5xabNJdefxLGfM0xHolnTT_EyzPmF_ZrgTsCfuhjDgVb9Md07RskOTK4VEvajwuTjYN1cYAILC-agCKm1VL3696Xa70PrxE_lyMdYttEyWS10kU6-SqyV5inlGkFTTKAfXiSCXdADS5LhkQimXKwuetrBnzONx_vicF4PG7v1XZrlRp6e65o_lcVKPMNcfRqboJJNXnEhjouw3YARwek2FNVOF715-IIB9OIv6G_F_N4cm7_lum6h1QZ3dc130Y4LLNoUWTxTs0u6CGDZeZMNR8ib-_EvR2sjGnwVbV22K3pMMxT7XR06PzfP_b1qVba7SvouJrWBcigYeRNZccACK3NsTPHvwhlgh3iSUd0XYJKRVQendDvtpDLuuAvCMJCZYMUyK0JhRdpxzuv0SnYYAHHIrYFSqyidfxZPvOQn_VeH2w8SxvNoGwzPPpNkLurVZHg==",
+      "status": null
+    },
+    {
+      "id": "msg_035a1fd25ea7342a016aaa54489f0487d0878b536661f57729",
+      "content": [
+        {
+          "annotations": [],
+          "text": "## 해결 방법\n\n각 절단 후의 조각들을 현재 순서대로 리스트에 저장합니다.\n\n- 처음에는 `[n]` 하나의 조각만 있습니다.\n- i번째 지시에서 `x_i`번째 조각의 길이를 `old`라고 하면,\n  - 앞 조각의 길이: `l_i`\n  - 뒤 조각의 길이: `old - l_i`\n- 따라서 `x_i`번째 원소를 `[l_i, old - l_i]`로 교체합니다.\n- 모든 절단이 끝난 뒤 리스트를 집합으로 변환하여 서로 다른 길이의 개수를 셉니다.\n\ni번째 절단 시점에는 조각이 i개이므로 주어진 `x_i`는 항상 유효합니다.\n\n## 시간 복잡도\n\n리스트 중간에 두 조각을 삽입하면서 최대 O(k)개의 원소가 이동할 수 있습니다. 이를 k번 수행하므로 전체 시간 복잡도는 O(k²)입니다.\n\n마지막 집합 변환을 포함해도 전체 시간 복잡도는 O(k²)입니다.\n\n## 공간 복잡도\n\n최대 k+1개의 조각을 저장하므로 공간 복잡도는 O(k)입니다.\n\n```python\nimport sys\n\ndata = list(map(int, sys.stdin.buffer.read().split()))\nn, k = data[0], data[1]\n\npieces = [n]\npos = 2\n\nfor _ in range(k):\n    x, l = data[pos], data[pos + 1]\n    pos += 2\n\n    old_length = pieces[x - 1]\n    pieces[x - 1:x] = [l, old_length - l]\n\nprint(len(set(pieces)))\n```",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message",
+      "phase": "final_answer"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "none",
+  "tools": [],
+  "top_p": 0.98,
+  "background": false,
+  "completed_at": 1789547595.0,
+  "conversation": null,
+  "max_output_tokens": 128000,
+  "max_tool_calls": null,
+  "moderation": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "prompt_cache_key": null,
+  "prompt_cache_options": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "max",
+    "generate_summary": null,
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "top_logprobs": 0,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 892,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 886,
+    "output_tokens_details": {
+      "reasoning_tokens": 516
+    },
+    "total_tokens": 1778
+  },
+  "user": null,
+  "billing": {
+    "payer": "developer"
+  },
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "store": false,
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  }
+}

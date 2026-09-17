@@ -1,0 +1,146 @@
+{
+  "run_id": "20260916_234654_025262Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_skijanje",
+    "name": "skijanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 9,
+    "difficulty_reason": "트리 경로의 목적식을 일차함수 질의 형태로 변환하고 subtree·깊이 제한까지 함께 처리해야 한다. 효율적인 전체 해결에는 Li Chao tree 또는 이에 준하는 CHT 계열 자료구조와 트리 순서 처리가 필요하다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/skijanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/skijanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Skijanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nSkier Mia spent a day at an unusual ski resort. The resort consists of $n$ apres-ski locations (hereafter: apres) connected by slopes such that they form a connected tree rooted at the apres labeled 1. Each slope is directed from the apres with a smaller number to the apres with a larger number.\n\nThe tree is defined as follows: for each apres $i>1$, it is known from which apres $p_i$ ($p_i<i$) one arrives at it, i.e., its parent in the tree is known. This uniquely determines all slopes (slope $i$ leads to the apres labeled $i$).\n\nDuring the day, Mia skied each slope exactly once and for each slope remembered its fun factor $z_i$ and speed $b_i$.\n\nAt the end of the day, Mia wants to ski down once more. Since Mia is very tired from skiing all day, she will choose a run consisting of at most $k$ consecutive slopes. The run must follow the direction of the slopes (from apres with smaller numbers to those with larger numbers). After finishing the run, a helicopter will pick her up and take her home.\n\nFor any chosen run, we define its hecticness as follows. Let:\n\n- $z_{\\mathrm{first}}$ be the fun factor of the first slope in the run\n- $z_{\\mathrm{last}}$ be the fun factor of the last slope in the run\n- $b_i$ be the speeds of all slopes in that run\n\nThen the hecticness of the run is: $z_{\\mathrm{last}} \\cdot (z_{\\mathrm{last}} + \\sum b_i) + z_{\\mathrm{first}}^2$. In the case $k=1$, the formula remains unchanged, and $first=last$ holds.\n\nYour task is to determine the maximum hecticness of a run that Mia can ski.\n\n## Input\n\nThe first line contains natural numbers $n,k$ ($1 \\le k \\le n \\le 3 \\cdot 10^5$), as described in the problem statement.\n\nThe second line contains $n-1$ integers, where the $i$-th number represents from which apres one can reach the apres labeled $i+1$ ($1 \\le p_i \\le i$).\n\nThe third line contains $n-1$ integers, where the $i$-th number represents the fun factor of the $(i+1)$-th slope ($1 \\le z_i \\le 10^5$).\n\nThe fourth line contains $n-1$ integers, where the $i$-th number represents the speed of the $(i+1)$-th slope ($-10^5 \\le b_i \\le 10^5$).\n\n## Output\n\nIn the first and only line, output a single number - the maximum hecticness of a run that Mia can ski.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n5 1\n1 2 2 1\n5 4 8 7\n6 3 9 3\n```\n\nOutput\n\n```text\n200\n```\n\n### Example 2\n\nInput\n\n```text\n9 2\n1 2 1 1 4 3 6 5\n1 3 7 8 4 1 8 2\n1 -7 -1 -6 3 8 -1 6\n```\n\nOutput\n\n```text\n120\n```\n\n### Clarification of the first example:\n\nSince $k=1$, it follows that the maximum hecticness of a run is equal to the maximum hecticness among the individual slopes. The slopes have hecticness values of 80, 44, 200, and119. The maximum hecticness is 200."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_098a4b32d36792e2016aab2a6f9c4487d0b24dea5e2f6e80e3",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 풀이 아이디어\n\n각 정점 \\(v \\ne 1\\)을 정점 \\(v\\)로 들어오는 slope를 나타내는 것으로 생각하겠습니다.\n\n루트에서 정점 \\(v\\)까지의 속도 합을 다음과 같이 정의합니다.\n\n\\[\nS[v] = \\sum_{\\text{root}\\to v} b\n\\]\n\n어떤 run의 첫 slope를 \\(a\\), 마지막 slope를 \\(v\\)라고 하면 \\(a\\)는 \\(v\\)의 조상이어야 하고, run의 속도 합은\n\n\\[\nS[v] - S[parent[a]]\n\\]\n\n입니다.\n\n따라서 해당 run의 hecticness는\n\n\\[\n\\begin{aligned}\nH(a,v)\n&= z_v\\left(z_v + S[v] - S[parent[a]]\\right) + z_a^2 \\\\\n&= z_v(z_v+S[v]) +\n\\left((-S[parent[a]])z_v + z_a^2\\right)\n\\end{aligned}\n\\]\n\n가 됩니다.\n\n마지막 slope \\(v\\)가 고정되었을 때, 첫 slope \\(a\\)에 대한 부분은 직선\n\n\\[\nf_a(x) = (-S[parent[a]])x + z_a^2\n\\]\n\n이고, \\(x=z_v\\)에서 이 직선값의 최댓값을 구하면 됩니다.\n\n---\n\n### DFS와 슬라이딩 윈도우\n\nDFS 중 현재 루트에서 현재 정점까지의 경로에 있는 slope들 중 마지막 \\(k\\)개를 덱으로 유지합니다.\n\n- 정점 \\(v\\)에 진입할 때:\n  - slope \\(v\\)를 덱의 오른쪽에 추가\n  - 개수가 \\(k\\)를 초과하면 왼쪽에서 하나 제거\n  - 현재 \\(z_v\\)에서 직선 최댓값을 질의\n- 정점 \\(v\\)에서 나올 때:\n  - 오른쪽에서 \\(v\\) 제거\n  - 진입 시 제거했던 slope가 있다면 왼쪽에 복구\n\n이렇게 하면 현재 정점 \\(v\\)에서 가능한 모든 첫 slope가 정확히 덱에 들어 있습니다.\n\n---\n\n### 덱과 Li Chao Tree\n\n직선들의 최댓값 질의를 위해 Li Chao Tree를 사용합니다.\n\nLi Chao Tree는 직선 삽입과 특정 \\(x\\)에서의 최댓값 질의를 각각 \\(O(\\log 10^5)\\)에 처리할 수 있습니다.\n\n덱은 두 개의 스택으로 구현합니다.\n\n- 왼쪽 스택\n- 오른쪽 스택\n\n각 스택은 다음을 지원합니다.\n\n- 직선 push\n- 직선 pop\n- 현재 스택에 포함된 직선들의 최댓값 질의\n\n스택의 pop은 삽입 과정에서 기록한 변경 사항을 되돌리는 rollback 방식으로 구현합니다.\n\n한쪽 스택이 비어 있을 때만 다른 스택의 원소를 절반씩 나누어 재구성하므로, 덱 재구성 비용은 amortized \\(O(1)\\)번의 원소 이동입니다.\n\n---\n\n### 정당성 증명\n\n1. 첫 slope가 \\(a\\), 마지막 slope가 \\(v\\)인 run의 hecticness는 위의 식에 의해  \n   \\(z_v(z_v+S[v]) + f_a(z_v)\\)로 표현됩니다.\n2. DFS에서 현재 덱에는 현재 루트-현재 정점 경로의 마지막 \\(k\\)개 slope가 정확히 들어 있습니다.\n3. 따라서 현재 정점 \\(v\\)에서 Li Chao Tree가 반환하는 직선 최댓값은 가능한 모든 첫 slope \\(a\\)에 대한 최댓값입니다.\n4. 모든 정점을 마지막 slope로 한 번씩 처리하므로, 전체 가능한 run 중 최댓값을 구하게 됩니다.\n\n따라서 알고리즘은 정답을 출력합니다.\n\n---\n\n### 복잡도\n\n\\(X=10^5\\)라 하면,\n\n- 시간 복잡도: \\(O(n\\log X)\\)\n- 공간 복잡도: \\(O(n + X + k\\log X)\\)\n\n입니다.\n\n```python\nimport sys\nfrom array import array\n\nMAX_X = 100000\nTREE_SIZE = 4 * MAX_X + 5\nSHIFT = 20\nMASK = (1 << SHIFT) - 1\nNEG = -10**30\n\nLINE_SLOPE = []\nLINE_INTERCEPT = []\n\n\nclass HullStack:\n    __slots__ = (\"tree\", \"changes\", \"marks\", \"items\")\n\n    def __init__(self):\n        self.tree = [-1] * TREE_SIZE\n        self.changes = array(\"Q\")\n        self.marks = []\n        self.items = []\n\n    def push(self, line):\n        changes = self.changes\n        self.marks.append(len(changes))\n        self.items.append(line)\n\n        tree = self.tree\n        slopes = LINE_SLOPE\n        intercepts = LINE_INTERCEPT\n\n        new_line = line\n        new_m = slopes[new_line]\n        new_c = intercepts[new_line]\n\n        lo = 1\n        hi = MAX_X\n        node = 1\n\n        while True:\n            old_line = tree[node]\n\n            if old_line == -1:\n                changes.append(node << SHIFT)\n                tree[node] = new_line\n                break\n\n            mid = (lo + hi) >> 1\n            old_m = slopes[old_line]\n            old_c = intercepts[old_line]\n\n            if new_m * mid + new_c > old_m * mid + old_c:\n                changes.append((node << SHIFT) | (old_line + 1))\n                tree[node] = new_line\n\n                new_line = old_line\n                new_m = old_m\n                new_c = old_c\n\n            if lo == hi:\n                break\n\n            current_line = tree[node]\n            current_m = slopes[current_line]\n            current_c = intercepts[current_line]\n\n            if new_m * lo + new_c > current_m * lo + current_c:\n                node <<= 1\n                hi = mid\n            elif new_m * hi + new_c > current_m * hi + current_c:\n                node = (node << 1) | 1\n                lo = mid + 1\n            else:\n                break\n\n    def pop(self):\n        line = self.items.pop()\n        mark = self.marks.pop()\n\n        changes = self.changes\n        tree = self.tree\n\n        i = len(changes) - 1\n        while i >= mark:\n            code = changes[i]\n            tree[code >> SHIFT] = (code & MASK) - 1\n            i -= 1\n\n        del changes[mark:]\n        return line\n\n    def clear(self):\n        while self.items:\n            self.pop()\n\n    def query(self, x):\n        if not self.items:\n            return NEG\n\n        tree = self.tree\n        slopes = LINE_SLOPE\n        intercepts = LINE_INTERCEPT\n\n        lo = 1\n        hi = MAX_X\n        node = 1\n        best = NEG\n\n        while True:\n            line = tree[node]\n            if line != -1:\n                value = slopes[line] * x + intercepts[line]\n                if value > best:\n                    best = value\n\n            if lo == hi:\n                break\n\n            mid = (lo + hi) >> 1\n            if x <= mid:\n                node <<= 1\n                hi = mid\n            else:\n                node = (node << 1) | 1\n                lo = mid + 1\n\n        return best\n\n\nclass LineDeque:\n    __slots__ = (\"left\", \"right\")\n\n    def __init__(self):\n        self.left = HullStack()\n        self.right = HullStack()\n\n    def push_left(self, line):\n        self.left.push(line)\n\n    def push_right(self, line):\n        self.right.push(line)\n\n    def _rebalance_left(self):\n        left = self.left\n        right = self.right\n\n        sequence = right.items[:]\n        right.clear()\n\n        half = (len(sequence) + 1) // 2\n\n        for i in range(half - 1, -1, -1):\n            left.push(sequence[i])\n        for i in range(half, len(sequence)):\n            right.push(sequence[i])\n\n    def _rebalance_right(self):\n        left = self.left\n        right = self.right\n\n        sequence = left.items[::-1]\n        left.clear()\n\n        half = len(sequence) // 2\n\n        for i in range(half - 1, -1, -1):\n            left.push(sequence[i])\n        for i in range(half, len(sequence)):\n            right.push(sequence[i])\n\n    def pop_left(self):\n        if not self.left.items:\n            self._rebalance_left()\n        return self.left.pop()\n\n    def pop_right(self):\n        if not self.right.items:\n            self._rebalance_right()\n        return self.right.pop()\n\n    def query(self, x):\n        best = NEG\n\n        if self.left.items:\n            best = self.left.query(x)\n\n        if self.right.items:\n            value = self.right.query(x)\n            if value > best:\n                best = value\n\n        return best\n\n\ndef main():\n    global LINE_SLOPE, LINE_INTERCEPT\n\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n\n    n = data[0]\n    k = data[1]\n\n    if n == 1:\n        print(0)\n        return\n\n    parent_start = 2\n    z_start = parent_start + (n - 1)\n    b_start = z_start + (n - 1)\n\n    if k == 1:\n        answer = NEG\n        for i in range(n - 1):\n            z = data[z_start + i]\n            b = data[b_start + i]\n            value = z * (z + b) + z * z\n            if value > answer:\n                answer = value\n        print(answer)\n        return\n\n    parent = [-1] * n\n    children = [[] for _ in range(n)]\n\n    for v in range(1, n):\n        p = data[parent_start + v - 1] - 1\n        parent[v] = p\n        children[p].append(v)\n\n    z = [0] + data[z_start:b_start]\n    b = [0] + data[b_start:b_start + n - 1]\n\n    prefix = [0] * n\n    for v in range(1, n):\n        prefix[v] = prefix[parent[v]] + b[v]\n\n    slopes = [0] * n\n    intercepts = [0] * n\n    base = [0] * n\n\n    for v in range(1, n):\n        p = parent[v]\n        zv = z[v]\n\n        slopes[v] = -prefix[p]\n        intercepts[v] = zv * zv\n        base[v] = zv * (zv + prefix[v])\n\n    LINE_SLOPE = slopes\n    LINE_INTERCEPT = intercepts\n\n    del data\n    del parent\n    del prefix\n    del b\n\n    line_deque = LineDeque()\n    removed = [-1] * n\n\n    events = children[0][::-1]\n    active_count = 0\n    answer = NEG\n\n    while events:\n        event = events.pop()\n\n        if event > 0:\n            v = event\n\n            line_deque.push_right(v)\n\n            if active_count == k:\n                removed[v] = line_deque.pop_left()\n            else:\n                active_count += 1\n\n            best_line = line_deque.query(z[v])\n            candidate = base[v] + best_line\n            if candidate > answer:\n                answer = candidate\n\n            events.append(-v)\n            for child in reversed(children[v]):\n                events.append(child)\n\n        else:\n            v = -event\n\n            line_deque.pop_right()\n            active_count -= 1\n\n            old_line = removed[v]\n            if old_line != -1:\n                line_deque.push_left(old_line)\n                active_count += 1\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 978,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 63268,
+      "output_tokens_details": {
+        "reasoning_tokens": 60685
+      },
+      "total_tokens": 64246
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 666.242916801,
+    "prompt_tokens": 978,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 63268,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 60685,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0761172,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 978,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 63268
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom array import array\n\nMAX_X = 100000\nTREE_SIZE = 4 * MAX_X + 5\nSHIFT = 20\nMASK = (1 << SHIFT) - 1\nNEG = -10**30\n\nLINE_SLOPE = []\nLINE_INTERCEPT = []\n\n\nclass HullStack:\n    __slots__ = (\"tree\", \"changes\", \"marks\", \"items\")\n\n    def __init__(self):\n        self.tree = [-1] * TREE_SIZE\n        self.changes = array(\"Q\")\n        self.marks = []\n        self.items = []\n\n    def push(self, line):\n        changes = self.changes\n        self.marks.append(len(changes))\n        self.items.append(line)\n\n        tree = self.tree\n        slopes = LINE_SLOPE\n        intercepts = LINE_INTERCEPT\n\n        new_line = line\n        new_m = slopes[new_line]\n        new_c = intercepts[new_line]\n\n        lo = 1\n        hi = MAX_X\n        node = 1\n\n        while True:\n            old_line = tree[node]\n\n            if old_line == -1:\n                changes.append(node << SHIFT)\n                tree[node] = new_line\n                break\n\n            mid = (lo + hi) >> 1\n            old_m = slopes[old_line]\n            old_c = intercepts[old_line]\n\n            if new_m * mid + new_c > old_m * mid + old_c:\n                changes.append((node << SHIFT) | (old_line + 1))\n                tree[node] = new_line\n\n                new_line = old_line\n                new_m = old_m\n                new_c = old_c\n\n            if lo == hi:\n                break\n\n            current_line = tree[node]\n            current_m = slopes[current_line]\n            current_c = intercepts[current_line]\n\n            if new_m * lo + new_c > current_m * lo + current_c:\n                node <<= 1\n                hi = mid\n            elif new_m * hi + new_c > current_m * hi + current_c:\n                node = (node << 1) | 1\n                lo = mid + 1\n            else:\n                break\n\n    def pop(self):\n        line = self.items.pop()\n        mark = self.marks.pop()\n\n        changes = self.changes\n        tree = self.tree\n\n        i = len(changes) - 1\n        while i >= mark:\n            code = changes[i]\n            tree[code >> SHIFT] = (code & MASK) - 1\n            i -= 1\n\n        del changes[mark:]\n        return line\n\n    def clear(self):\n        while self.items:\n            self.pop()\n\n    def query(self, x):\n        if not self.items:\n            return NEG\n\n        tree = self.tree\n        slopes = LINE_SLOPE\n        intercepts = LINE_INTERCEPT\n\n        lo = 1\n        hi = MAX_X\n        node = 1\n        best = NEG\n\n        while True:\n            line = tree[node]\n            if line != -1:\n                value = slopes[line] * x + intercepts[line]\n                if value > best:\n                    best = value\n\n            if lo == hi:\n                break\n\n            mid = (lo + hi) >> 1\n            if x <= mid:\n                node <<= 1\n                hi = mid\n            else:\n                node = (node << 1) | 1\n                lo = mid + 1\n\n        return best\n\n\nclass LineDeque:\n    __slots__ = (\"left\", \"right\")\n\n    def __init__(self):\n        self.left = HullStack()\n        self.right = HullStack()\n\n    def push_left(self, line):\n        self.left.push(line)\n\n    def push_right(self, line):\n        self.right.push(line)\n\n    def _rebalance_left(self):\n        left = self.left\n        right = self.right\n\n        sequence = right.items[:]\n        right.clear()\n\n        half = (len(sequence) + 1) // 2\n\n        for i in range(half - 1, -1, -1):\n            left.push(sequence[i])\n        for i in range(half, len(sequence)):\n            right.push(sequence[i])\n\n    def _rebalance_right(self):\n        left = self.left\n        right = self.right\n\n        sequence = left.items[::-1]\n        left.clear()\n\n        half = len(sequence) // 2\n\n        for i in range(half - 1, -1, -1):\n            left.push(sequence[i])\n        for i in range(half, len(sequence)):\n            right.push(sequence[i])\n\n    def pop_left(self):\n        if not self.left.items:\n            self._rebalance_left()\n        return self.left.pop()\n\n    def pop_right(self):\n        if not self.right.items:\n            self._rebalance_right()\n        return self.right.pop()\n\n    def query(self, x):\n        best = NEG\n\n        if self.left.items:\n            best = self.left.query(x)\n\n        if self.right.items:\n            value = self.right.query(x)\n            if value > best:\n                best = value\n\n        return best\n\n\ndef main():\n    global LINE_SLOPE, LINE_INTERCEPT\n\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n\n    n = data[0]\n    k = data[1]\n\n    if n == 1:\n        print(0)\n        return\n\n    parent_start = 2\n    z_start = parent_start + (n - 1)\n    b_start = z_start + (n - 1)\n\n    if k == 1:\n        answer = NEG\n        for i in range(n - 1):\n            z = data[z_start + i]\n            b = data[b_start + i]\n            value = z * (z + b) + z * z\n            if value > answer:\n                answer = value\n        print(answer)\n        return\n\n    parent = [-1] * n\n    children = [[] for _ in range(n)]\n\n    for v in range(1, n):\n        p = data[parent_start + v - 1] - 1\n        parent[v] = p\n        children[p].append(v)\n\n    z = [0] + data[z_start:b_start]\n    b = [0] + data[b_start:b_start + n - 1]\n\n    prefix = [0] * n\n    for v in range(1, n):\n        prefix[v] = prefix[parent[v]] + b[v]\n\n    slopes = [0] * n\n    intercepts = [0] * n\n    base = [0] * n\n\n    for v in range(1, n):\n        p = parent[v]\n        zv = z[v]\n\n        slopes[v] = -prefix[p]\n        intercepts[v] = zv * zv\n        base[v] = zv * (zv + prefix[v])\n\n    LINE_SLOPE = slopes\n    LINE_INTERCEPT = intercepts\n\n    del data\n    del parent\n    del prefix\n    del b\n\n    line_deque = LineDeque()\n    removed = [-1] * n\n\n    events = children[0][::-1]\n    active_count = 0\n    answer = NEG\n\n    while events:\n        event = events.pop()\n\n        if event > 0:\n            v = event\n\n            line_deque.push_right(v)\n\n            if active_count == k:\n                removed[v] = line_deque.pop_left()\n            else:\n                active_count += 1\n\n            best_line = line_deque.query(z[v])\n            candidate = base[v] + best_line\n            if candidate > answer:\n                answer = candidate\n\n            events.append(-v)\n            for child in reversed(children[v]):\n                events.append(child)\n\n        else:\n            v = -event\n\n            line_deque.pop_right()\n            active_count -= 1\n\n            old_line = removed[v]\n            if old_line != -1:\n                line_deque.push_left(old_line)\n                active_count += 1\n\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    main()",
+  "judge": null,
+  "record_complete": true
+}

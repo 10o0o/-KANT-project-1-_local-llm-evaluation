@@ -1,0 +1,146 @@
+{
+  "run_id": "20260916_083828_659995Z",
+  "experiment": {
+    "type": "cloud",
+    "round": 1,
+    "planned_attempts": 10
+  },
+  "invocation": {
+    "selected_problem_ids": [
+      "coci_2025_2026_c5_skare",
+      "coci_2025_2026_c6_cokolada",
+      "coci_2025_2026_c6_dzeparac",
+      "coci_2025_2026_c4_tomahawk",
+      "coci_2025_2026_c5_struktura",
+      "coci_2025_2026_c6_prepisivanje",
+      "coci_2025_2026_c5_tezina",
+      "coci_2025_2026_c5_pet",
+      "coci_2025_2026_c6_ucionica",
+      "coci_2025_2026_c6_skijanje"
+    ]
+  },
+  "model": {
+    "id": "gpt-5.6-luna",
+    "name": "luna",
+    "runtime": "openai_responses",
+    "response_model": "gpt-5.6-luna"
+  },
+  "problem": {
+    "id": "coci_2025_2026_c6_prepisivanje",
+    "name": "prepisivanje",
+    "season": "2025_2026",
+    "contest": 6,
+    "difficulty": 7,
+    "difficulty_reason": "좌석을 체커보드 색으로 나눠 충돌 관계를 이분 그래프로 모델링하고, 최대 독립 집합을 최소 정점 커버와 최대 이분 매칭으로 환원해야 한다.",
+    "problem_dir": "data/coci/2025_2026/contest6/testdata/prepisivanje",
+    "statement_path": "data/coci/2025_2026/contest6/statements/prepisivanje.md",
+    "time_limit_seconds": 1.0,
+    "memory_limit_mib": 512,
+    "judge_type": "token",
+    "title": "Prepisivanje"
+  },
+  "request": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "input": [
+      {
+        "role": "user",
+        "content": "다음 알고리즘 문제를 해결하세요.\n\n요구사항:\n- 문제 해결 접근법을 설명하세요.\n- 시간 복잡도와 공간 복잡도를 설명하세요.\n- 실행 가능한 Python 3 정답 코드를 제공하세요.\n- 입력은 표준 입력(stdin)에서 받고 출력은 표준 출력(stdout)으로 작성하세요.\n- 최종 Python 코드는 ```python 코드 블록 안에 작성하세요.\n- 최종 답변에는 실행 가능한 Python 3 코드 블록을 정확히 하나만 포함하세요.\n- 중간 코드, 예시 코드, 수정 전 코드는 코드 블록으로 작성하지 마세요.\n- 코드 블록 안의 코드는 그대로 제출되므로 자체 수정본이나 대체 코드를 추가로 작성하지 마세요.\n\n실행 제한:\n- 시간 제한: 1초\n- 메모리 제한: 512 MiB\n\n문제:\n\nOn the eve of an important Croatian language exam, the classroom is already prepared. We can view it as a matrix of dimension $n \\times m$, where each cell represents one seat. Each cell of the matrix can have one of three values:\n\n- 2 denotes a seat already occupied by well-behaved students. They are responsible and the teacher is not concerned about them.\n- 1 denotes a seat that the teacher has marked as forbidden. No one will sit in those seats.\n- 0 denotes an empty seat where mischievous students can sit.\n\nThe mischievous students have not arrived yet, but they will come soon. The teacher can decide which empty seats the mischievous students will occupy.\n\nWell-behaved students never cheat, but they can cause mischievous students to cheat if they are adjacent to them. A mischievous student will cheat if they have at least one neighboring student (in one of the four directions: up, down, left, right), whether well-behaved or mischievous.\n\nDetermine the maximum total number of students that can be seated in the classroom (including both well-behaved and mischievous students) such that no cheating occurs during the exam.\n\n## Input\n\nThe first line contains natural numbers $n,m$ ($1 \\le n,m \\le 80$), as described in the problem statement.\n\nEach of the next $n$ lines contains $m$ characters, each being 0, 1, or 2, representing the matrix described in the problem.\n\n## Output\n\nIn the first and only line, output a single number - the maximum total number of students that can be seated in the classroom such that no cheating occurs during the exam.\n\n## Examples\n\n### Example 1\n\nInput\n\n```text\n4 4\n0100\n0202\n1000\n2120\n```\n\nOutput\n\n```text\n6\n```\n\n### Example 2\n\nInput\n\n```text\n4 4\n0000\n0000\n0000\n0000\n```\n\nOutput\n\n```text\n8\n```\n\n### Clarification of the second example:\n\nThe teacher will seat students in the first and third rows in odd-numbered columns, and in the second and fourth rows in even-numbered columns. This way, she will ensure that no student can cheat."
+      }
+    ]
+  },
+  "generation_config": {
+    "model": "gpt-5.6-luna",
+    "reasoning": {
+      "effort": "max"
+    },
+    "max_output_tokens": 128000,
+    "tools": [],
+    "tool_choice": "none",
+    "store": false,
+    "service_tier": "default",
+    "temperature": null,
+    "temperature_reason": "Not sent; provider default applies"
+  },
+  "client_config": {
+    "timeout_seconds": 3600,
+    "max_retries": 0
+  },
+  "call": {
+    "status": "success",
+    "error": null
+  },
+  "generation": {
+    "response_id": "resp_02d3d2930b58ec66016aaa5584d52c87d0a3a4a9f267df8e51",
+    "status": "completed",
+    "incomplete_details": null,
+    "content": "### 풀이 방법\n\n`2`인 좌석의 학생은 반드시 포함되므로 먼저 그 개수를 센다.\n\n장난꾸러기 학생이 앉을 수 있는 `0` 좌석 중, 상하좌우에 `2`가 있는 좌석은 선택할 수 없다. 해당 좌석의 장난꾸러기 학생이 바로 옆의 모범생 때문에 반드시 부정행위를 하기 때문이다.\n\n이제 다음 조건을 만족하는 `0` 좌석만 남긴다.\n\n- 선택한 두 좌석이 상하좌우로 인접하지 않는다.\n\n따라서 남은 좌석들을 정점으로 하고, 인접한 두 좌석 사이에 간선을 만든 그래프에서 최대 독립 집합을 구하면 된다.\n\n격자에서 `(행 + 열)`의 홀짝에 따라 좌석을 나누면 모든 간선은 서로 다른 그룹 사이에 연결되므로 이 그래프는 이분 그래프이다.\n\n이분 그래프에서는 쾨니그 정리에 의해 다음이 성립한다.\n\n- 최대 독립 집합 크기 = 정점 수 - 최대 매칭 크기\n\n따라서 Hopcroft–Karp 알고리즘으로 최대 매칭을 구한 뒤, 고정된 `2`의 개수와 더한다.\n\n### 정당성 증명\n\n선택 가능한 `0` 좌석만 그래프의 정점으로 포함한다. 이 좌석들은 인접한 `2`가 없으므로, 선택된 장난꾸러기 학생이 모범생 때문에 부정행위를 하는 일은 없다.\n\n또한 선택한 두 `0` 좌석이 인접하면 두 학생 모두 이웃 학생을 가지므로 부정행위를 하게 된다. 반대로 선택한 `0` 좌석들 사이에 간선이 없다면, 선택된 장난꾸러기 학생의 이웃에는 학생이 존재하지 않으므로 부정행위가 발생하지 않는다.\n\n따라서 유효한 장난꾸러기 학생 배치는 그래프의 독립 집합과 정확히 대응한다. 최대 독립 집합의 크기는 이분 그래프에서 정점 수에서 최대 매칭 크기를 뺀 값이므로, 계산한 값이 가능한 장난꾸러기 학생의 최댓값이다. 여기에 이미 앉아 있는 `2` 학생을 더하면 전체 학생 수의 최댓값이 된다.\n\n### 복잡도\n\n안전한 `0` 좌석의 수를 `V`, 인접 관계의 수를 `E`라 하면 Hopcroft–Karp의 시간 복잡도는 `O(E√V)`이다.\n\n격자에서 `V, E = O(nm)`이므로 전체 시간 복잡도는 `O(nm√(nm))`, 공간 복잡도는 `O(nm)`이다.\n\n```python\nimport sys\nfrom collections import deque\n\nsys.setrecursionlimit(1_000_000)\n\n\ndef solve():\n    input = sys.stdin.buffer.readline\n\n    n, m = map(int, input().split())\n    grid = [input().strip() for _ in range(n)]\n\n    fixed_students = sum(row.count(b\"2\") for row in grid)\n    directions = ((-1, 0), (1, 0), (0, -1), (0, 1))\n\n    # 인접한 2가 없는 안전한 0 좌석\n    safe = [[False] * m for _ in range(n)]\n\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] != 48:  # '0'\n                continue\n\n            possible = True\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if grid[nr][nc] == 50:  # '2'\n                        possible = False\n                        break\n\n            if possible:\n                safe[r][c] = True\n\n    # 체스판 색에 따른 이분 그래프 정점 번호 부여\n    left_id = [[-1] * m for _ in range(n)]\n    right_id = [[-1] * m for _ in range(n)]\n\n    safe_count = 0\n    left_count = 0\n    right_count = 0\n\n    for r in range(n):\n        for c in range(m):\n            if not safe[r][c]:\n                continue\n\n            safe_count += 1\n            if (r + c) % 2 == 0:\n                left_id[r][c] = left_count\n                left_count += 1\n            else:\n                right_id[r][c] = right_count\n                right_count += 1\n\n    graph = [[] for _ in range(left_count)]\n\n    # 왼쪽 그룹 정점의 인접 리스트 구성\n    for r in range(n):\n        for c in range(m):\n            if not safe[r][c] or (r + c) % 2 == 1:\n                continue\n\n            u = left_id[r][c]\n\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if safe[nr][nc]:\n                        graph[u].append(right_id[nr][nc])\n\n    pair_left = [-1] * left_count\n    pair_right = [-1] * right_count\n\n    INF = 10**9\n    dist = [INF] * left_count\n\n    def bfs():\n        queue = deque()\n\n        for u in range(left_count):\n            if pair_left[u] == -1:\n                dist[u] = 0\n                queue.append(u)\n            else:\n                dist[u] = INF\n\n        shortest = INF\n\n        while queue:\n            u = queue.popleft()\n\n            if dist[u] >= shortest:\n                continue\n\n            current_dist = dist[u]\n\n            for v in graph[u]:\n                matched_u = pair_right[v]\n\n                if matched_u == -1:\n                    shortest = min(shortest, current_dist + 1)\n                elif dist[matched_u] == INF:\n                    dist[matched_u] = current_dist + 1\n                    queue.append(matched_u)\n\n        return shortest\n\n    def dfs(u, shortest):\n        current_dist = dist[u]\n\n        for v in graph[u]:\n            matched_u = pair_right[v]\n\n            if matched_u == -1:\n                if current_dist + 1 != shortest:\n                    continue\n\n                pair_left[u] = v\n                pair_right[v] = u\n                return True\n\n            if dist[matched_u] == current_dist + 1:\n                if dfs(matched_u, shortest):\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n        dist[u] = INF\n        return False\n\n    matching = 0\n\n    while True:\n        shortest = bfs()\n        if shortest == INF:\n            break\n\n        for u in range(left_count):\n            if pair_left[u] == -1 and dist[u] == 0:\n                if dfs(u, shortest):\n                    matching += 1\n\n    answer = fixed_students + safe_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    solve()\n```",
+    "reasoning_content": null,
+    "reasoning_content_reason": "Internal reasoning is not requested or fabricated",
+    "usage": {
+      "input_tokens": 666,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 16908,
+      "output_tokens_details": {
+        "reasoning_tokens": 15365
+      },
+      "total_tokens": 17574
+    },
+    "service_tier": "default"
+  },
+  "metrics": {
+    "response_elapsed_seconds": 152.87717072099622,
+    "prompt_tokens": 666,
+    "prompt_tokens_reason": null,
+    "completion_tokens": 16908,
+    "completion_tokens_reason": null,
+    "reasoning_tokens": 15365,
+    "reasoning_tokens_reason": null,
+    "cached_input_tokens": 0,
+    "cached_input_tokens_reason": null,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_reason": null,
+    "generation_tokens_per_second": null,
+    "generation_tokens_per_second_reason": "Cloud API does not provide server generation duration",
+    "model_load_seconds": null,
+    "model_load_reason": "Cloud API does not provide model load duration",
+    "memory": {
+      "value": null,
+      "reason": "Cloud model VRAM is not exposed by the API"
+    },
+    "cost": {
+      "estimated_usd": 0.0204228,
+      "reason": null,
+      "currency": "USD",
+      "kind": "estimate_not_invoice",
+      "rates_per_million_tokens": {
+        "input": "0.20",
+        "cache_read": "0.02",
+        "cache_write": "0.25",
+        "output": "1.20"
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+      "checked_at": "2026-09-16",
+      "pricing_model": "gpt-5.6-luna",
+      "billable_tokens": {
+        "input": 666,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 16908
+      }
+    }
+  },
+  "extracted_code": "import sys\nfrom collections import deque\n\nsys.setrecursionlimit(1_000_000)\n\n\ndef solve():\n    input = sys.stdin.buffer.readline\n\n    n, m = map(int, input().split())\n    grid = [input().strip() for _ in range(n)]\n\n    fixed_students = sum(row.count(b\"2\") for row in grid)\n    directions = ((-1, 0), (1, 0), (0, -1), (0, 1))\n\n    # 인접한 2가 없는 안전한 0 좌석\n    safe = [[False] * m for _ in range(n)]\n\n    for r in range(n):\n        for c in range(m):\n            if grid[r][c] != 48:  # '0'\n                continue\n\n            possible = True\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if grid[nr][nc] == 50:  # '2'\n                        possible = False\n                        break\n\n            if possible:\n                safe[r][c] = True\n\n    # 체스판 색에 따른 이분 그래프 정점 번호 부여\n    left_id = [[-1] * m for _ in range(n)]\n    right_id = [[-1] * m for _ in range(n)]\n\n    safe_count = 0\n    left_count = 0\n    right_count = 0\n\n    for r in range(n):\n        for c in range(m):\n            if not safe[r][c]:\n                continue\n\n            safe_count += 1\n            if (r + c) % 2 == 0:\n                left_id[r][c] = left_count\n                left_count += 1\n            else:\n                right_id[r][c] = right_count\n                right_count += 1\n\n    graph = [[] for _ in range(left_count)]\n\n    # 왼쪽 그룹 정점의 인접 리스트 구성\n    for r in range(n):\n        for c in range(m):\n            if not safe[r][c] or (r + c) % 2 == 1:\n                continue\n\n            u = left_id[r][c]\n\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < m:\n                    if safe[nr][nc]:\n                        graph[u].append(right_id[nr][nc])\n\n    pair_left = [-1] * left_count\n    pair_right = [-1] * right_count\n\n    INF = 10**9\n    dist = [INF] * left_count\n\n    def bfs():\n        queue = deque()\n\n        for u in range(left_count):\n            if pair_left[u] == -1:\n                dist[u] = 0\n                queue.append(u)\n            else:\n                dist[u] = INF\n\n        shortest = INF\n\n        while queue:\n            u = queue.popleft()\n\n            if dist[u] >= shortest:\n                continue\n\n            current_dist = dist[u]\n\n            for v in graph[u]:\n                matched_u = pair_right[v]\n\n                if matched_u == -1:\n                    shortest = min(shortest, current_dist + 1)\n                elif dist[matched_u] == INF:\n                    dist[matched_u] = current_dist + 1\n                    queue.append(matched_u)\n\n        return shortest\n\n    def dfs(u, shortest):\n        current_dist = dist[u]\n\n        for v in graph[u]:\n            matched_u = pair_right[v]\n\n            if matched_u == -1:\n                if current_dist + 1 != shortest:\n                    continue\n\n                pair_left[u] = v\n                pair_right[v] = u\n                return True\n\n            if dist[matched_u] == current_dist + 1:\n                if dfs(matched_u, shortest):\n                    pair_left[u] = v\n                    pair_right[v] = u\n                    return True\n\n        dist[u] = INF\n        return False\n\n    matching = 0\n\n    while True:\n        shortest = bfs()\n        if shortest == INF:\n            break\n\n        for u in range(left_count):\n            if pair_left[u] == -1 and dist[u] == 0:\n                if dfs(u, shortest):\n                    matching += 1\n\n    answer = fixed_students + safe_count - matching\n    print(answer)\n\n\nif __name__ == \"__main__\":\n    solve()",
+  "judge": null,
+  "record_complete": true
+}
