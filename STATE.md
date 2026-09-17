@@ -4,7 +4,7 @@
 
 Gemma Round 1 도중 생성을 멈췄다. AI의 원본 조회에서 Qwen 20건·Luna 10건·Gemma Round 1 5건, 총 35건의 저장 완료와 호출 성공을 확인했다. Qwen Skijanje 두 회차는 코드 미추출이다. 원본 JSON·후보 일관성과 현재 입력·설정에 대한 재개 검사는 35건 모두 통과했다. 후보는 실행하지 않았으며 정답률·품질·전체 실험 완료로 해석하지 않는다. 확인 시 생성기·큐·채점기·모델 서버는 실행 중이지 않았다.
 
-구조 개선, 기록·잠금 보강, Cloud 독립 Round 2, Judge의 테스트별 stdout·stderr 합계 10 MiB OLE 정책을 통합했다. 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation` 한곳을 기준으로 사용한다. 새 위치에서 고정 의존성을 오프라인 캐시로 복원했고 모의·합성 프로세스 테스트 124개, 기존·신규 CLI 도움말 8개와 서버 셸 문법 검사를 통과했다. 실제 모델·Cloud 호출·후보 채점은 하지 않았다. Git 게시·Notion·복사본 정리 상태는 [인계](docs/maintenance-handoff.md)를 따른다.
+구조 개선, 기록·잠금 보강, Cloud 독립 Round 2, Judge의 테스트별 stdout·stderr 합계 10 MiB OLE 정책을 통합했다. 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation` 한곳을 기준으로 사용한다. 새 위치에서 고정 의존성을 오프라인 캐시로 복원했고 모의·합성 프로세스 테스트 124개, 기존·신규 CLI 도움말 8개와 서버 셸 문법 검사를 통과했다. 실제 모델·Cloud 호출·후보 채점은 하지 않았다. 성격별 커밋을 게시하고 Notion을 갱신·재조회했으며 작업 복사본을 정리했다. 상세 근거는 [인계](docs/maintenance-handoff.md)를 따른다.
 
 원본 Gemma 셸의 `fit-target 0`, `load-mode auto`, `lazy-mode auto`와 전체 바이트를 보존했다. 당시 서버 로그는 남아 있지 않아 현재 셸 값을 과거 실행 설정으로 소급하지 않는다. 결과 원본과 과거 pilot, 기존 Cloud `planned_attempts=10`은 수정하지 않았다.
 
