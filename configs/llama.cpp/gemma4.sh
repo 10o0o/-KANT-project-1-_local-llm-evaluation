@@ -14,7 +14,9 @@ exec "$LLAMA_ROOT/build/bin/llama-server" \
   --parallel 1 \
   --gpu-layers auto \
   --fit on \
-  --fit-target 1536 \
+  --fit-target 0 \
+  --load-mode auto \
+  --lazy-mode auto \
   --flash-attn on \
   --threads 16 \
   --threads-batch 24 \
