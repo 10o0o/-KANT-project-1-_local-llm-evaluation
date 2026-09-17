@@ -2,7 +2,7 @@
 
 | 경로 | 용도 | 본 실험 집계 |
 | --- | --- | --- |
-| `benchmark/<문제>/luna/round_1/` | Cloud 10문항×1회, 로컬과 별도 비교 | Cloud 집계 |
+| `benchmark/<문제>/luna/round_<회차>/` | Cloud 10문항×2회 독립 실행(총 20회), 로컬과 별도 비교 | Cloud 집계 |
 | `benchmark/<문제>/<qwen36 또는 gemma4>/round_<회차>/` | 로컬 모델당 10문항×2회 | 로컬 집계 |
 | `pilot/pre_offline_judging_20260916_173157_900249/` | 생성·일괄 채점 분리 후 새 실행을 위한 기존 19건·54파일 원본 보존 | 제외 |
 | `pilot/pre_resource_limits_20260916_162603_416706/` | 실행 제한 미제공 조건의 로컬 6회·Cloud 10회와 이동 manifest | 제외 |
@@ -12,15 +12,17 @@
 | [diagnostics/struktura](diagnostics/struktura/) | WA 원인을 확인하기 위한 수동 코드 수정본 | 제외 |
 | [archive/legacy-runs](archive/legacy-runs/) | 초기 연결·Ollama 실습·benchmark 개발 과정의 timestamp 결과 | 제외 |
 
+AI의 원본 조회에서 확인한 중단 기록은 Qwen 20건·Luna 10건·Gemma Round 1 5건, 합계 35건이며 호출 상태는 모두 성공이다. Qwen의 `skijanje` 2건은 코드 미추출이며 실제 후보 채점은 하지 않았다. 이는 로컬 40회·Cloud 20회, 총 60회 계획의 완료나 Judge 실행 완료를 뜻하지 않는다. 이번 문서 유지보수에서는 실제 모델·Cloud 생성과 후보 Judge를 실행하지 않았으며, AI의 읽기 전용 artifact 검사는 원본 JSON·후보 일관성만 확인했다.
+
 ## Reasoning 진단의 이동과 집계 예외
 
-처음 `benchmark/round_1/tomahawk/qwen36/`에서 확인한 run `20260916_124351_312419`는 reasoning 종료 메시지 추가 후 진단이다. `experiment.type=benchmark`로 저장돼 있어도 **본 실험 40회·품질·성능 집계에서 제외한다**. 결과는 `stop`·completion 3703·코드 생성·`RE`이며 [진단 기록](../docs/reasoning-budget-diagnostic.md)에 근거를 남겼다.
+당시 구형 경로인 `benchmark/round_1/tomahawk/qwen36/`에서 확인한 run `20260916_124351_312419`는 reasoning 종료 메시지 추가 후 진단이다. `experiment.type=benchmark`로 저장돼 있어도 **본 실험 40회·품질·성능 집계에서 제외한다**. 결과는 `stop`·completion 3703·코드 생성·`RE`이며 [진단 기록](../docs/history/reasoning-budget-diagnostic.md)에 근거를 남겼다.
 
 문서 검증 중 `pilot/reasoning_block/tomahawk/qwen36/`로 이동된 것을 확인했다. 실행기는 같은 경로의 완료 결과를 건너뛰므로 이 진단을 원래 benchmark 경로에 다시 두면 정식 요청이 건너뛰어진다. 경로 분리는 확인했으며 새 결과에는 종료 메시지 설정 기록도 추가했다. 이번 문서 작업에서는 이동·삭제·JSON 수정을 하지 않았다. 이 예외는 run ID로 식별하며 동일 문제의 다른 실행으로 확대하지 않는다.
 
 ## 기록과 집계 원칙
 
-본 평가 결과는 `benchmark/<문제>/<모델>/round_<라운드>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 본 실험 요청 설정은 출력 61440·reasoning 53248·temperature 0이며 서버 셸 Context는 65536이다. 기존 종료 메시지는 유지하고 이전 조건의 결과와 구분한다. 새 로컬 benchmark JSON에는 [종료 메시지](../docs/reasoning-budget-diagnostic.md)도 generation_config에 기록한다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
+본 평가 결과는 `benchmark/<문제>/<모델>/round_<라운드>/`에 저장한다. 폴더는 실제 실행 시 생성한다. 현재 본 실험 요청 설정은 출력 61440·reasoning 53248·temperature 0이며 서버 셸 Context는 65536이다. 기존 종료 메시지는 유지하고 이전 조건의 결과와 구분한다. 새 로컬 benchmark JSON에는 [종료 메시지](../docs/history/reasoning-budget-diagnostic.md)도 generation_config에 기록한다. 실제 서버 적용과 관측값은 파일 설정과 구분해야 한다.
 
 `response.json`은 원본 응답, `candidate.py`는 추출 코드, `result.json`은 설정·응답·생성 지표와 생성 기록 완료 여부다. 새 기록은 `judge=null`이며, 구형 기록의 embedded `judge`는 당시 판정으로 보존한다. 코드가 없으면 `candidate.py`가 없을 수 있다. 초기 보관 기록은 파일명과 스키마가 다를 수 있다.
 
@@ -30,7 +32,7 @@ Calibration의 `PASS`는 최종 응답과 코드 블록 생성 여부를 확인�
 
 Diagnostics의 수정 코드는 모델 원본 답변이 아니므로 모델 정답률에 포함하지 않는다. 저장된 판정 근거가 없으면 코드 파일만으로 수동 재채점 성공을 단정하지 않는다.
 
-원본 내용은 수정하지 않고 이전 경로와 복원 방법은 [정리 이력](../docs/history/README.md)에 남겼다. 이전 Cloud 10회는 pilot으로 보존하고, [Cloud 안내](../docs/cloud-benchmark.md)에 따라 전체 10문항×1회 결과를 `benchmark/<문제>/luna/round_1/`에 저장한다. 로컬의 40회에 합산하지 않는다. 원본 응답·선택적 후보 코드·정리된 결과를 나누고, 성공·실패 시도를 덮어쓰지 않는다.
+원본 내용은 수정하지 않고 이전 경로와 복원 방법은 [정리 이력](../docs/history/README.md)에 남겼다. 이전 Cloud 10회는 pilot으로 보존하고, [Cloud 안내](../docs/operations/cloud-runbook.md)에 따라 현재 계획인 전체 10문항×2회 독립 실행 결과를 `benchmark/<문제>/luna/round_1/`·`round_2/`에 저장한다. Cloud 20회는 로컬의 40회에 합산하지 않으며 최종 로컬 후보 선정에서도 제외한다. 원본 응답·선택적 후보 코드·정리된 결과를 나누고, 성공·실패 시도를 덮어쓰지 않는다.
 
 모델당 서버 시작 후 warmup 1회를 수행한다.
 warmup은 본 실험 40회 및 품질·성능 평균에서 제외한다.
@@ -52,7 +54,7 @@ benchmark 문제는 warmup에 사용하지 않는다.
 
 `results/judging/<세션 ID>/manifest.json`에 선택 범위, 시작/종료 시각, 처리 상태, 미생성 목록, 원본 run ID·경로·SHA-256, 후보 SHA-256, 시간 제한, 테스트 입출력 파일별 SHA-256, Python·플랫폼·Judge 소스 식별값을 저장한다. 각 `judge.json`에는 기존 Judge 반환값과 원본 연결 정보를 저장한다.
 
-- `complete=true`는 발견한 저장 완료 기록의 처리를 마쳤다는 뜻이다. 전체 50회 생성·품질 평가 완료를 뜻하지 않는다.
+- `complete=true`는 발견한 저장 완료 기록의 처리를 마쳤다는 뜻이다. 전체 계획 60회 생성·품질 평가 완료를 뜻하지 않는다.
 - 선택 범위에 미생성 항목이 있으면 `coverage_complete=false`, `status=completed_with_missing`이며 `missing` 목록을 확인한다. 누락이 없으면 `status=completed`다.
 - 호출 실패는 `CALL_ERROR`로 채점 제외하며 성공 응답의 코드 미추출은 별도 `NO_CODE` 결과로 남긴다. 호출 실패를 정답률 분모에서 임의로 제외하지 않는다.
 - 현재 본 실험 경로만 조회하며 pilot·archive는 제외한다. 기존 embedded Judge 결과가 있어도 새 세션에서 다시 채점한다.
@@ -63,8 +65,30 @@ benchmark 문제는 warmup에 사용하지 않는다.
 
 이번 구조 변경은 생성·채점 부하를 분리하기 위한 것이다. 기존 TLE가 추론 부하 때문에 발생했다는 인과는 확인하지 않았으며, 서버 종료 후 실제 일괄 채점과 비교는 별도로 수행한다.
 
-## 생성·채점 분리 후 새 실행 준비
+## 2026-09-16 생성·채점 분리 후 보관 이력
 
 현재 benchmark의 Qwen 9건·Luna 10건을 `results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/`로 옮겼다. 원본 54파일(3,421,076바이트)의 이동 전후 경로별 SHA-256·크기를 대조했고 결과를 같은 보관 폴더의 `manifest.json`에 남겼다. 기존 응답·코드·판정·호출 실패는 수정하지 않았다. 이 기록은 새 본 실험 및 일괄 채점 대상에서 제외한다.
 
-이동 당시 생성기·채점기는 실행 중이지 않았으며 모델 서버는 종료하지 않았다. `results/benchmark/`는 빈 상태로 새 생성을 시작할 수 있게 했다. 새 실행이나 실제 채점은 이 보관 작업에서 수행하지 않았다.
+이동 당시 생성기·채점기는 실행 중이지 않았으며 모델 서버는 종료하지 않았다. 보관 작업 직후의 `results/benchmark/`는 빈 상태였다. 이후 생성 중인 현재 상태와 구분하며 최신 진행은 [STATE](../STATE.md)를 따른다. 새 실행이나 실제 채점은 이 보관 작업에서 수행하지 않았다.
+
+## 생성 코드와 판정 읽기
+
+추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 생성 기록의 `extracted_code`는 null이며, 후속 일괄 채점에서 `NO_CODE`로 기록합니다.
+
+Judge는 `<문제 이름>.in.*`와 대응하는 `.out.*` 파일을 사용하며, `.dummy.in.*` 예제 파일은 채점 대상에서 제외됩니다. 각 테스트를 별도 Python 프로세스로 실행하고 문제의 시간 제한을 적용합니다. 출력은 공백으로 나눈 토큰 단위로 비교합니다.
+
+| 판정 | 의미 |
+| --- | --- |
+| `AC` | 모든 테스트 통과 |
+| `WA` | 출력 불일치 |
+| `TLE` | 테스트 실행 시간 초과 |
+| `RE` | 실행 중 오류로 비정상 종료 |
+| `NO_CODE` | 추출할 코드 블록 없음 |
+| `OLE` | 테스트별 stdout·stderr 합산 출력이 10 MiB(10,485,760 bytes)를 초과함 |
+| `JUDGE_ERROR` | 채점 인프라·처리 예외로 해당 항목의 판정을 완료하지 못함; 후보 코드 판정과 구분함 |
+
+선택한 채점 세션의 `judge.json`에서 통과 수·전체 테스트 수·테스트별 판정·최대 실행 시간을 확인할 수 있습니다. Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 한도를 적용하고, 시간 초과와 출력 초과가 함께 발생하면 먼저 발생한 자원을 `TLE` 또는 `OLE`로 기록합니다. 이 정책의 `version`, `per_test_output_limit_bytes`, `output_limit_scope`, `resource_verdict_precedence`는 세션 `manifest.json`의 `judge_policy`에 남깁니다. 인프라·처리 예외는 `JUDGE_ERROR`로 남기며 정상 판정과 섞지 않습니다. 기존 생성 기록에 포함된 `judge`는 당시 판정으로 보존하며 새 채점과 섞지 않습니다. 모델의 응답 생성 시간과 생성된 코드의 테스트 실행 시간은 별도 지표입니다. 풀이 설명의 정확성은 응답 원문을 읽고 평가합니다.
+
+공식 메모리 제한은 모델 입력에 제공하지만, Judge는 코드의 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않습니다. AC는 메모리 제한 준수를 증명하지 않습니다. 현재 Judge는 샌드박스를 구현하지 않았으며, 생성 코드를 로컬 권한으로 실행합니다. 결과는 이 실행 환경의 관측값이며 대회 공식 채점 결과와 같음을 보장하지 않습니다.
+
+실행·재개·채점 명령은 [로컬 실행 안내](../docs/operations/local-runbook.md), 측정 의미와 기록 한계는 [기록 구현 점검](../docs/operations/recording.md)을 따른다.

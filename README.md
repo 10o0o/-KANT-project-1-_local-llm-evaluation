@@ -2,21 +2,38 @@
 
 Qwen과 Gemma가 생성한 Python 풀이를 공개 테스트 데이터로 실행·채점하고 결과를 비교하는 프로젝트입니다. 정답 여부와 함께 풀이 설명, 추론 내용, 생성 속도를 살펴보며 코딩테스트 풀이에 적합한 로컬 모델을 찾습니다.
 
-COCI에서 선정한 10문항을 사용합니다. 현재 실행기는 모델 하나에 문제 하나를 요청하고, 응답·생성 지표와 추출 코드를 저장합니다. 채점은 전체 생성과 모델 서버 종료 후 별도로 수행합니다. 전체 문항의 반복 실험과 최종 비교는 진행 중입니다.
+COCI에서 선정한 10문항을 사용합니다. 현재 실행기는 모델 하나에 문제 하나를 요청하고, 응답·생성 지표와 추출 코드를 저장합니다. 채점은 전체 생성과 모델 서버 종료 후 별도로 수행합니다. AI의 원본 조회에서 확인한 중단 기록은 Qwen 20건·Luna 10건·Gemma Round 1 5건, 합계 35건이며 모두 호출 성공이다. Qwen의 `skijanje` 2건은 코드 미추출이다. 이는 계획한 60회 완료나 품질·채점 완료를 뜻하지 않는다.
 
 ```text
 문제문 → 모델 호출 → 응답·생성 지표·Python 코드 저장
 전체 생성 완료 → 모델 서버 종료 → 순차 일괄 채점 → 채점 회차별 저장
 ```
 
+현재 진행 근거와 다음 한 작업은 [STATE](STATE.md), 문서 정리와 종료 후 인계는 [작업 목록](docs/maintenance-handoff.md)에서 확인한다.
+
+현재 로컬 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation`이다. 운영 명령은 저장소 루트에서 실행한다. 생성 기록 35건은 저장소에 보존했고 모델 가중치·비밀 파일·테스트 데이터는 포함하지 않는다. Cloud `--round`는 기본 1이며 2를 선택할 수 있고, 로컬 생성은 `--round 1` 또는 `--round 2`를 명시한다. 통합 검증·게시 상태는 [인계 문서](docs/maintenance-handoff.md#현재-상태와-다음-행동)를 따른다.
+
+학습 실습·실제 모델 호출·채점·평가는 직접 수행한다. 명시적으로 맡긴 유지보수의 AI 구현·정적/모의 검증은 별도 기록한다. 범위는 [튜터 지침](AGENTS.md)에 따른다.
+
+## 발제와 현재 수행 기준
+
+| 구분 | 기준 |
+| --- | --- |
+| 발제 원문 | Ollama, 서로 다른 로컬 2모델 × 10문항 × 2회 = 40회, Cloud 공통 5문항 × 1회 |
+| 현재 수행 | 튜터에게 허락받아 llama.cpp로 전환했다. Qwen·Gemma의 독립 반복 40회와 Cloud Luna 전체 10문항 × 2회 = 20회를 구분한다. 로컬과 Cloud는 제공자·생성 설정이 다르며 문제 목록·반복 수·독립성만 공통으로 맞춘다. 일부 결과를 본 뒤 Cloud 범위를 확장한 경과를 사전 선정으로 소급하지 않는다. 전체 계획은 60회이며 Cloud는 최종 로컬 후보 선정에서 제외한다. AI의 원본 조회에서 확인한 중단 기록은 35건이고, Round 2 지원은 구현돼 있으나 실제 완료·Judge·최종 비교는 별도 근거가 필요하다. |
+| 사용자 정의 평가 | 원본 유효 정답 12/20(60%) 통과선과 선정 순서는 [요구사항](docs/project/requirements.md)을 따른다. 호출 성공 수/시도 수·지표별 n도 별도로 유지한다. |
+| 개인 필수 | 기본 과제 이후 세 번째 로컬 모델·Transformers 직접 실행·동일 모델 양자화 비교·임베딩 실습 4개를 수행한다. [개인 필수 실습](docs/project/learning-guide.md#발제-선택사용자-필수)은 발제 공통 필수와 구분한다. |
+
+생성 기록 완료, 채점 완료, 설명 평가·집계·최종 선정 완료는 서로 다르다. 설명 평가·집계·최종 선정의 완료 근거는 아직 확인하지 않았다.
+
 ## 실행 환경
 
-- Python 3.12, uv
+- 확인한 Python 환경은 3.12, 패키지 요구 범위는 `>=3.12`; uv 사용
 - `--reasoning-budget`을 지원하는 llama.cpp 빌드와 `llama-server`
 - 해당 llama.cpp에서 로딩할 수 있는 Qwen·Gemma GGUF 가중치
 - COCI 문제별 테스트 입력·정답 파일
 
-확인한 장비·버전·모델 파일과 실제 관측 범위는 [실행 환경과 측정 근거](docs/environment.md)에 정리했습니다. 서버 스크립트의 GPU 설정은 이 환경에서 사용한 값이므로 장비에 맞게 조정해야 합니다. 모델 가중치, llama.cpp 런타임, 테스트 데이터는 저장소에 포함하지 않습니다.
+확인한 장비·버전·모델 파일과 실제 관측 범위는 [실행 환경과 측정 근거](docs/operations/environment.md)에 정리했습니다. 서버 스크립트의 GPU 설정은 이 환경에서 사용한 값이므로 장비에 맞게 조정해야 합니다. 모델 가중치, llama.cpp 런타임, 테스트 데이터는 저장소에 포함하지 않습니다.
 
 ## 설치와 실행
 
@@ -25,8 +42,8 @@ COCI에서 선정한 10문항을 사용합니다. 현재 실행기는 모델 하
 저장소를 내려받은 뒤 루트에서 실행합니다.
 
 ```bash
-git clone https://github.com/10o0o/-KANT-project-1-_local-llm-evaluation.git
-cd -- -KANT-project-1-_local-llm-evaluation
+git clone https://github.com/10o0o/-KANT-project-1-_local-llm-evaluation.git local-llm-evaluation
+cd -- local-llm-evaluation
 uv sync --locked
 ```
 
@@ -47,152 +64,54 @@ data/coci/2025_2026/contest5/testdata/skare/
 
 문제문에 포함된 그림은 Markdown에서 확인할 수 있습니다. 현재 호출기는 텍스트만 전송하므로 이미지 파일 자체는 모델에 전달되지 않습니다.
 
-### 3. 서버 실행
-
-별도 터미널에서 사용할 모델 하나를 시작한다. 기본 경로가 설치 위치와 다르면 `LLAMA_ROOT`, `GEMMA4_MODEL_PATH` 또는 `QWEN36_MODEL_PATH`를 지정한다.
+데이터 준비 후 다음 검증기를 직접 실행한다. 문제 목록·문제문·테스트 입출력 짝을 확인하며, 문제의 텍스트 적합성이나 모델 품질 판정을 대신하지 않는다. 최종 `Validation PASSED`와 종료 코드를 확인한다.
 
 ```bash
-bash configs/llama.cpp/gemma4.sh
-# Qwen을 실행할 때:
-# bash configs/llama.cpp/qwen36.sh
+uv run python scripts/validate_dataset.py
 ```
 
-서버 터미널에서 준비 완료를 확인한 뒤 워밍업을 실행한다. 두 서버는 `127.0.0.1:8080`을 공유하므로 모델 전환 시 기존 서버를 종료한다. 환경 JSON이나 별도 시작 실행기는 사용하지 않는다.
+### 3. 생성과 채점
 
-| 서버 설정 | Qwen | Gemma |
-| --- | --- | --- |
-| API 모델 이름 | `qwen36` | `gemma4` |
-| Context | 65536 | 65536 |
-| 기본 출력 / reasoning / temperature | 61440 / 53248 / 0 | 61440 / 53248 / 0 |
-| Parallel / Flash Attention | 1 / on | 1 / on |
-| GPU layers | all | auto |
-| Fit / fit target | 미지정 / 미지정 | on / 1536 |
-| CPU MoE layers | 32 | 미지정 |
-| Generation / batch threads | 16 / 24 | 16 / 24 |
-| Load mode | none | 미지정 |
-| RAM prompt cache | 0 MiB (비활성) | 0 MiB (비활성) |
+1. [로컬 실행 안내](docs/operations/local-runbook.md): 서버·워밍업·독립 두 회차를 수동 실행하거나 자동 큐를 사용한다.
+2. [Cloud 비교 안내](docs/operations/cloud-runbook.md): 로컬 측정 종료 후 Luna 10문항을 두 회차 독립 실행한다. 키 로드 방법과 로컬과의 설정 차이는 해당 안내를 따른다.
+3. [일괄 채점 절차](docs/operations/local-runbook.md#전체-생성-완료-후-일괄-채점): 로컬·Cloud 전체 생성과 모델 서버 종료 후 직접 채점한다.
 
-미지정 옵션은 런타임 기본값을 따른다. Gemma는 직접 최적화한 `--gpu-layers auto --fit on --fit-target 1536 --threads 16 --threads-batch 24`를 사용한다. Qwen의 `--fit`은 미지정이다. 이후 Qwen 진단의 로그 인용에는 기본 fit 수행과 parameter 변경 없음이 보고됐으며 [환경 근거](docs/environment.md)에 구분해 기록했다. 표는 설정값이며 실제 적재 상태·VRAM 적합성은 직접 실행해서 확인한다.
+생성·채점의 표준 진입점은 `scripts/run_local_benchmark.py`와 `scripts/run_batch_judge.py`다. 기존 `run_benchmark.py`·`run_judge.py` 명령은 이전 사용자를 위한 호환 진입점로 유지하며 새 절차에서는 표준 진입점을 사용한다.
 
-### 4. 워밍업 후 두 회차 평가
-
-다른 터미널에서 실행한다. 아래는 Qwen 예시이며 Gemma는 `--model gemma4`로 바꾼다.
-
-```bash
-uv run python scripts/run_warmup.py --model qwen36
-
-uv run python scripts/run_benchmark.py \
-  --model qwen36 --problems all --round 1
-
-uv run python scripts/run_benchmark.py \
-  --model qwen36 --problems all --round 2
-```
-
-워밍업은 모델당 별도 짧은 입력으로 호출하고 완료 여부만 터미널에 표시한다. 파일 저장·환경 기록·성능 측정은 하지 않는다. 실패하면 오류를 그대로 전달한다. 워밍업은 본 실험 40회와 평균에서 제외한다. 요청은 출력 128·reasoning 64·temperature 0이다.
-
-`--problems`에는 `all` 또는 `problems.json`의 ID를 쉼표로 나열한다. 본 실험은 동일 문제문·지시문·생성 설정으로 두 번 독립 요청한다. 이전 답변이나 채점 결과는 전달하지 않으며 Round 1 없이 Round 2도 실행할 수 있다. 현재 작업 트리의 공통 요청에는 [reasoning 종료 메시지](docs/reasoning-budget-diagnostic.md)도 추가했다. 메시지 본문·소스 근거는 진단 문서에 정리했다. 새 로컬 성공·실패 기록에는 `generation_config.reasoning_budget_message`도 저장한다. 공통 요청의 `cache_prompt=false`와 서버의 `--cache-ram 0`은 유지한다. 여기서 독립 요청은 이전 답변을 전달하지 않는 절차를 뜻한다. 응답의 캐시 카운터는 해당 요청의 근거이며 전체 실험의 독립성을 단독으로 증명하지 않는다.
-
-설정 변경은 서버 재시작이 필요하다. 실행할 모델과 서버를 직접 맞춘다. 환경 파일 연결·검증은 하지 않는다. 클라이언트 timeout은 3600초이며 자동 재시도는 꺼져 있다. 호출 실패는 기록한 뒤 중단하고, 같은 명령 재실행 시 보존된 실패 시도는 건너뛴다.
-
-과거 calibration·diagnostic 실행기는 당시 실험용이다. 과거 Ollama 실습은 [정리 전 Git 이력](docs/history/README.md)에 보존했다.
-
-### 5. 전체 생성 완료 후 일괄 채점
-
-로컬·Cloud 생성이 모두 끝나면 모델 서버 터미널에서 서버를 종료한 뒤 실행한다. 실행 중인 생성기·서버는 이 스크립트가 자동 종료하지 않는다. 새 생성 실행기는 채점하지 않지만, 변경 전에 시작한 프로세스는 기존 자동 채점을 계속 수행한다.
-
-```bash
-uv run python scripts/run_judge.py --problems all --models all --rounds all
-```
-
-`--problems`는 `all` 또는 전체 문제 ID, `--models`는 `all` 또는 `qwen36,gemma4,luna`, `--rounds`는 `all` 또는 `1,2`를 받는다. 예를 들어 Tezina만 선택하려면 `--problems coci_2025_2026_c5_tezina`를 사용한다. Luna는 round 1만 대상으로 한다.
-
-기존 판정 유무와 관계없이 저장된 원본 후보를 순차 채점한다. 후보가 `extracted_code`와 다르거나 생성 폴더가 불완전하면 시작 전에 중단한다. 수정본 한 개의 검증에는 기존 `scripts/check_candidate.py`를 사용한다.
-
-새 생성 기록은 `record_complete=true`, `judge=null`로 저장한다. 생성 기록 완료는 모델의 정답 또는 API 응답의 완전한 종료를 뜻하지 않는다. 동일 입력·설정의 구형 채점 완료 기록과 새 생성 완료 기록, 호출 실패는 재호출하지 않는다.
-
-채점 결과는 `results/judging/<세션 ID>/<문제>/<모델>/round_<회차>/judge.json`과 세션 `manifest.json`에 저장한다. 재실행마다 새 세션을 만들며 생성 원본과 이전 채점 결과는 덮어쓰지 않는다. 상세 필드와 미생성·중단 처리는 [결과 안내](results/README.md#일괄-채점-세션)를 따른다.
-
-채점 중에는 새로운 생성 작업이나 다른 무거운 작업을 시작하지 않는다. Linux/WSL의 `/proc`에서 알려진 실행기와 `llama-server`를 시작 전·후보 사이에 검사하지만, 외부 작업의 시작 자체를 막는 기능은 아니다. 별도 Windows 프로세스나 다른 실행 방식의 부하까지 검증하지는 않는다. TLE는 CPU 시간이 아닌 테스트별 실제 경과 시간 기준이며 Python 시작·입출력·CPU 대기도 포함한다.
-
-## 결과 확인
-
-생성·채점 분리 후 새로 시작하기 위해 이전 benchmark 19건을 `results/pilot/pre_offline_judging_20260916_173157_900249/`로 보존했다. 기존 원본과 이동 검증 manifest는 유지하며 새 본 실험에서는 제외한다.
-
-로컬과 Cloud 모두 문제 → 모델 → 라운드 순서로 저장한다. 로컬은 `round_1`·`round_2`, Luna는 `round_1`만 사용한다. 제한 미제공 조건의 로컬 6회·Cloud 10회는 `results/pilot/pre_resource_limits_20260916_162603_416706/`에 원본 그대로 분리했고 새 집계에서 제외한다.
-
-
-실행 결과는 다음 위치에 저장합니다.
+## 결과 위치와 해석
 
 ```text
-results/benchmark/<문제 이름>/<모델 이름>/round_<라운드>/
-├── response.json   # API 원본 응답
-├── candidate.py    # 추출한 Python 코드가 있을 때 생성
-└── result.json     # 생성 설정·응답·추론·사용량·생성 기록 완료 여부
+results/benchmark/<문제>/<모델>/round_<회차>/
+├── response.json   # 원본 API 응답이 저장된 경우
+├── candidate.py    # 추출 코드가 있는 경우
+└── result.json     # 호출 상태·요청·응답·생성 지표·기록 완료 여부
+
+results/judging/<세션 ID>/
+├── manifest.json
+└── <문제>/<모델>/round_<회차>/judge.json
 ```
 
-`--problems all`은 전체 문제를, 쉼표로 구분한 ID는 지정한 문제들을 순서대로 실행합니다. 같은 라운드·문제·모델의 완료 결과는 입력 프롬프트와 생성 설정이 같을 때만 건너뜁니다. 조건이 다르면 호출 전에 중단합니다. 불완전한 결과 폴더는 덮어쓰지 않고 중단합니다. Tomahawk run `20260916_124351_312419`는 진단이므로 본 실험에서 제외합니다. 문서 검증 중 `results/pilot/reasoning_block/`로 분리된 것을 확인했으며 자세한 예외는 [결과 분류](results/README.md)에 있습니다.
+로컬과 Luna는 각각 두 회차이며, 계획한 본 실험은 로컬 40회와 Cloud 20회, 총 60회다. 현재 전달된 35건은 일시정지 범위로 별도 표시하고 나머지 계획을 완료로 소급하지 않는다. 실패·부분 기록에서는 파일 구성이 다를 수 있다. 판정은 선택한 채점 세션을 원본 run ID와 연결해 읽고, 원본과 수정본·pilot·과거 embedded 판정을 섞지 않는다. 세부 필드·판정·집계 제외 이력은 [결과 안내](results/README.md)를 따른다. 현재 폴더의 존재만으로 실험 완료를 판단하지 않는다.
 
-기존 출력 한도 6144의 8회 실행은 [pilot/6144](results/pilot/6144/)에 보존했습니다. 당시 Qwen Pet이 6144토큰에서 `length`로 종료하고 `NO_CODE`가 되어 출력 한도를 8192로 늘렸던 이력이 있습니다.
+## 저장소와 문서
 
-현재 설정은 서버 Context 65536, 기본 출력 61440·reasoning 53248, 공통 본 실험 요청 max_tokens 61440 / reasoning_budget_tokens 53248 / temperature 0 / cache_prompt false다. 기존 reasoning_budget_message 본문은 유지한다. 이전 Context 12288·출력 8192·reasoning 2048의 진단 기록과 구분하며 새 설정의 실제 적용·VRAM 적합성은 서버 재시작 후 확인해야 한다. Pilot은 본 실험 집계에서 제외하며 두 회차 어느 쪽에서도 이전 답변으로 전달하지 않는다.
-
-본 실험 생성기는 요청·응답·실패·전체 응답 시간·토큰·생성 속도를 저장하고, 채점 결과는 별도 채점 세션에 저장한다. 환경 세션 파일과의 연결 및 서버 시작 계측은 제거했다. 요청별 로딩 시간은 llama.cpp 응답에 없어 null과 사유를 남긴다.
-
-VRAM은 응답 원본 저장 후 또는 호출 실패 직후 조회한다. 현재 8080 포트를 사용하는 llama-server와 모델 별칭으로 PID를 자동 탐색한다. 서버를 하나로 식별하지 못하거나 WSL에서 프로세스 값이 제공되지 않으면 null과 사유를 남긴다. `memory.process`(프로세스)와 `memory.devices`(전체 장치)는 서로 대체하지 않으며 최대 VRAM으로 표시하지 않는다. 전체 응답 시간에는 VRAM 조회·파일 저장·채점 시간이 포함되지 않는다.
-
-모델별 집계에는 호출 성공 수/시도 수와 지표별 평균·n을 표시한다. 누락값을 0으로 대체하지 않는다. 실행 도구·모델 파일·설정의 확인 범위는 [환경 문서](docs/environment.md)에 정리하며 자동 환경 기록이 있는 것으로 간주하지 않는다.
-
-추출기는 마지막 Python 코드 블록을 선택하고, Python 블록이 없으면 마지막 일반 코드 블록을 사용합니다. 코드 블록이 없으면 생성 기록의 `extracted_code`는 null이며, 후속 일괄 채점에서 `NO_CODE`로 기록합니다.
-
-Judge는 `<문제 이름>.in.*`와 대응하는 `.out.*` 파일을 사용하며, `.dummy.in.*` 예제 파일은 채점 대상에서 제외됩니다. 각 테스트를 별도 Python 프로세스로 실행하고 문제의 시간 제한을 적용합니다. 출력은 공백으로 나눈 토큰 단위로 비교합니다.
-
-| 판정 | 의미 |
+| 위치 | 역할 |
 | --- | --- |
-| `AC` | 모든 테스트 통과 |
-| `WA` | 출력 불일치 |
-| `TLE` | 테스트 실행 시간 초과 |
-| `RE` | 실행 중 오류로 비정상 종료 |
-| `NO_CODE` | 추출할 코드 블록 없음 |
+| `configs/llama.cpp/` | 모델 서버 실행 셸 |
+| `scripts/` | 생성·워밍업·큐·채점·데이터 검증 진입점과 `diagnostics/` 아래 과거 진단 |
+| `src/llm_eval/local/` | 로컬 호출·생성·워밍업·큐; `server.py`는 서버 탐색, `metrics.py`는 관측·지표 |
+| `src/llm_eval/cloud/` | Cloud 호출·생성·사용량·비용 |
+| `src/llm_eval/judging/` | 후보 채점·일괄 처리; `process.py`는 아직 미연결인 출력 제한 도구 |
+| `src/llm_eval/shared/` | 프롬프트·문제 읽기·코드 추출·결과 경로·저장·파일 검사·작업 잠금 |
+| `tests/local/`, `cloud/`, `judging/`, `shared/` | 동일 책임별 모의 테스트 |
+| `docs/project/`, `operations/`, `history/`, `sources/` | 과제 기준·운영 절차·과거 이력·원문 스냅샷 |
+| [문제 목록](data/coci/problems.json) | 선정 10문항의 ID·문제문/테스트 경로·실행 제한 |
+| [결과 안내](results/README.md) | 생성·채점 결과와 pilot·진단·보관 기록의 구분 |
+| [요구사항](docs/project/requirements.md) · [모델 조사](docs/project/model-candidates.md) | 사용 사례·선정 기준·후보 정보 |
+| [실행 환경](docs/operations/environment.md) · [기록 구현 점검](docs/operations/recording.md) | 장비·설정·측정의 확인 범위와 한계 |
+| [발제 원문](docs/project/assignment.md) · [평가표](docs/project/assignment-rubric.md) · [단계별 안내](docs/project/learning-guide.md) | 과제 기준·학습 절차 |
+| [정리 이력](docs/history/README.md) | 과거 파일 위치와 복원 방법 |
+| [STATE](STATE.md) · [작업 인계](docs/maintenance-handoff.md) | 현재 근거·다음 한 작업·완료/보류 목록 |
+| [튜터 지침](AGENTS.md) | 직접 수행 원칙과 승인된 AI 유지보수·정적/모의 검증 범위 |
 
-선택한 채점 세션의 `judge.json`에서 통과 수·전체 테스트 수·테스트별 판정·최대 실행 시간을 확인할 수 있습니다. 기존 생성 기록에 포함된 `judge`는 당시 판정으로 보존하며 새 채점과 섞지 않습니다. 실패가 여러 종류면 전체 판정에는 첫 실패의 상태를 기록합니다. 모델의 응답 생성 시간과 생성된 코드의 테스트 실행 시간은 별도 지표입니다. 풀이 설명의 정확성은 응답 원문을 읽고 평가합니다.
-
-공식 메모리 제한은 모델 입력에 제공하지만, Judge는 코드의 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않습니다. AC는 메모리 제한 준수를 증명하지 않습니다. 현재 Judge는 샌드박스를 구현하지 않았으며, 생성 코드를 로컬 권한으로 실행합니다. 결과는 이 실행 환경의 관측값이며 대회 공식 채점 결과와 같음을 보장하지 않습니다.
-
-## 저장소 구성과 문서
-
-```text
-configs/llama.cpp/   모델 서버 실행 스크립트
-scripts/            benchmark·데이터 검증 진입점과 calibration 실행기
-src/llm_eval/benchmark/  CLI·프롬프트·문제별 실행
-src/llm_eval/       모델 호출·문제 선택·코드 추출·채점
-data/coci/         문제 목록과 모델 입력용 문제문
-results/            실행별 응답·후보 코드·채점 결과
-docs/               프로젝트 요구사항과 조사·학습 기록
-```
-
-| 문서 | 내용 |
-| --- | --- |
-| [요구사항](docs/requirements.md) | 평가 목적과 모델 선정 기준 |
-| [모델 조사](docs/models.md) | 후보 모델 정보와 실행 경과 |
-| [Cloud 비교](docs/cloud-benchmark.md) | Luna 10문항 실행·결과·비용과 비교 조건 |
-| [실행 환경](docs/environment.md) | 장비·버전·모델 파일과 측정 근거·미확인 항목 |
-| [발제 원문](docs/project-brief.md) | 프로젝트 과제 기준 |
-| [단계별 안내](docs/guide.md) | 실습 단계와 참고 자료 |
-| [진행 기록](STATE.md) | 학습 과정과 확인 근거 |
-| [튜터 지침](AGENTS.md) | AI 활용과 작업 범위 |
-
-실행 결과의 용도와 집계 범위는 [결과 분류](results/README.md), 이전 파일의 위치와 복원 방법은 [정리 이력](docs/history/README.md)에 정리했습니다.
-
-로컬 benchmark와 분리된 [Luna Cloud 실행기](docs/cloud-benchmark.md)를 추가했다. 발제의 5문항×1회를 직접 정한 10문항×1회로 확장하며, Luna reasoning=max·출력 한도 128000을 사용한다. 로컬과 생성 예산·반복 수가 다름을 명시하고 동일 문제·프롬프트·Judge로 비교한다. 이전 프롬프트의 Cloud 10회는 pilot으로 분리했다. 새 조건의 실행·품질 평가·집계는 남아 있다.
-
-`openai_secret_key`를 실행 환경에 설정한 뒤 `uv run python scripts/run_cloud_benchmark.py --problems all`로 실행한다. 기존 `.env`를 로드하는 방법과 비용·오류 처리는 Cloud 안내를 따른다. 코드 채점이 로컬 측정에 영향을 주지 않도록 로컬 실험 종료 후 실행한다.
-
-llama.cpp 전환은 튜터에게 허락받았다. [평가 기준](docs/requirements.md)과 [기록 복구 점검](docs/logging-review.md)을 따른다. 기록 복구와 본 실험 준비는 아직 완료되지 않았다.
-
-## 모의 검증
-
-```bash
-uv run python -m unittest discover -s tests -v
-```
-
-모델 응답과 GPU 조회를 모의 처리하고 워밍업 무저장·본 실험 기록 유지를 확인한다. 이 검증은 실제 서버 실행, 모델 품질·VRAM 적합성이나 본 실험 완료를 증명하지 않는다.
+과거 calibration·diagnostic 실행기는 당시 실험용이며 본 실험 경로와 구분한다. 선정 10문항 외 Slaganje는 calibration에 사용한 자료다. 모의 검증 명령은 [로컬 안내](docs/operations/local-runbook.md#모의-검증)에 있다.

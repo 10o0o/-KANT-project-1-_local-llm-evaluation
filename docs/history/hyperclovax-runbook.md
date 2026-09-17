@@ -1,6 +1,6 @@
 # HyperCLOVAX 실행 메모
 
-현재 benchmark에서는 사용하지 않는다. NAVER llama.cpp로 진단하던 당시의 명령을 보존했다. 아래 절대 경로는 당시 PC 기준이며 현재 실행 가능 여부를 다시 확인한 것은 아니다. 후보 제외 경위는 [모델 조사](../models.md#제외-이력-hyperclova)에 있다.
+현재 benchmark에서는 사용하지 않는다. NAVER llama.cpp로 진단하던 당시의 명령을 보존했다. 아래 절대 경로는 당시 PC 기준이며 현재 실행 가능 여부를 다시 확인한 것은 아니다. 후보 제외 경위는 [모델 조사](../project/model-candidates.md#제외-이력-hyperclova)에 있다.
 
 ## 당시 메모 원문
 

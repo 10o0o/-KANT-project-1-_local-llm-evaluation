@@ -1,6 +1,6 @@
 > 출처: [프로젝트 발제 문서](https://app.notion.com/p/3ddde5bf9074809787d7f6a5a5a263e7). 2026-09-16 Notion 조회 본문 전체를 내용·구조 기준으로 보존했다.
-> 교정 전 [2026-09-14 Markdown](sources/project-brief.2026-09-14.md), [첨부 HTML](sources/project-brief.html), [이전 발제](sources/project-brief.previous.md)는 그대로 보존한다.
-> [조회 원문](sources/project-brief.notion.md)을 함께 보존한다. 화면 장식과 토글 표현만 Markdown에 맞췄으며 개인 기준은 원문에 섞지 않았다.
+> 교정 전 [2026-09-14 Markdown](../sources/project-brief.2026-09-14.md), [첨부 HTML](../sources/project-brief.html), [이전 발제](../sources/project-brief.previous.md)는 그대로 보존한다.
+> [조회 원문](../sources/project-brief.notion.md)을 함께 보존한다. 화면 장식과 토글 표현만 Markdown에 맞췄으며 개인 기준은 원문에 섞지 않았다.
 
 **모든 토글을 열고 닫는 단축키**
 - Windows: `Ctrl` + `Alt` + `T`
@@ -272,7 +272,7 @@ Prompt, Response, Latency, VRAM Usage, 품질 평가, 질문·실행 ID, 반복 
 
 # 8️⃣ 필수 완료 기준과 평가표
 
-[프로젝트 수행 평가표](project-evaluation.md) ([Notion 원문](https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820))
+[프로젝트 수행 평가표](assignment-rubric.md) ([Notion 원문](https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820))
 
 - [ ] 사용 사례와 모델 요구사항, 로컬 후보 2개의 정보·출처·실행 조건을 정의했습니다.
 - [ ] 고정 질문 10개를 로컬 모델 2개에 각각 2회 적용하고 원본 응답·측정값·실패 기록을 저장했습니다.

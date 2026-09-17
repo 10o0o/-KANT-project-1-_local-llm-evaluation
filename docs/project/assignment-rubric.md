@@ -1,5 +1,5 @@
 > 출처: [프로젝트 수행 평가표](https://app.notion.com/p/3ddde5bf9074801ba56fd9356c80e820). 2026-09-16 Notion 조회 본문 전체를 내용·구조 기준으로 보존했다.
-> [조회 원문](sources/project-evaluation.notion.md)을 함께 보존한다. 화면 장식과 토글 표현만 Markdown에 맞췄으며 개인 기준은 원문에 섞지 않았다.
+> [조회 원문](../sources/project-evaluation.notion.md)을 함께 보존한다. 화면 장식과 토글 표현만 Markdown에 맞췄으며 개인 기준은 원문에 섞지 않았다.
 
 # 1. 프로젝트 요구사항 기반 평가표
 

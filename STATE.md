@@ -1,5 +1,19 @@
 # 현재 학습 상태
 
+## 현재 확인 범위: 2026-09-17 중단 기록 보존·유지보수 통합
+
+Gemma Round 1 도중 생성을 멈췄다. AI의 원본 조회에서 Qwen 20건·Luna 10건·Gemma Round 1 5건, 총 35건의 저장 완료와 호출 성공을 확인했다. Qwen Skijanje 두 회차는 코드 미추출이다. 원본 JSON·후보 일관성과 현재 입력·설정에 대한 재개 검사는 35건 모두 통과했다. 후보는 실행하지 않았으며 정답률·품질·전체 실험 완료로 해석하지 않는다. 확인 시 생성기·큐·채점기·모델 서버는 실행 중이지 않았다.
+
+구조 개선, 기록·잠금 보강, Cloud 독립 Round 2, Judge의 테스트별 stdout·stderr 합계 10 MiB OLE 정책을 통합했다. 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation` 한곳을 기준으로 사용한다. 새 위치에서 고정 의존성을 오프라인 캐시로 복원했고 모의·합성 프로세스 테스트 124개, 기존·신규 CLI 도움말 8개와 서버 셸 문법 검사를 통과했다. 실제 모델·Cloud 호출·후보 채점은 하지 않았다. Git 게시·Notion·복사본 정리 상태는 [인계](docs/maintenance-handoff.md)를 따른다.
+
+원본 Gemma 셸의 `fit-target 0`, `load-mode auto`, `lazy-mode auto`와 전체 바이트를 보존했다. 당시 서버 로그는 남아 있지 않아 현재 셸 값을 과거 실행 설정으로 소급하지 않는다. 결과 원본과 과거 pilot, 기존 Cloud `planned_attempts=10`은 수정하지 않았다.
+
+계획 범위는 Qwen·Gemma·Luna 각각 10문항 × 독립 2회, 총 60회다. Cloud reasoning=max·출력 128000과 로컬 선정 기준은 유지한다. 남은 생성은 25건이며 실제 채점·설명 평가·집계·최종 선정은 아직 수행하지 않았다.
+
+다음 한 작업: **Gemma Round 1 미생성 문항부터 직접 재개**. 순서는 Prepisivanje → Tezina → Pet → Ucionica → Skijanje다. [로컬 실행 안내](docs/operations/local-runbook.md)의 서버 시작·워밍업·생성 절차를 따르며, 같은 입력·설정의 기존 기록은 건너뛴다.
+
+아래는 각 시점의 과거 기록이며 당시 다음 작업·미확인 사항을 보존한다. 현재 진행은 위 확인 범위를 기준으로 읽는다.
+
 ## 생성·일괄 채점 분리 후 재시작 준비: 2026-09-16
 
 새로 실행하기 위해 기존 benchmark 전체를 `results/pilot/pre_offline_judging_20260916_173157_900249/benchmark/`로 보존했다. AI의 파일 조회·이동 검증 결과를 참고했다. Qwen 9건·Luna 10건, 원본 54파일(3,421,076바이트)의 SHA-256·크기가 이동 전후 일치했고 manifest를 남겼다. 원본 응답·후보·embedded 판정·호출 실패는 변경하지 않았으며 새 본 실험에서 제외한다.
@@ -20,9 +34,9 @@ AI의 구현과 모의 테스트 34개 통과 결과를 참고해 공통 프롬�
 
 ## Cloud 실행기 구현: 2026-09-16
 
-로컬 두 모델의 10문항×2회 실행을 진행하면서 Cloud를 전체 10문항×1회로 확장하기로 했다. [발제 STEP 7](docs/project-brief.md)의 원래 5문항 기준과 사용자 정의 확장을 구분한다. 진행 중인 로컬 코드·설정·원본 결과는 이번 작업에서 수정하지 않았다.
+로컬 두 모델의 10문항×2회 실행을 진행하면서 Cloud를 전체 10문항×1회로 확장하기로 했다. [발제 STEP 7](docs/project/assignment.md)의 원래 5문항 기준과 사용자 정의 확장을 구분한다. 진행 중인 로컬 코드·설정·원본 결과는 이번 작업에서 수정하지 않았다.
 
-AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](docs/cloud-benchmark.md)를 추가했다. Luna reasoning=max·출력 한도 128000이며 기존 문제·프롬프트·Judge를 재사용한다. 호출·오류·원본·사용량·예상 비용을 기록한다. 실제 Cloud 호출·모델 실행·실제 후보 코드 채점은 하지 않았고 Cloud 실험·품질 평가·집계는 미완료다.
+AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](docs/operations/cloud-runbook.md)를 추가했다. Luna reasoning=max·출력 한도 128000이며 기존 문제·프롬프트·Judge를 재사용한다. 호출·오류·원본·사용량·예상 비용을 기록한다. 실제 Cloud 호출·모델 실행·실제 후보 코드 채점은 하지 않았고 Cloud 실험·품질 평가·집계는 미완료다.
 
 ## 통합 전 상태 기록
 
@@ -32,11 +46,11 @@ AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](docs/cl
 
 llama.cpp 전환은 튜터에게 허락받았다. 독립 반복과 원본 유효 정답률 60%, 최소 수정 보조 평가, 설명 2/1/0 기준은 유지한다.
 
-기존에는 서버 Context 12288, 요청 출력 8192·reasoning 2048·temperature 0·cache_prompt false로 설정을 동결했다. 이후 공통 요청에 [reasoning 종료 메시지](docs/reasoning-budget-diagnostic.md)를 추가했다. 현재 작업 트리 기준 변경이며 결과 JSON 기록 보완과 확정 조건의 실제 적용 검증이 남아 있다. Gemma GPU auto와 Qwen 기존 적재·스레드 튜닝을 유지한다.
+기존에는 서버 Context 12288, 요청 출력 8192·reasoning 2048·temperature 0·cache_prompt false로 설정을 동결했다. 이후 공통 요청에 [reasoning 종료 메시지](docs/history/reasoning-budget-diagnostic.md)를 추가했다. 현재 작업 트리 기준 변경이며 결과 JSON 기록 보완과 확정 조건의 실제 적용 검증이 남아 있다. Gemma GPU auto와 Qwen 기존 적재·스레드 튜닝을 유지한다.
 
 AI의 구현·모의 검증 결과를 참고해 워밍업 파일 저장과 environment 인자·세션 검증·시작 실행기를 제거했다. 서버는 기존 셸로 직접 시작한다. 본 실험 응답·실패·tok/s·VRAM 기록은 유지하고 VRAM용 PID는 실행 중인 서버에서 자동 탐색한다. 원본 기록은 삭제하지 않았다. 이번 AI 문서 작업에서는 모델·Cloud 호출, 서버 재시작과 채점을 실행하지 않았다.
 
-질문별 기대 결과·사례 범위·텍스트 적합성, Cloud 전체 10문항 실행, 실제 서버 설정 적용·VRAM 적합성·워밍업 실행 확인이 남아 있다. [환경 문서](docs/environment.md)에 CPU·RAM·버전·GGUF 파일 크기와 현재 Qwen 실행 인수를 정리했다. 이후 첨부 로그 인용으로 Qwen Context 12288·혼합 적재·내부 메타데이터·fit 수행 근거를 보완했다. Gemma 내부 메타데이터는 직접 확인했으나 AI는 원본 로그를 대조하지 못했다. Gemma 실제 적재 상태, 두 GGUF 해시와 서버 시작 시간은 미확인이다. 기술 구현을 학습 완료나 본 실험 전체 준비 완료로 바꾸지 않는다.
+질문별 기대 결과·사례 범위·텍스트 적합성, Cloud 전체 10문항 실행, 실제 서버 설정 적용·VRAM 적합성·워밍업 실행 확인이 남아 있다. [환경 문서](docs/operations/environment.md)에 CPU·RAM·버전·GGUF 파일 크기와 현재 Qwen 실행 인수를 정리했다. 이후 첨부 로그 인용으로 Qwen Context 12288·혼합 적재·내부 메타데이터·fit 수행 근거를 보완했다. Gemma 내부 메타데이터는 직접 확인했으나 AI는 원본 로그를 대조하지 못했다. Gemma 실제 적재 상태, 두 GGUF 해시와 서버 시작 시간은 미확인이다. 기술 구현을 학습 완료나 본 실험 전체 준비 완료로 바꾸지 않는다.
 
 ### 종료 메시지 추가 후 진단: 2026-09-16
 
@@ -81,14 +95,14 @@ Skare는 응답 69.22초·생성 38.64 tok/s이고 전체 GPU 장치 사용량�
 ## 유지할 환경·진행 근거
 
 - 정리 전 환경에는 Ollama/OpenAI 의존성이 있었다. 현재 [pyproject.toml](pyproject.toml)·[uv.lock](uv.lock)에는 OpenAI 의존성만 남겼다. 전체 환경 재현 검증은 별도다.
-- 당시 Ollama 실습에서 Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용했다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](docs/models.md)에 연결했다.
+- 당시 Ollama 실습에서 Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용했다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](docs/project/model-candidates.md)에 연결했다.
 - Context와 VRAM 관계를 고려해 실제 관측하며 설정을 정하기로 했다. 코딩테스트 요구사항 초안은 작성했지만 STEP 2의 필수 통과 조건·확인 방법 구체화는 남아 있다.
 
 ## 완료 상태 구분
 
 기본 과제와 개인 전체 학습은 아직 미완료다. 문제 10개는 선정했다. Cloud 전체 10문항 확장은 결정했다. 새 설정의 본 실험 40회 전체 완료·워밍업 2회 수행 확인·Cloud 10회, 품질 평가·최종 선정·재실행 검증은 남아 있다.
 
-[발제 선택·개인 필수 실습 4개](docs/guide.md#발제-선택사용자-필수)는 모두 수행 근거 미확인이다: 세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델 양자화 비교, Sentence Transformers 임베딩. 오늘 연결 진단으로 완료 처리하지 않는다.
+[발제 선택·개인 필수 실습 4개](docs/project/learning-guide.md#발제-선택사용자-필수)는 모두 수행 근거 미확인이다: 세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델 양자화 비교, Sentence Transformers 임베딩. 오늘 연결 진단으로 완료 처리하지 않는다.
 
 ## 다음 한 작업
 

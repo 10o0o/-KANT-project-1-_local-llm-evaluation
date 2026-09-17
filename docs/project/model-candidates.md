@@ -1,8 +1,10 @@
 # 로컬 모델 후보 조사
 
-[발제 STEP 3](project-brief.md)의 후보 조사 내용을 기록한다. 발제의 후보 조사 항목을 아래 비교표에 함께 기록한다. 미조사 값은 그대로 두고 설치 식별값은 설치 정보 확인 후 작성한다.
+[발제 STEP 3](assignment.md)의 후보 조사 내용을 기록한다. 발제의 후보 조사 항목을 아래 비교표에 함께 기록한다. 미조사 값은 그대로 두고 설치 식별값은 설치 정보 확인 후 작성한다.
 
 ## 핵심 비교표
+
+모델 정보와 함께 **과거 Ollama 설치 식별값**을 보존한 표다. 아래 태그·digest·Modelfile은 현재 llama.cpp 실행 파일의 식별값이나 설정이 아니다. 현재 GGUF·런타임 근거와 미확인 사항은 [실행 환경](../operations/environment.md)을 따른다.
 
 | 항목 | 후보 A | 후보 B |
 | --- | --- | --- |
@@ -13,7 +15,7 @@
 | 모델 파일 크기 | 21.2GB | [18GB](https://ollama.com/library/gemma4:26b-a4b-it-q4_K_M) |
 | 문서상 최대 Context (토큰) | 262,144 | 256K; Ollama 조회 262,144 |
 | 양자화 형식 | Q4_K_M | Q4_K_M |
-| 모델 ID/digest | c1f47f017694 | `5571076f3d70` (전체 digest는 아래) |
+| 과거 Ollama 모델 ID/digest | c1f47f017694 | `5571076f3d70` (전체 digest는 아래) |
 | Architecture | qwen35moe | gemma4 / Mixture-of-Experts (MoE) |
 | 지원 언어 | 지원 언어 목록 미명시 | 공식 카드: 35개 이상 언어 지원, 140개 이상 언어 사전학습 |
 | 공개 Benchmark·출처 | LiveCodeBench v6, AIME26 등 — [공식 모델 카드](https://huggingface.co/Qwen/Qwen3.6-35B-A3B#benchmark-results) | LiveCodeBench v6 77.1%, AIME 2026 88.3%, Codeforces ELO 1718 — [공식 카드](https://ai.google.dev/gemma/docs/core/model_card_4#benchmark_results) |
@@ -34,20 +36,20 @@ PARAMETER num_ctx 4096
 - 전체 digest: `c1f47f01769450c584d5779ce1ef0bfc34799937782e0168694ec1a4125b63a1`.
 - 기반 등록 모델: `qwen3.6:35b-a3b-q4_K_M`, ID `07d35212591f`. 같은 가중치와 Q4_K_M 양자화를 사용하며 별도 재양자화가 아니다.
 - GPU 레이어 설정은 12, 실행 Context 설정은 4096이다. 표의 문서상 최대 Context 262,144와 구분한다. 호출 시 옵션으로 덮어쓰면 실제 사용한 설정을 따로 기록한다.
-- [사용자 Modelfile](/home/jake/workspace/local-llm/configs/ollama/qwen3.6-35b-a3b-q4_K_M/Modelfile)과 [기존 실행 안내](/home/jake/workspace/local-llm/configs/ollama/qwen3.6-35b-a3b-q4_K_M/README.md)는 현재 PC의 외부 참고 위치다. 제출 시 재현에 필요한 설정을 저장소 안에 남긴다.
+- 사용자 Modelfile: `/home/jake/workspace/local-llm/configs/ollama/qwen3.6-35b-a3b-q4_K_M/Modelfile`과 기존 실행 안내: `/home/jake/workspace/local-llm/configs/ollama/qwen3.6-35b-a3b-q4_K_M/README.md`는 현재 PC의 외부 참고 위치다. 제출 시 재현에 필요한 설정을 저장소 안에 남긴다.
 - 기존 실행 안내에는 이전 측정값 약 6.04 tok/s·GPU 메모리 6,835 MiB가 있다. 이번 조회에서는 추론을 재실행하지 않았고 `ollama ps`는 비어 있었다. 이 수치를 본 실험 결과로 집계하지 않는다.
 
 ## 후보 B Gemma 설치 확인
 
-공식 출처와 AI의 읽기 전용 조회 결과를 참고해 조사표를 정리했다. 이후 CLI·Python 기본 호출을 진행하고 결과를 `results/`에 저장했다. 이 절은 당시 기본 호출 이력이며 이후 코딩테스트 평가는 [STATE](../STATE.md)와 결과 기록에서 확인한다.
+공식 출처와 AI의 읽기 전용 조회 결과를 참고해 조사표를 정리했다. 이후 CLI·Python 기본 호출을 진행하고 결과를 `results/`에 저장했다. 이 절은 당시 기본 호출 이력이며 이후 코딩테스트 평가는 [STATE](../../STATE.md)와 결과 기록에서 확인한다.
 
 - 전체 digest: `5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251`.
-- 기본 호출에서 Context 4096과 응답 저장·재읽기를 확인했다. 당시 CLI의 CPU/GPU 적재 비율은 73%/27%였다. 자세한 진행 근거는 [STATE](../STATE.md)에 기록했다.
-- 이후 llama.cpp 전환과 현재 실행·평가 상태는 [STATE](../STATE.md)를 따른다. 위 Ollama 식별값과 연결 결과는 당시 이력으로 보존하며 새 GGUF와 같은 파일이라고 간주하지 않는다.
+- 기본 호출에서 Context 4096과 응답 저장·재읽기를 확인했다. 당시 CLI의 CPU/GPU 적재 비율은 73%/27%였다. 자세한 진행 근거는 [STATE](../../STATE.md)에 기록했다.
+- 이후 llama.cpp 전환과 현재 실행·평가 상태는 [STATE](../../STATE.md)를 따른다. 위 Ollama 식별값과 연결 결과는 당시 이력으로 보존하며 새 GGUF와 같은 파일이라고 간주하지 않는다.
 
 ## llama.cpp 실행 산출물 식별
 
-자동 환경 기록은 제거했다. 현재 GGUF 경로·바이트 크기, 실행 도구 버전·설정의 확인 근거와 미확인 항목은 [실행 환경](environment.md)에 정리했다. Qwen 내부 메타데이터·Context·혼합 적재는 첨부 로그 인용 근거로, Gemma 내부 메타데이터는 직접 확인한 근거로 구분했다. Gemma 실제 적재 상태와 두 GGUF 해시는 미확인이다. 공통 요청의 [reasoning 종료 메시지 진단](reasoning-budget-diagnostic.md)은 모델 품질 평가와 구분한다. 과거 Ollama digest를 새 GGUF 식별값으로 재사용하지 않는다. 조사표의 파일 크기는 배포 문서상 값을 유지한다.
+자동 환경 기록은 제거했다. 현재 GGUF 경로·바이트 크기, 실행 도구 버전·설정의 확인 근거와 미확인 항목은 [실행 환경](../operations/environment.md)에 정리했다. Qwen 내부 메타데이터·Context·혼합 적재는 첨부 로그 인용 근거로, Gemma 내부 메타데이터는 직접 확인한 근거로 구분했다. Gemma 실제 적재 상태와 두 GGUF 해시는 미확인이다. 공통 요청의 [reasoning 종료 메시지 진단](../history/reasoning-budget-diagnostic.md)은 모델 품질 평가와 구분한다. 과거 Ollama digest를 새 GGUF 식별값으로 재사용하지 않는다. 조사표의 파일 크기는 배포 문서상 값을 유지한다.
 
 ## 제외 이력: HyperCLOVA
 
@@ -64,7 +66,7 @@ PARAMETER num_ctx 4096
 | 모델 파일 크기 | 21.2GB | 8.92GB |
 | 문서상 최대 Context (토큰) | 262,144 | 32,000 |
 | 양자화 형식 | Q4_K_M | Q4_K_M |
-| 모델 ID/digest | c1f47f017694 | ee0e0d9ce93e |
+| 과거 Ollama 모델 ID/digest | c1f47f017694 | ee0e0d9ce93e |
 | Architecture | qwen35moe | hcx-seed-think |
 | 지원 언어 | 지원 언어 목록 미명시 | 한국어·영어 평가 결과 제공, 전체 지원 언어 목록 미명시 |
 | 공개 Benchmark·출처 | LiveCodeBench v6, AIME26 등 — [공식 모델 카드](https://huggingface.co/Qwen/Qwen3.6-35B-A3B#benchmark-results) | HumanEval, MBPP, MATH500 등 — [공식 모델 카드](https://huggingface.co/naver-hyperclovax/HyperCLOVAX-SEED-Think-14B#benchmarks) |
@@ -73,11 +75,11 @@ PARAMETER num_ctx 4096
 
 ### 제외 전 실행 도구 예외와 점검 이력
 
-HyperCLOVA만 NAVER `llama.cpp` 포크로 진행하기로 했다. 이는 [사용자 선택 실행 도구 예외](guide.md#현재-후보와-hyperclova-제외-이력)이며 과제 측의 승인 여부는 확인되지 않았다. 위 조사값은 보존하며 다운로드 식별자와 실제 실행 도구를 구분한다.
+HyperCLOVA만 NAVER `llama.cpp` 포크로 진행하기로 했다. 이는 [사용자 선택 실행 도구 예외](learning-guide.md#현재-후보와-hyperclova-제외-이력)이며 과제 측의 승인 여부는 확인되지 않았다. 위 조사값은 보존하며 다운로드 식별자와 실제 실행 도구를 구분한다.
 
 - 다운로드한 전체 Ollama 태그: `hf.co/naver-ellm/HyperCLOVAX-SEED-Think-14B-GGUF:Q4_K_M`. 교체 전 표의 `ee0e0d9ce93e`는 Ollama 등록 ID이며 실행 도구 버전이 아니다.
 - 실행 도구: [NAVER 포크](https://github.com/NAVER-Cloud-HyperCLOVA-X/llama.cpp), 조회한 커밋 `e586ccd5`. [GGUF 모델 카드](https://huggingface.co/naver-ellm/HyperCLOVAX-SEED-Think-14B-GGUF) 본문에도 이 포크 사용을 안내한다.
-- [설정·실행 안내](/home/jake/workspace/local-llm/configs/llama-cpp/hyperclovax-seed-think-14b-q4_K_M/README.md), 소스·빌드 위치 `/home/jake/workspace/local-llm/runtimes/hyperclovax-llama.cpp`. CUDA 빌드 설정과 `build/bin/llama-cli`, `build/bin/llama-server` 파일 존재를 확인했다. 파일 존재는 정상 추론 성공 근거가 아니다.
+- 설정·실행 안내: `/home/jake/workspace/local-llm/configs/llama-cpp/hyperclovax-seed-think-14b-q4_K_M/README.md`, 소스·빌드 위치 `/home/jake/workspace/local-llm/runtimes/hyperclovax-llama.cpp`. CUDA 빌드 설정과 `build/bin/llama-cli`, `build/bin/llama-server` 파일 존재를 확인했다. 파일 존재는 정상 추론 성공 근거가 아니다.
 - 기존 Ollama GGUF blob을 재다운로드 없이 참조하는 구성이다. 조회한 가중치 경로는 `/usr/share/ollama/.ollama/models/blobs/sha256-34189c1048e57b9b0025058114185ce4dc37d045596666b67e377ef1f08398c0`이다. Ollama 모델 삭제로 파일 참조가 끊길 수 있다. 외부 경로는 현재 PC의 참고 위치이며 제출 시 재현 방법을 남긴다.
 - 기존 안내의 GPU 레이어 `24`, Context `4096`, 서버 `127.0.0.1:8080`은 시작 설정이다. 당시 실제 설정과 최적값은 미확인이다.
 - 당시 실행 경험: 처음 Ollama에서 오류가 나 별도 환경을 구성했고, 응답을 받았으나 출력이 이상하며 VRAM이 약 600MB로 보였다. 최초 오류 시점·당시 명령·오류·응답 원문과 VRAM 측정 도구·시점·정확한 단위는 미확보다. CPU 실행이나 GPU 미사용으로 단정하지 않는다.

@@ -14,7 +14,8 @@
 | GPU | NVIDIA GeForce RTX 5060 Laptop GPU | Skare 결과의 `metrics.memory.devices`; 장치 총량 8151 MiB |
 | Python | 3.12.14 | 프로젝트 `.venv/bin/python`의 `sys.version` |
 | uv | 0.12.5 | `uv --version` |
-| 주요 설치 패키지 | openai 3.8.0, httpx 0.28.1, pydantic 2.13.5 | 프로젝트 가상환경의 `importlib.metadata.version`; 선언·고정 의존성은 [pyproject.toml](../pyproject.toml)과 [uv.lock](../uv.lock) 참고 |
+| 2026-09-16 설치 패키지 관측 | openai 3.8.0, httpx 0.28.1, pydantic 2.13.5 | 당시 프로젝트 가상환경의 `importlib.metadata.version` 조회; 설치 실상은 이 문서 작업에서 재조회하지 않았다. 선언·고정 의존성은 [pyproject.toml](../../pyproject.toml)과 [uv.lock](../../uv.lock) 참고 |
+| 현재 lock 고정값 | httpx2 2.12.0 | `uv.lock`의 현재 고정값이며 당시 설치 관측과 구분한다. 이 문서 작업에서 설치 실상을 재조회하지 않았다. |
 
 시스템 RAM 총량과 실제 모델 RAM 사용량은 다르다. 모델의 시스템 RAM 사용량은 이번에 측정하지 않았다.
 
@@ -24,7 +25,7 @@
 - 소스 커밋: `4c9233c034fc450dcf34c7c0988aebe6da5cdf1a`. 해당 소스 저장소의 `git status --short` 출력은 비어 있었다.
 - 현재 Qwen 프로세스 실행 파일: 위 경로의 `build/bin/llama-server`.
 
-모델 경로는 `$HOME/workspace/local-llm/models/` 기준이다. 파일 크기는 현재 로컬 파일의 `stat` 조회값으로 실행 산출물 구분에 사용한다. [모델 조사표](models.md)의 배포 문서상 크기를 대체하지 않는다.
+모델 경로는 `$HOME/workspace/local-llm/models/` 기준이다. 파일 크기는 현재 로컬 파일의 `stat` 조회값으로 실행 산출물 구분에 사용한다. [모델 조사표](../project/model-candidates.md)의 배포 문서상 크기를 대체하지 않는다.
 
 | 모델 별칭 | 파일 경로 | 바이트 크기 | 양자화 확인 범위 | SHA-256 |
 | --- | --- | --- | --- | --- |
@@ -39,17 +40,17 @@ Qwen에서 변경한 64k·60k·52k(k=1024)를 Gemma 셸과 공통 Python 기본�
 
 이전 32k·30k·26k 설정 이력은 Git에 보존한다. 제한 미제공 프롬프트의 Qwen 6건에는 이미 요청 출력 61440·reasoning 53248이 기록돼 있었다. 이 사실만으로 실제 서버 Context나 Gemma의 VRAM 적합성을 확정하지 않는다. 이번 통합에서는 서버 재시작·모델 호출을 하지 않았다. 새 프롬프트의 실험과 두 서버의 실제 적용·VRAM 확인은 직접 진행한다.
 
-시간·메모리 제한은 문제 바로 위에 제공한다. Judge는 시간 제한만 적용하며 코드 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않는다. 기존 응답 후 모델 VRAM 관측은 별개로 유지한다.
+시간·메모리 제한은 문제 바로 위에 제공한다. 현재 Judge 정책은 테스트별 경과 시간과 stdout·stderr 합산 출력 10 MiB(10,485,760 bytes)를 적용하며, 둘 중 먼저 발생한 자원을 `TLE` 또는 `OLE`로 기록한다. 인프라·처리 예외는 `JUDGE_ERROR`로 남긴다. 코드 메모리 사용량·RSS를 측정하거나 메모리 제한을 강제하지 않으며, 기존 응답 후 모델 VRAM 관측은 별개로 유지한다.
 
-## Gemma 서버 최적화 설정 동기화: 2026-09-17
+## Gemma 서버 현재 설정 동기화: 2026-09-17
 
-Gemma 서버 셸을 직접 최적화한 값으로 정리했다. GPU layers는 `auto`, fit은 `on`, fit target은 `1536`, generation threads는 `16`, batch threads는 `24`다. Context `65536`, 기본 출력 `61440`, reasoning `53248`, temperature `0`과 공통 Python 요청값은 유지했다. AI는 현재 셸과 문서의 일치를 확인했으며, 이번 문서 동기화에서 모델을 실행하거나 최적화 전후 성능을 재측정하지 않았다.
+현재 Gemma 서버 셸의 값은 GPU layers `auto`, fit `on`, fit target `0`, load mode `auto`, lazy mode `auto`, generation threads `16`, batch threads `24`다. Context `65536`, 기본 출력 `61440`, reasoning `53248`, temperature `0`과 공통 Python 요청값은 유지한다. 과거 `fit target 1536`은 당시 기록으로 보존하며 현재 파일의 값만으로 과거 실행 설정을 확정하지 않는다. 이번 문서 동기화에서 모델을 실행하거나 최적화 전후 성능을 재측정하지 않았다.
 
-단일 요청 진단 파일은 `scripts/diagnose.py`로 이름을 바꾸고 현재 대상 모델을 `gemma4`로 설정했다. 이 진단의 출력 `1024`·reasoning `512`는 본 실험의 공통 요청값과 별개다.
+단일 요청 진단 파일은 `scripts/diagnostics/response_probe.py`로 두고 현재 대상 모델을 `gemma4`로 설정했다. 기존 `scripts/diagnose.py`는 이전 명령과의 호환을 위한 thin wrapper다. 이 진단의 출력 `1024`·reasoning `512`는 본 실험의 공통 요청값과 별개다.
 
 ## 변경 전 설정값과 실제 적용 근거
 
-서버 설정 원본은 [Qwen 셸](../configs/llama.cpp/qwen36.sh)·[Gemma 셸](../configs/llama.cpp/gemma4.sh), 공통 설정표는 [README](../README.md#3-서버-실행)에 있다. Context는 서버 설정이고, temperature·출력 한도·reasoning·cache_prompt는 요청에도 명시한다.
+서버 설정 원본은 [Qwen 셸](../../configs/llama.cpp/qwen36.sh)·[Gemma 셸](../../configs/llama.cpp/gemma4.sh), 공통 설정표는 [로컬 실행 안내](local-runbook.md#서버-실행)에 있다. Context는 서버 설정이고, temperature·출력 한도·reasoning·cache_prompt는 요청에도 명시한다.
 
 12:22 점검 당시 실행 중인 Qwen의 `/proc/<pid>/cmdline`에서 다음 인수를 확인했다. 이 조회는 프로세스를 재시작하거나 모델을 호출하지 않았다.
 
@@ -66,7 +67,7 @@ Gemma 서버 셸을 직접 최적화한 값으로 정리했다. GPU layers는 `a
 
 ### 이후 Qwen 시작 로그 인용
 
-[Reasoning 진단](reasoning-budget-diagnostic.md)의 첨부 해석문에 인용된 값을 정리했다. AI가 서버 원본 로그 전체를 재검증한 것은 아니며 해당 시작 사례의 근거로 제한한다.
+[Reasoning 진단](../history/reasoning-budget-diagnostic.md)의 첨부 해석문에 인용된 값을 정리했다. AI가 서버 원본 로그 전체를 재검증한 것은 아니며 해당 시작 사례의 근거로 제한한다.
 
 | 항목 | 인용된 값 |
 | --- | --- |
@@ -85,7 +86,7 @@ Gemma 서버 셸을 직접 최적화한 값으로 정리했다. GPU layers는 `a
 
 12:22에 확인한 Skare 요청은 temperature 0, max_tokens 8192, reasoning_budget_tokens 2048, cache_prompt false다. 환경 세션 연결이 없으므로 현재 프로세스 관측을 해당 요청 시점의 모든 실행 조건에 대한 증명으로 사용하지 않는다.
 
-현재 작업 트리의 공통 요청에는 [종료 메시지](reasoning-budget-diagnostic.md)도 추가됐다. 과거 benchmark JSON에는 해당 필드가 없었다. 새 성공·실패 기록에는 `generation_config.reasoning_budget_message`를 저장한다.
+현재 작업 트리의 공통 요청에는 [종료 메시지](../history/reasoning-budget-diagnostic.md)도 추가됐다. 과거 benchmark JSON에는 해당 필드가 없었다. 새 성공·실패 기록에는 `generation_config.reasoning_budget_message`를 저장한다.
 
 ## 결과 해석과 남은 확인
 
@@ -98,4 +99,4 @@ Gemma 서버 셸을 직접 최적화한 값으로 정리했다. GPU layers는 `a
 - 추출 코드와 저장된 `candidate.py`의 내용 일치를 확인했다. 원본 코드·판정은 유지하며 최소 수정 후 전체 테스트 통과 여부는 미확인이다.
 - 워밍업은 호출 완료만 표시하고 저장·측정하지 않는다. 이번 조회로 실제 워밍업 수행 여부를 확인하지 않았다. 요청별 로딩 시간은 API 미제공 사유와 함께 null이며 서버 시작 시간도 측정하지 않았다.
 
-이번 문서 작업에서는 모델·Cloud 호출, 서버 재시작, 채점 재실행을 하지 않았다. 전체 실행 상태와 다음 작업은 [STATE](../STATE.md)를 따른다.
+이번 문서 작업에서는 모델·Cloud 호출, 서버 재시작, 채점 재실행을 하지 않았다. 전체 실행 상태와 다음 작업은 [STATE](../../STATE.md)를 따른다.
