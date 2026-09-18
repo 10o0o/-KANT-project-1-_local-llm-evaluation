@@ -14,11 +14,11 @@
 
 ## 작업별 읽기 순서
 
-- 학습 진행, 현재 단계, 다음 작업을 판단할 때는 [README](README.md)와 [STATE](STATE.md)를 먼저 읽고 관련 사용자 파일과 실행 근거를 확인한다.
-- 코드·설정 유지보수는 대상 소스, 인접 테스트, 해당 실행 안내를 먼저 읽는다. 구조 개선·병합·분리본 작업은 [유지보수 인계](docs/maintenance-handoff.md)도 확인한다. README·STATE는 그 작업이 사용법이나 확인된 상태를 바꿀 때만 갱신 대상으로 검토한다.
+- 실험은 2026-09-17에 종료됐다. 현재 결과와 결론은 [README](README.md)와 발제 산출물 3종([평가 질문](docs/project/evaluation-questions.md), [Local–Cloud 비교](docs/project/local-cloud-comparison.md), [최종 선정 보고서](docs/project/model-selection-report.md))을 먼저 읽는다. 과거 시점의 결정 경위가 필요할 때만 [결정 이력](docs/history/decision-log.md)을 참고하며, 이 문서의 "다음 한 작업"은 모두 당시 서술이다.
+- 코드·설정 유지보수는 대상 소스, 인접 테스트, 해당 실행 안내를 먼저 읽는다. 구조 개선·병합·분리본 작업은 [유지보수 이력](docs/history/maintenance-log.md)도 확인한다. README는 그 작업이 사용법이나 확인된 상태를 바꿀 때만 갱신 대상으로 검토한다. 닫힌 [결정 이력](docs/history/decision-log.md)·[유지보수 이력](docs/history/maintenance-log.md)에는 새 진행 상태를 덧쓰지 않는다.
 - 구조 개선·이름 변경은 [architecture](docs/architecture.md)의 현재 트리, 이전 명령 매핑, 생성 파일군 경계를 먼저 확인한다. `src/llm_eval/`의 책임을 결과·로그·데이터 파일의 내용과 섞지 않는다.
 - 과제 범위와 완료 기준은 [발제 원문](docs/project/assignment.md), [단계별 안내](docs/project/learning-guide.md), [사용자 정의 기준](docs/project/requirements.md)의 해당 절을 작업별로 읽는다. 발제 필수, 발제 선택·사용자 필수, 사용자 정의 기준, 추가 학습·방법 제안을 서로 바꾸지 않는다.
-- 사용자가 명시적으로 Notion 활동 기록을 요청할 때만 [저장소 일지 스킬](.agents/skills/kant-notion-journal/SKILL.md)을 사용한다. 일반 질문·리뷰와 AI 중간 인계·메모리 기록·STATE/README/문서 갱신·실습/과제 수행에는 사용하지 않는다. Notion에는 실제 활동·결정·검증 결과만 남기고 AI의 중간 계획·체크포인트·임시 경로·재개 지시는 저장하지 않는다. STATE·[유지보수 인계](docs/maintenance-handoff.md)는 실행 근거·재개 작업을 관리한다. 스킬을 사용할 수 없을 때는 [원격 작성 안내](https://app.notion.com/p/3dbde5bf907481059282f5ee3c95fe22)를 따른다.
+- 사용자가 명시적으로 Notion 활동 기록을 요청할 때만 [저장소 일지 스킬](.agents/skills/kant-notion-journal/SKILL.md)을 사용한다. 일반 질문·리뷰와 AI 중간 인계·메모리 기록·README/문서 갱신·실습/과제 수행에는 사용하지 않는다. Notion에는 실제 활동·결정·검증 결과만 남기고 AI의 중간 계획·체크포인트·임시 경로·재개 지시는 저장하지 않는다. 실행 근거와 당시 재개 작업은 [결정 이력](docs/history/decision-log.md)·[유지보수 이력](docs/history/maintenance-log.md)에 시점 기록으로 남아 있다. 스킬을 사용할 수 없을 때는 [원격 작성 안내](https://app.notion.com/p/3dbde5bf907481059282f5ee3c95fe22)를 따른다.
 
 ## 학습 진행
 
@@ -51,4 +51,4 @@
 
 - 프로젝트 문서와 Notion 일지는 내가 작성한 활동 기록처럼 1인칭 또는 주어를 생략해 쓴다. “사용자가 판단했다·보고했다” 같은 제3자 서술은 쓰지 않는다.
 - 수행 주체와 근거를 보존한다. AI가 확인한 사실은 직접 수행한 것처럼 바꾸지 않고, 원본 출력 미보관·미확인 사항도 유지한다. 발제 원문·인용·코드·응답 원문은 문체 수정 대상이 아니다.
-- STATE에는 확인된 작성·실행·설명 근거와 다음 한 작업만 반영한다. 상태 정리를 요청받았을 때 확인된 근거만 요약하며, 문서 정리나 모의 구현을 학습·실험 완료로 바꾸지 않는다.
+- 종료 전에는 STATE(현재 [결정 이력](docs/history/decision-log.md))에 확인된 작성·실행·설명 근거와 다음 한 작업만 반영했다. 실험이 끝나 이 파일은 닫혔으므로 새 상태를 추가하지 않는다. 상태 정리를 요청받았을 때 확인된 근거만 요약하며, 문서 정리나 모의 구현을 학습·실험 완료로 바꾸지 않는다.

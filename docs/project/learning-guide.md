@@ -1,6 +1,6 @@
 # 단계별 학습 안내
 
-현재 실행 절차는 [로컬 안내](../operations/local-runbook.md)와 [Cloud 안내](../operations/cloud-runbook.md)를 따른다. 아래 발제 단계표·원문 측정표는 Ollama와 Cloud 5문항 기준을 보존한다. 이번 수행은 허락받은 llama.cpp 전환과 Cloud 두 제공자의 전체 10문항×2회 독립 실행(모델당 20회)을 적용하며, 전체 계획은 로컬 40회와 Cloud 40회를 합한 80회다. 이전 60회 계획은 계획 변경 이력으로 구분하되 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다. 원문 필수와 [사용자 정의 기준](requirements.md)을 구분한다. 확인한 중단 기록은 당시 기록이며 현재 생성·Judge·평가 완료와 구분한다. 현재 상태·후속 인계는 [STATE](../../STATE.md)와 [작업 목록](../maintenance-handoff.md)을 따른다.
+현재 실행 절차는 [로컬 안내](../operations/local-runbook.md)와 [Cloud 안내](../operations/cloud-runbook.md)를 따른다. 아래 발제 단계표·원문 측정표는 Ollama와 Cloud 5문항 기준을 보존한다. 이번 수행은 허락받은 llama.cpp 전환과 Cloud 두 제공자의 전체 10문항×2회 독립 실행(모델당 20회)을 적용하며, 전체 계획은 로컬 40회와 Cloud 40회를 합한 80회다. 이전 60회 계획은 계획 변경 이력으로 구분하되 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다. 원문 필수와 [사용자 정의 기준](requirements.md)을 구분한다. 확인한 중단 기록은 당시 기록이며 현재 생성·Judge·평가 완료와 구분한다. 현재 상태·후속 인계는 [결정 이력](../history/decision-log.md)와 [유지보수 이력](../history/maintenance-log.md)을 따른다.
 
 수행 범위와 최종 기준은 [발제 원문](assignment.md)이 기준입니다. 이 안내는 원문의 STEP 1~8을 진행하기 위한 길잡이입니다.
 
@@ -34,7 +34,7 @@ STEP 3에서는 조사할 수 있는 정보를 먼저 기록하고 설치 식별
 
 ## 현재 후보와 HyperCLOVA 제외 이력
 
-현재 후보와 실행·평가 진행 상태는 [STATE](../../STATE.md)를 따른다. 현재 표준 실행기는 저장소 루트의 `uv run llm-eval generate local`이며 llama.cpp API를 사용한다. 로컬 `--round`는 필수이고, 이전 `scripts/run_local_benchmark.py`와 `scripts/run_benchmark.py`는 제거됐다. 과거 Ollama 실습 코드는 [정리 전 Git 이력](../history/README.md)에, 응답은 결과 보관 폴더에 남긴다. llama.cpp 전환은 튜터에게 허락받았다. 2026-09-16 대화에서 확인한 경과이며 발제 원문의 Ollama 문구 자체는 유지한다. 전체 명령·파일 책임은 [architecture](../architecture.md)를 따른다.
+현재 후보와 실행·평가 진행 상태는 [결정 이력](../history/decision-log.md)를 따른다. 현재 표준 실행기는 저장소 루트의 `uv run llm-eval generate local`이며 llama.cpp API를 사용한다. 로컬 `--round`는 필수이고, 이전 `scripts/run_local_benchmark.py`와 `scripts/run_benchmark.py`는 제거됐다. 과거 Ollama 실습 코드는 [정리 전 Git 이력](../history/README.md)에, 응답은 결과 보관 폴더에 남긴다. llama.cpp 전환은 튜터에게 허락받았다. 2026-09-16 대화에서 확인한 경과이며 발제 원문의 Ollama 문구 자체는 유지한다. 전체 명령·파일 책임은 [architecture](../architecture.md)를 따른다.
 
 HyperCLOVA는 NAVER llama.cpp 실행 도구 예외로 진단했으나, 현재 구성의 지시 수행 성능 미달로 제외했다. [교체 전 조사와 진단 이력](model-candidates.md#제외-이력-hyperclova)은 보존하며 현재 후보의 필수 절차로 적용하지 않습니다. 로컬 본 실험 40회·워밍업 2회와 개인 필수 실습은 유지한다. 발제의 Cloud 5회는 이번 수행에서 Luna·Motif-3 각각 전체 10문항×2회 독립 실행인 20회로 확장했다. 제외 전 연결 점검을 본 실험이나 세 번째 모델 비교 실습 완료로 집계하지 않습니다.
 
@@ -67,7 +67,7 @@ HyperCLOVA는 NAVER llama.cpp 실행 도구 예외로 진단했으나, 현재 �
 ## 환경과 파일 형식
 
 - Python 3.12와 uv를 사용한다. 발제 원문은 Ollama 버전을 기록하며 현재는 [실행 환경](../operations/environment.md)의 llama.cpp·Python·패키지·GPU/VRAM 근거를 따른다. 자동 환경 JSON을 요구하지 않는다.
-- 선행 환경을 이어 쓸 때의 `pyproject.toml`·`uv.lock`과 사용한 Python 버전은 최종 의존성 근거로 남깁니다. 생성 여부와 실행 근거는 [현재 상태](../../STATE.md)에서 확인합니다.
+- 선행 환경을 이어 쓸 때의 `pyproject.toml`·`uv.lock`과 사용한 Python 버전은 최종 의존성 근거로 남깁니다. 생성 여부와 실행 근거는 [결정 이력](../history/decision-log.md)에서 확인합니다.
 - 원본 결과는 JSON·CSV·JSONL 등 다시 읽을 수 있는 형식으로 저장합니다. 특정 스키마나 폴더명은 필수가 아닙니다.
 - 질문 ID·실행 ID·모델·회차·입력·설정·원본 답변·성공/오류 상태·워밍업 여부를 연결할 수 있어야 합니다. 저장 형식은 이 목적을 이해한 뒤 사용자가 선택합니다.
 - 질문, 평가 기준, 비교표, 보고서도 해당 단계에서 사용자가 작성합니다. README에 통합하거나 별도 문서로 연결할 수 있으며 같은 내용을 중복 작성할 필요는 없습니다.
@@ -132,6 +132,6 @@ GitHub 저장소 하나에 사용자 코드·환경 정보·질문·원본 기�
 
 ## 현재 구현과 남은 확인
 
-`--round 1/2`는 동일 문제의 독립 반복이며 이전 답변을 읽지 않는다. 최종 통합 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 로컬 생성은 `--round`를 명시하고, Cloud 생성은 생략하면 1회차를 사용한다. 일괄 채점의 `--rounds` 기본값은 `all`이다. 이후 기준 세션을 `evaluate prepare`로 고정하고 제한 재평가·보조 수정·보고서를 별도 평가 ID에 기록한다. 현재 구현 검증·게시 상태는 [작업 인계](../maintenance-handoff.md#현재-상태와-다음-행동)의 현재 표를 따른다. [기록 구현 점검](../operations/recording.md)은 정적 동작과 한계를 설명하며 전체 실험의 실행 완료를 뜻하지 않는다. 평가 명령과 직접 입력할 리뷰 항목은 [평가 실행 안내](../operations/evaluation.md)에 둔다.
+`--round 1/2`는 동일 문제의 독립 반복이며 이전 답변을 읽지 않는다. 최종 통합 저장소 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 로컬 생성은 `--round`를 명시하고, Cloud 생성은 생략하면 1회차를 사용한다. 일괄 채점의 `--rounds` 기본값은 `all`이다. 이후 기준 세션을 `evaluate prepare`로 고정하고 제한 재평가·보조 수정·보고서를 별도 평가 ID에 기록한다. 현재 구현 검증·게시 상태는 [유지보수 이력](../history/maintenance-log.md#최종-상태-2026-09-17-종료)의 현재 표를 따른다. [기록 구현 점검](../operations/recording.md)은 정적 동작과 한계를 설명하며 전체 실험의 실행 완료를 뜻하지 않는다. 평가 명령과 직접 입력할 리뷰 항목은 [평가 실행 안내](../operations/evaluation.md)에 둔다.
 
-질문별 기대 결과와 사례 범위·텍스트 적합성, 실제 워밍업·실행 조건·완료 범위의 확인 근거는 [STATE](../../STATE.md)와 [종료 후 인계](../maintenance-handoff.md#종료-후-확인과-직접-수행)를 따른다. 이미 시작한 실험을 미시작으로 돌리거나 사전 확정을 소급하지 않는다. 새 질문·추가 실험을 문서 정리만으로 강제하지 않는다.
+질문별 기대 결과와 사례 범위·텍스트 적합성, 실제 워밍업·실행 조건·완료 범위의 확인 근거는 [결정 이력](../history/decision-log.md)와 [유지보수 이력](../history/maintenance-log.md#종료-후-확인과-직접-수행)를 따른다. 이미 시작한 실험을 미시작으로 돌리거나 사전 확정을 소급하지 않는다. 새 질문·추가 실험을 문서 정리만으로 강제하지 않는다.

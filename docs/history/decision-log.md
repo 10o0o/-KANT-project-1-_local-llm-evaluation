@@ -1,6 +1,10 @@
-# 현재 학습 상태
+# 결정 이력
 
-## 현재 확인 범위: 2026-09-17 평가 완주와 최종 선정
+> **이 문서는 닫혔다.** 2026-09-17 평가 완주와 최종 선정으로 실험이 끝나, 다음 세션에 작업을 넘기던 재개 장치로서의 역할을 종료했다. 아래는 2026-09-14부터 종료 시점까지의 결정과 관측을 시점 역순으로 보존한 기록이다. 본문의 "다음 한 작업"·"남아 있다"·"미확인"은 모두 **그 시점의 서술**이며 현재 상태가 아니다.
+>
+> 현재 결과와 결론은 [최종 선정 보고서](../project/model-selection-report.md), [Local–Cloud 비교](../project/local-cloud-comparison.md), [평가 질문 10개](../project/evaluation-questions.md)와 [평가 보고서](../../results/evaluation/20260917_131133_521417Z_98657c40/reports/20260917_134421_178261Z_7affc20f/report.md)를 따른다. 종료 시점의 검증 근거는 [유지보수 이력](maintenance-log.md)에 있다.
+
+## 최종 확인: 2026-09-17 평가 완주와 최종 선정
 
 기준 채점부터 최종 선정까지를 완료했다.
 
@@ -15,19 +19,19 @@
 | luna | 16 (80%) | 2.00 | 2 | 254.4s |
 | motif3 | 13 (65%) | 1.56 | 0 | 245.7s |
 
-**최종 로컬 선정은 `qwen36`이다.** 유일하게 12/20 통과선을 넘었다. 2배 제한 재평가에서 qwen36 `tezina` 2건과 luna `ucionica` 1건이 AC로 전환됐다. 최소 수정 보조 평가는 6건을 시도해 6건 모두 통과했고, 그중 4건이 Gemma다. 근거는 [최종 선정 보고서](docs/project/model-selection-report.md)에 있다.
+**최종 로컬 선정은 `qwen36`이다.** 유일하게 12/20 통과선을 넘었다. 2배 제한 재평가에서 qwen36 `tezina` 2건과 luna `ucionica` 1건이 AC로 전환됐다. 최소 수정 보조 평가는 6건을 시도해 6건 모두 통과했고, 그중 4건이 Gemma다. 근거는 [최종 선정 보고서](../project/model-selection-report.md)에 있다.
 
-두 가지 진단을 [생성 기록 진단](docs/history/generation-diagnostics.md)에 남겼다. 하나는 Gemma의 reasoning 퇴행 반복(8문항에서 12-gram 반복률 50~92%, 최대 1,085회)이고, 다른 하나는 `temperature=0` 결정론 때문에 qwen36의 두 회차가 10문항 전부 동일하다는 것이다. 후자는 반복 측정의 의미를 제한하므로 한계로 기록했다. 고유 응답으로 보정해도 qwen36 70% > gemma4 53%라 선정 결론은 바뀌지 않는다.
+두 가지 진단을 [생성 기록 진단](generation-diagnostics.md)에 남겼다. 하나는 Gemma의 reasoning 퇴행 반복(8문항에서 12-gram 반복률 50~92%, 최대 1,085회)이고, 다른 하나는 `temperature=0` 결정론 때문에 qwen36의 두 회차가 10문항 전부 동일하다는 것이다. 후자는 반복 측정의 의미를 제한하므로 한계로 기록했다. 고유 응답으로 보정해도 qwen36 70% > gemma4 53%라 선정 결론은 바뀌지 않는다.
 
 원본 `results/benchmark`·`results/judging`과 `data/coci`는 작업 전후 SHA-256이 같다.
 
-발제 [선택 실습 4개](docs/project/learning-guide.md#발제-선택-실습--진행하지-않음)는 원문대로 선택으로 남기고 진행하지 않는다. 필수 완료 기준에 포함되지 않는다.
+발제 [선택 실습 4개](../project/learning-guide.md#발제-선택-실습--진행하지-않음)는 원문대로 선택으로 남기고 진행하지 않는다. 필수 완료 기준에 포함되지 않는다.
 
 ## 이전 확인: 2026-09-17 평가 기반 구현
 
 공식 제한의 원본 채점과 프로젝트 평가를 분리했다. Tezina·Pet·Ucionica·Skijanje만 문제 ID로 2배 평가 제한을 적용하며 나머지 여섯 문항의 2배 결과는 진단이다. 생성 중 결정한 기준 변경이며 원본 프롬프트·JSON·후보·기존 채점은 수정하지 않았다. 네 모델 각각 20회, 총 80회 계획이다.
 
-`evaluate prepare/run/report`로 기준 세션 연결, 정책·원본 해시 검증, 최소 수정 스냅샷, 설명 직접 입력과 JSON·Markdown 부분 보고서를 지원한다. 모의·합성 프로세스 테스트 181개를 통과했다. 실제 후보 실행·답안 수정·설명 채점·최종 선정은 하지 않았다. [평가 안내](docs/operations/evaluation.md)와 [인계](docs/maintenance-handoff.md)를 따른다.
+`evaluate prepare/run/report`로 기준 세션 연결, 정책·원본 해시 검증, 최소 수정 스냅샷, 설명 직접 입력과 JSON·Markdown 부분 보고서를 지원한다. 모의·합성 프로세스 테스트 181개를 통과했다. 실제 후보 실행·답안 수정·설명 채점·최종 선정은 하지 않았다. [평가 안내](../operations/evaluation.md)와 [유지보수 이력](maintenance-log.md)를 따른다.
 
 사용자가 Gemma Round 2 완료를 보고했다. AI는 작업 시작 시 모델 서버가 남아 있음을 확인했고 종료하지 않았다. 이번 유지보수에서는 결과 내용과 모델별 완료 건수를 재검증하지 않았다.
 
@@ -41,17 +45,17 @@ Cloud 비교 대상을 Luna 하나에서 **Luna·Motif-3 두 제공자**로 확�
 
 Motif-3에는 제공자 예제가 검증한 `model`과 `messages`만 보낸다. Luna의 reasoning=max·출력 한도 128000·tool 설정을 옮겨 적지 않았고, 두 모델의 토큰 예산을 동일 조건으로 표시하지 않는다. Motif-3는 **확인한 공개 단가표가 없어 예상 비용을 계산하지 않고 사유와 함께 null로 기록한다.** 임의 추정치를 넣지 않는다.
 
-모의 테스트 **152개 통과**(이전 138개 + Chat Completions 제공자 계약). 실제 Motif-3·Luna API 호출, 모델 실행, 후보 채점, GPU 조회는 하지 않았다. 따라서 Motif-3의 응답 구조·정답률·비용·소요 시간은 전부 미확인이며 Cloud 비교는 미완료다. 상세 조건은 [Cloud 안내](docs/operations/cloud-runbook.md), 확장 근거는 [확장 기준](docs/project/requirements.md#cloud-비교-확장-기준)을 따른다.
+모의 테스트 **152개 통과**(이전 138개 + Chat Completions 제공자 계약). 실제 Motif-3·Luna API 호출, 모델 실행, 후보 채점, GPU 조회는 하지 않았다. 따라서 Motif-3의 응답 구조·정답률·비용·소요 시간은 전부 미확인이며 Cloud 비교는 미완료다. 상세 조건은 [Cloud 안내](../operations/cloud-runbook.md), 확장 근거는 [확장 기준](../project/requirements.md#cloud-비교-확장-기준)을 따른다.
 
 다음 한 작업: **`morph_secret_key`를 넣고 Motif-3 1문항만 먼저 호출해 `result.json`·`response.json` 구조를 직접 확인한 뒤 전체 실행 여부를 결정**.
 
 ## 이전 확인: 2026-09-17 단일 CLI·책임 통합
 
-운영 명령을 `uv run llm-eval`과 동일 구현의 `python -m llm_eval`로 통합했다. 기존 scripts 진입점은 제거했고 생성·기록·문제 입력·채점 책임을 정리했다. [파일별 구조 안내](docs/architecture.md)에서 역할·호출 관계·관련 테스트를 확인한다.
+운영 명령을 `uv run llm-eval`과 동일 구현의 `python -m llm_eval`로 통합했다. 기존 scripts 진입점은 제거했고 생성·기록·문제 입력·채점 책임을 정리했다. [파일별 구조 안내](../architecture.md)에서 역할·호출 관계·관련 테스트를 확인한다.
 
 적용 전 관련 실행 프로세스가 없음을 확인했다. 새 미추적 실험 결과는 읽거나 수정하지 않았으며 이번 게시에 포함하지 않는다. 따라서 현재 생성 완료 범위·성공률은 미확인이다. 서버 설정·프롬프트·요청 조건·결과 경로와 기존 기록은 유지한다. Gemma 병렬 실행 설정은 변경하지 않았다.
 
-모의·합성 프로세스 테스트 **138개 통과**, console/module 도움말 26회와 오프라인 패키지 설치를 확인했다. 실제 모델·API·GPU 조회·실험 후보 채점은 수행하지 않았다. Notion은 변경하지 않았다. 게시·검증 근거는 [유지보수 인계](docs/maintenance-handoff.md)에 남긴다.
+모의·합성 프로세스 테스트 **138개 통과**, console/module 도움말 26회와 오프라인 패키지 설치를 확인했다. 실제 모델·API·GPU 조회·실험 후보 채점은 수행하지 않았다. Notion은 변경하지 않았다. 게시·검증 근거는 [유지보수 이력](maintenance-log.md)에 남긴다.
 
 다음 한 작업: **현재 원본 기록과 미생성 범위를 직접 확인한 뒤 새 CLI로 필요한 생성만 재개**.
 
@@ -59,7 +63,7 @@ Motif-3에는 제공자 예제가 검증한 `model`과 `messages`만 보낸다. 
 
 AI의 적용 전 프로세스 조회에서 로컬 생성기와 모델 서버가 실행 중임을 확인했고 그대로 보존했다. 구버전 Cloud·채점 프로세스는 없었다. 이번에는 결과 원본을 다시 읽지 않았으므로 현재 생성 건수·성공률·완료 범위는 미확인이다. 아래 35건은 앞선 중단 시점의 보존 기록이며 현재 총계가 아니다.
 
-Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있도록 잠금을 분리했다. 중복 Cloud와 채점의 충돌 차단은 유지한다. 검증·게시 근거는 [유지보수 인계](docs/maintenance-handoff.md)를 따른다. Notion은 활동 기록에만 사용하고 중간 상태·재개 정보는 이 저장소에서 관리한다.
+Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있도록 잠금을 분리했다. 중복 Cloud와 채점의 충돌 차단은 유지한다. 검증·게시 근거는 [유지보수 이력](maintenance-log.md)를 따른다. Notion은 활동 기록에만 사용하고 중간 상태·재개 정보는 이 저장소에서 관리한다.
 
 다음 한 작업: **현재 로컬 생성 종료 후 원본 기록과 미생성 범위를 직접 확인**.
 
@@ -67,13 +71,13 @@ Cloud는 로컬 생성·워밍업·큐·서버와 병행할 수 있도록 잠금
 
 Gemma Round 1 도중 생성을 멈췄다. AI의 원본 조회에서 Qwen 20건·Luna 10건·Gemma Round 1 5건, 총 35건의 저장 완료와 호출 성공을 확인했다. Qwen Skijanje 두 회차는 코드 미추출이다. 원본 JSON·후보 일관성과 현재 입력·설정에 대한 재개 검사는 35건 모두 통과했다. 후보는 실행하지 않았으며 정답률·품질·전체 실험 완료로 해석하지 않는다. 확인 시 생성기·큐·채점기·모델 서버는 실행 중이지 않았다.
 
-구조 개선, 기록·잠금 보강, Cloud 독립 Round 2, Judge의 테스트별 stdout·stderr 합계 10 MiB OLE 정책을 통합했다. 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation` 한곳을 기준으로 사용한다. 새 위치에서 고정 의존성을 오프라인 캐시로 복원했고 모의·합성 프로세스 테스트 124개, 기존·신규 CLI 도움말 8개와 서버 셸 문법 검사를 통과했다. 실제 모델·Cloud 호출·후보 채점은 하지 않았다. 성격별 커밋을 게시하고 Notion을 갱신·재조회했으며 작업 복사본을 정리했다. 상세 근거는 [인계](docs/maintenance-handoff.md)를 따른다.
+구조 개선, 기록·잠금 보강, Cloud 독립 Round 2, Judge의 테스트별 stdout·stderr 합계 10 MiB OLE 정책을 통합했다. 저장소는 `/home/jake/workspace/projects/kant/local-llm-evaluation` 한곳을 기준으로 사용한다. 새 위치에서 고정 의존성을 오프라인 캐시로 복원했고 모의·합성 프로세스 테스트 124개, 기존·신규 CLI 도움말 8개와 서버 셸 문법 검사를 통과했다. 실제 모델·Cloud 호출·후보 채점은 하지 않았다. 성격별 커밋을 게시하고 Notion을 갱신·재조회했으며 작업 복사본을 정리했다. 상세 근거는 [유지보수 이력](maintenance-log.md)를 따른다.
 
 원본 Gemma 셸의 `fit-target 0`, `load-mode auto`, `lazy-mode auto`와 전체 바이트를 보존했다. 당시 서버 로그는 남아 있지 않아 현재 셸 값을 과거 실행 설정으로 소급하지 않는다. 결과 원본과 과거 pilot, 기존 Cloud `planned_attempts=10`은 수정하지 않았다.
 
 계획 범위는 Qwen·Gemma·Luna 각각 10문항 × 독립 2회, 총 60회다. Cloud reasoning=max·출력 128000과 로컬 선정 기준은 유지한다. 남은 생성은 25건이며 실제 채점·설명 평가·집계·최종 선정은 아직 수행하지 않았다.
 
-다음 한 작업: **Gemma Round 1 미생성 문항부터 직접 재개**. 순서는 Prepisivanje → Tezina → Pet → Ucionica → Skijanje다. [로컬 실행 안내](docs/operations/local-runbook.md)의 서버 시작·워밍업·생성 절차를 따르며, 같은 입력·설정의 기존 기록은 건너뛴다.
+다음 한 작업: **Gemma Round 1 미생성 문항부터 직접 재개**. 순서는 Prepisivanje → Tezina → Pet → Ucionica → Skijanje다. [로컬 실행 안내](../operations/local-runbook.md)의 서버 시작·워밍업·생성 절차를 따르며, 같은 입력·설정의 기존 기록은 건너뛴다.
 
 아래는 각 시점의 과거 기록이며 당시 다음 작업·미확인 사항을 보존한다. 현재 진행은 위 확인 범위를 기준으로 읽는다.
 
@@ -97,9 +101,9 @@ AI의 구현과 모의 테스트 34개 통과 결과를 참고해 공통 프롬�
 
 ## Cloud 실행기 구현: 2026-09-16
 
-로컬 두 모델의 10문항×2회 실행을 진행하면서 Cloud를 전체 10문항×1회로 확장하기로 했다. [발제 STEP 7](docs/project/assignment.md)의 원래 5문항 기준과 사용자 정의 확장을 구분한다. 진행 중인 로컬 코드·설정·원본 결과는 이번 작업에서 수정하지 않았다.
+로컬 두 모델의 10문항×2회 실행을 진행하면서 Cloud를 전체 10문항×1회로 확장하기로 했다. [발제 STEP 7](../project/assignment.md)의 원래 5문항 기준과 사용자 정의 확장을 구분한다. 진행 중인 로컬 코드·설정·원본 결과는 이번 작업에서 수정하지 않았다.
 
-AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](docs/operations/cloud-runbook.md)를 추가했다. Luna reasoning=max·출력 한도 128000이며 기존 문제·프롬프트·Judge를 재사용한다. 호출·오류·원본·사용량·예상 비용을 기록한다. 실제 Cloud 호출·모델 실행·실제 후보 코드 채점은 하지 않았고 Cloud 실험·품질 평가·집계는 미완료다.
+AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](../operations/cloud-runbook.md)를 추가했다. Luna reasoning=max·출력 한도 128000이며 기존 문제·프롬프트·Judge를 재사용한다. 호출·오류·원본·사용량·예상 비용을 기록한다. 실제 Cloud 호출·모델 실행·실제 후보 코드 채점은 하지 않았고 Cloud 실험·품질 평가·집계는 미완료다.
 
 ## 통합 전 상태 기록
 
@@ -109,11 +113,11 @@ AI의 구현·모의 검증 결과를 참고해 [독립 Cloud 실행기](docs/op
 
 llama.cpp 전환은 튜터에게 허락받았다. 독립 반복과 원본 유효 정답률 60%, 최소 수정 보조 평가, 설명 2/1/0 기준은 유지한다.
 
-기존에는 서버 Context 12288, 요청 출력 8192·reasoning 2048·temperature 0·cache_prompt false로 설정을 동결했다. 이후 공통 요청에 [reasoning 종료 메시지](docs/history/reasoning-budget-diagnostic.md)를 추가했다. 현재 작업 트리 기준 변경이며 결과 JSON 기록 보완과 확정 조건의 실제 적용 검증이 남아 있다. Gemma GPU auto와 Qwen 기존 적재·스레드 튜닝을 유지한다.
+기존에는 서버 Context 12288, 요청 출력 8192·reasoning 2048·temperature 0·cache_prompt false로 설정을 동결했다. 이후 공통 요청에 [reasoning 종료 메시지](reasoning-budget-diagnostic.md)를 추가했다. 현재 작업 트리 기준 변경이며 결과 JSON 기록 보완과 확정 조건의 실제 적용 검증이 남아 있다. Gemma GPU auto와 Qwen 기존 적재·스레드 튜닝을 유지한다.
 
 AI의 구현·모의 검증 결과를 참고해 워밍업 파일 저장과 environment 인자·세션 검증·시작 실행기를 제거했다. 서버는 기존 셸로 직접 시작한다. 본 실험 응답·실패·tok/s·VRAM 기록은 유지하고 VRAM용 PID는 실행 중인 서버에서 자동 탐색한다. 원본 기록은 삭제하지 않았다. 이번 AI 문서 작업에서는 모델·Cloud 호출, 서버 재시작과 채점을 실행하지 않았다.
 
-질문별 기대 결과·사례 범위·텍스트 적합성, Cloud 전체 10문항 실행, 실제 서버 설정 적용·VRAM 적합성·워밍업 실행 확인이 남아 있다. [환경 문서](docs/operations/environment.md)에 CPU·RAM·버전·GGUF 파일 크기와 현재 Qwen 실행 인수를 정리했다. 이후 첨부 로그 인용으로 Qwen Context 12288·혼합 적재·내부 메타데이터·fit 수행 근거를 보완했다. Gemma 내부 메타데이터는 직접 확인했으나 AI는 원본 로그를 대조하지 못했다. Gemma 실제 적재 상태, 두 GGUF 해시와 서버 시작 시간은 미확인이다. 기술 구현을 학습 완료나 본 실험 전체 준비 완료로 바꾸지 않는다.
+질문별 기대 결과·사례 범위·텍스트 적합성, Cloud 전체 10문항 실행, 실제 서버 설정 적용·VRAM 적합성·워밍업 실행 확인이 남아 있다. [환경 문서](../operations/environment.md)에 CPU·RAM·버전·GGUF 파일 크기와 현재 Qwen 실행 인수를 정리했다. 이후 첨부 로그 인용으로 Qwen Context 12288·혼합 적재·내부 메타데이터·fit 수행 근거를 보완했다. Gemma 내부 메타데이터는 직접 확인했으나 AI는 원본 로그를 대조하지 못했다. Gemma 실제 적재 상태, 두 GGUF 해시와 서버 시작 시간은 미확인이다. 기술 구현을 학습 완료나 본 실험 전체 준비 완료로 바꾸지 않는다.
 
 ### 종료 메시지 추가 후 진단: 2026-09-16
 
@@ -142,9 +146,9 @@ Skare는 응답 69.22초·생성 38.64 tok/s이고 전체 GPU 장치 사용량�
 
 ## 2026-09-14 수행 근거
 
-- [당시 호출 코드의 Git 이력](docs/history/README.md)를 직접 수정해 두 모델을 순차 호출했다. 모델마다 `hi`로 워밍업하고, 같은 Context·생성 설정으로 질문을 호출했다. 워밍업은 타이머 밖에 두고 저장·재읽기 후 모델을 내린다.
+- [당시 호출 코드의 Git 이력](README.md)를 직접 수정해 두 모델을 순차 호출했다. 모델마다 `hi`로 워밍업하고, 같은 Context·생성 설정으로 질문을 호출했다. 워밍업은 타이머 밖에 두고 저장·재읽기 후 모델을 내린다.
 - 당시 실행 시각별 `results/<run_id>/`(현재 `results/archive/legacy-runs/<run_id>/`)에 모델별 JSON을 저장했다. 루트의 이전 응답 파일은 의도적으로 삭제했고, 이후 결과부터 이 구조로 남긴다.
-- [첫 실행](results/archive/legacy-runs/20260914_192215_545834/)과 [워밍업 후 실행](results/archive/legacy-runs/20260914_193504_991782/)에 각각 두 모델의 응답을 보존했다. AI의 파일 재읽기 점검에서 네 JSON 모두 파싱되고 최종 답변과 `stop` 종료를 확인했다. 터미널의 재읽기 출력 원문은 별도 보관하지 않았다.
+- [첫 실행](../../results/archive/legacy-runs/20260914_192215_545834/)과 [워밍업 후 실행](../../results/archive/legacy-runs/20260914_193504_991782/)에 각각 두 모델의 응답을 보존했다. AI의 파일 재읽기 점검에서 네 JSON 모두 파싱되고 최종 답변과 `stop` 종료를 확인했다. 터미널의 재읽기 출력 원문은 별도 보관하지 않았다.
 - Gemma CLI 답변과 `ollama ps` 출력을 대화에 남겼다. 당시 Context 4096, CPU/GPU 적재 비율 73%/27%였다. 이는 GPU 사용률이나 모든 실행의 고정 적재 비율이 아니다.
 - 당시 `perf_counter()`로 측정한 `elapsed`는 출력만 하고 JSON에는 저장하지 않았다. 입력 질문·요청 설정·워밍업 응답도 별도 기록 보완이 필요하다.
 
@@ -157,17 +161,17 @@ Skare는 응답 69.22초·생성 38.64 tok/s이고 전체 GPU 장치 사용량�
 
 ## 유지할 환경·진행 근거
 
-- 정리 전 환경에는 Ollama/OpenAI 의존성이 있었다. 현재 [pyproject.toml](pyproject.toml)·[uv.lock](uv.lock)에는 OpenAI 의존성만 남겼다. 전체 환경 재현 검증은 별도다.
-- 당시 Ollama 실습에서 Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용했다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](docs/project/model-candidates.md)에 연결했다.
+- 정리 전 환경에는 Ollama/OpenAI 의존성이 있었다. 현재 [pyproject.toml](../../pyproject.toml)·[uv.lock](../../uv.lock)에는 OpenAI 의존성만 남겼다. 전체 환경 재현 검증은 별도다.
+- 당시 Ollama 실습에서 Qwen은 `qwen36-35b-lowvram:latest`, Gemma는 `gemma4:26b-a4b-it-q4_K_M`을 사용했다. Qwen 외부 Modelfile과 이전 장비 조회 근거는 [모델 조사](../project/model-candidates.md)에 연결했다.
 - Context와 VRAM 관계를 고려해 실제 관측하며 설정을 정하기로 했다. 코딩테스트 요구사항 초안은 작성했지만 STEP 2의 필수 통과 조건·확인 방법 구체화는 남아 있다.
 
-## 완료 상태 구분
+### (2026-09-16 시점 기록) 당시 완료 상태 구분
 
 기본 과제와 개인 전체 학습은 아직 미완료다. 문제 10개는 선정했다. Cloud 전체 10문항 확장은 결정했다. 새 설정의 본 실험 40회 전체 완료·워밍업 2회 수행 확인·Cloud 10회, 품질 평가·최종 선정·재실행 검증은 남아 있다.
 
-[발제 선택·개인 필수 실습 4개](docs/project/learning-guide.md#발제-선택사용자-필수)는 모두 수행 근거 미확인이다: 세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델 양자화 비교, Sentence Transformers 임베딩. 오늘 연결 진단으로 완료 처리하지 않는다.
+[발제 선택·개인 필수 실습 4개](../project/learning-guide.md#발제-선택-실습--진행하지-않음)는 모두 수행 근거 미확인이다: 세 번째 로컬 모델 비교, Transformers 직접 실행, 동일 모델 양자화 비교, Sentence Transformers 임베딩. 오늘 연결 진단으로 완료 처리하지 않는다.
 
-## 다음 한 작업
+### (2026-09-16 시점 기록) 당시 다음 한 작업
 
 **진행 중인 로컬 40회 실행을 마치고 원본 결과를 확인한다. Cloud는 로컬 측정과 겹치지 않게 이후 실행한다.**
 
@@ -183,7 +187,7 @@ AI에 패키지 구조 정리를 요청해 `src/llm_eval/`로 실습 로직과 �
 
 직접 `warm_up`, `chat`, `get_metrics_from_response`, `get_vram_info`, `print_result_summary`로 역할을 나눴다. Rich 표·답변 패널과 진행 로그를 분리했다. AI에 VRAM·prefill 행과 사유 표시 추가를 요청했다. 누락값은 사유와 함께 null로 남기며 0과 구분한다.
 
-[최신 확인 결과](results/archive/legacy-runs/20260915_110551_990145/)는 두 모델 모두 stop 종료와 최종 답변이 있다. AI의 파일 점검으로 아래 값을 확인했다.
+[최신 확인 결과](../../results/archive/legacy-runs/20260915_110551_990145/)는 두 모델 모두 stop 종료와 최종 답변이 있다. AI의 파일 점검으로 아래 값을 확인했다.
 
 | 모델 | 전체 응답 시간 (초) | 생성 속도 (tok/s) | Prefill (tok/s) | 모델 VRAM (MiB) |
 | --- | --- | --- | --- | --- |
@@ -218,7 +222,7 @@ AI 조회에서 `/home/jake/workspace/local-llm/runtimes/llama.cpp`의 빌드와
 
 ## 2026-09-15 Gemma 실행 성공과 추출 정책 보완
 
-Gemma 다운로드·서버 실행 후 Skare AC를 직접 확인했다. [저장 결과](results/archive/legacy-runs/20260915_160840_518693/gemma4/skare/)에는 stop 종료, 최종 답변 3859자, reasoning 5049자와 candidate.py가 있다. judge.json에는 설정·응답만 있어 통과 수와 코드 실행 시간은 저장 근거 미확보다. AI가 모델·채점을 재실행하지 않았다.
+Gemma 다운로드·서버 실행 후 Skare AC를 직접 확인했다. [저장 결과](../../results/archive/legacy-runs/20260915_160840_518693/gemma4/skare/)에는 stop 종료, 최종 답변 3859자, reasoning 5049자와 candidate.py가 있다. judge.json에는 설정·응답만 있어 통과 수와 코드 실행 시간은 저장 근거 미확보다. AI가 모델·채점을 재실행하지 않았다.
 
 답변에 Python 블록이 2개 있었고 기존 추출기는 첫 블록을 저장했다. 해당 블록에는 잘못된 solve()와 수정 main()이 공존했지만 실제 호출된 main()으로 통과했다. 기존 후보는 수정하지 않았다. 이후 프롬프트에 코드 블록 하나·중간 코드와 자체 수정본 금지를 추가했고 추출기를 마지막 Python 블록, 없으면 마지막 일반 블록 선택으로 바꿨다. 새 정책의 재실행 결과는 아직 확인하지 않았다.
 
@@ -226,7 +230,7 @@ Qwen standalone GGUF는 다운로드 중이라고 경과를 남겼으며 실행 
 
 ## 2026-09-15 생성 한도 변경과 benchmark 재시작
 
-Qwen Pet의 [저장 결과](results/pilot/6144/round_1/pet/qwen36/result.json)는 `completion_tokens=6144`, `finish_reason=length`, `NO_CODE`였다. 전체 생성 한도가 소진된 근거로 출력 한도를 8192로 늘리고 reasoning 2048과 temperature 0은 유지하기로 했다. 이 결과만으로 reasoning 예산 부족이나 새 설정의 성공을 확정하지 않는다.
+Qwen Pet의 [저장 결과](../../results/pilot/6144/round_1/pet/qwen36/result.json)는 `completion_tokens=6144`, `finish_reason=length`, `NO_CODE`였다. 전체 생성 한도가 소진된 근거로 출력 한도를 8192로 늘리고 reasoning 2048과 temperature 0은 유지하기로 했다. 이 결과만으로 reasoning 예산 부족이나 새 설정의 성공을 확정하지 않는다.
 
 기존 8회 실행의 원본 23개 파일은 `results/pilot/6144/`로 옮겼다. 원본 JSON의 실행 ID·설정·판정·experiment 값은 수정하지 않았으며 폴더 위치로 pilot을 구분한다. 새 본 실험은 `results/benchmark/round_<라운드>/<문제>/<모델>/`에 처음부터 저장하고, pilot을 집계하거나 Round 2 입력으로 재사용하지 않는다.
 
@@ -234,6 +238,6 @@ Qwen Pet의 [저장 결과](results/pilot/6144/round_1/pet/qwen36/result.json)�
 
 ## 2026-09-15 실행기 구조화와 과거 자료 정리
 
-현재 진입점은 `scripts/run_benchmark.py`다. CLI·프롬프트·문제별 실행을 `src/llm_eval/benchmark/`로 분리했고, 동작과 설정은 유지했다. 과거 코드의 복원 방법은 [정리 이력](docs/history/README.md), 결과 분류는 [results 안내](results/README.md)에 있다.
+현재 진입점은 `scripts/run_benchmark.py`다. CLI·프롬프트·문제별 실행을 `src/llm_eval/benchmark/`로 분리했고, 동작과 설정은 유지했다. 과거 코드의 복원 방법은 [정리 이력](README.md), 결과 분류는 [results 안내](../../results/README.md)에 있다.
 
 정리 전 실행 프로세스 조회에서는 서버가 Context 8192·기본 출력 6144로 실행 중이었고, 저장소 셸의 12288·8192와 달랐다. 이후 benchmark 실행기를 직접 종료했다. 이 관측을 과거 모든 결과의 실제 Context로 일반화하지 않으며, 파일 설정을 변경한 것만으로 서버에 적용됐다고 보지 않는다. 이번 정리에서는 서버 재시작·모델 호출·채점을 하지 않았다. 다음 작업은 앞서 정한 서버 재시작 후 실제 설정·VRAM 확인이다.

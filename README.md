@@ -21,7 +21,7 @@
 
 네 모델이 공유하는 것은 문제 목록·반복 수·독립성뿐입니다. 제공자마다 API 계열과 생성 설정이 달라 토큰 예산이나 temperature까지 같은 조건이라고 적지 않습니다. Luna와 Motif-3도 각각 20회의 분모를 따로 두고 하나의 Cloud 집계로 합치지 않습니다.
 
-계획 횟수와 완료 건수는 다릅니다. 생성 완료·채점 완료·품질 평가 완료도 각각 구분합니다. 현재 진행 상태는 [STATE](STATE.md)에서 확인합니다.
+계획 횟수와 완료 건수는 다릅니다. 생성 완료·채점 완료·품질 평가 완료도 각각 구분합니다. 현재 진행 상태는 [결정 이력](docs/history/decision-log.md)에서 확인합니다.
 
 이 프로젝트는 **개인 수행**입니다. 요구사항 정의, 모델 실행, 채점, 설명 평가, 문서화를 모두 혼자 진행했습니다. 그래서 발제의 팀 공통 검수 항목(질문·채점 기준의 팀 합의, 팀원별 실행·채점 참여, 다른 팀원의 재실행 확인)은 해당하지 않습니다. 아래 [재실행 확인](#재실행-확인)도 제3자 교차 검증이 아니라 다른 기기에서 직접 재현한 기록이고, 설명 점수에 교차 검토가 없다는 한계는 [최종 선정 보고서](docs/project/model-selection-report.md#5-2-그-밖의-한계)에 적었습니다.
 
@@ -156,7 +156,6 @@ results/evaluation/<평가 ID>/
 ├── src/llm_eval/            # 단일 CLI와 local/cloud/judging/shared 패키지
 ├── tests/                   # 책임별 mock·fixture와 합성 경계 테스트
 ├── AGENTS.md                # 저장소 작업 규칙과 보존 규칙
-├── STATE.md                 # 확인된 진행 상태와 다음 한 작업
 ├── pyproject.toml           # package와 llm-eval console script
 ├── uv.lock                  # 고정 의존성
 └── .python-version          # 채점 조건을 고정하는 인터프리터 버전
@@ -195,7 +194,6 @@ Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제�
 
 | 문서 | 역할 |
 | --- | --- |
-| [STATE](STATE.md) | 확인된 진행 상태와 다음 한 작업 |
 | [architecture](docs/architecture.md) | 파일별 책임·호출자·테스트 매핑 |
 | [로컬 실행 안내](docs/operations/local-runbook.md) | 서버·워밍업·두 회차·큐·채점 절차 |
 | [Cloud 비교 안내](docs/operations/cloud-runbook.md) | Luna·Motif-3 실행 조건, 모델별 키 로드, 비용 경계 |
@@ -212,4 +210,5 @@ Judge는 테스트별 시간 제한과 stdout·stderr 합산 10 MiB 출력 제�
 | [단계별 학습 안내](docs/project/learning-guide.md) | STEP 1~8 진행 순서와 완료 근거 |
 | [결과 안내](results/README.md) | 결과군 이름·집계 제외·채점 세션 의미 |
 | [정리 이력](docs/history/README.md) | 이전 경로와 Git 복원 정보 |
-| [유지보수 인계](docs/maintenance-handoff.md) | 통합·검증 기록과 인계 사항 |
+| [결정 이력](docs/history/decision-log.md) | 2026-09-14~09-17 시점별 결정·관측; 종료로 닫힘 |
+| [유지보수 이력](docs/history/maintenance-log.md) | 통합·검증 기록과 종료 시점 상태; 종료로 닫힘 |

@@ -170,7 +170,7 @@ src/llm_eval/
 | --- | --- |
 | `README.md` | 프로젝트 목적·설치·폴더 지도·표준 명령을 안내하는 입구 |
 | `AGENTS.md` | AI 작업 범위·학습 주체·보존 규칙·검증 방법 |
-| `STATE.md` | 현재 확인한 상태와 다음 한 행동; 과거 확인 이력 보존 |
+| `docs/history/decision-log.md` | 2026-09-14~09-17 시점별 결정·관측 기록; 종료로 닫힘 (이전 `STATE.md`) |
 | `docs/architecture.md` | 파일 책임·주요 함수·호출 관계·관련 테스트·이전 명령 대응표 |
 | `docs/operations/local-runbook.md` | 서버·워밍업·로컬 생성·큐·별도 채점·검증 절차 |
 | `docs/operations/cloud-runbook.md` | Cloud 독립 회차·키 로드·비용·채점 절차 |
@@ -182,7 +182,7 @@ src/llm_eval/
 | `docs/project/learning-guide.md` | STEP 1~8 학습 단계와 완료 근거 |
 | `docs/project/model-candidates.md` | 모델 후보 조사와 제외 근거 |
 | `docs/project/requirements.md` | 사용자 정의 입력·반복·채점·선정 기준 |
-| `docs/maintenance-handoff.md` | 유지보수 완료 근거·미확인 사항·후속 작업 |
+| `docs/history/maintenance-log.md` | 유지보수 완료 근거·미확인 사항·종료 시점 상태; 종료로 닫힘 (이전 `docs/maintenance-handoff.md`) |
 | `docs/history/README.md` | 과거 경로와 Git 복원 안내 |
 | `docs/history/hyperclovax-runbook.md` | 과거 HyperCLOVA 실행·진단 절차 |
 | `docs/history/reasoning-budget-diagnostic.md` | 과거 reasoning 설정과 진단 근거 |
