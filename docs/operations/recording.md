@@ -21,7 +21,7 @@
 
 ## 2026-09-16 진단 이력
 
-Tomahawk run `20260916_124351_312419`는 메시지 추가 후 진단이며, 당시 실제 요청은 `max_tokens=8192`·`reasoning_budget_tokens=2048`이었다. `stop`·코드 생성·`RE`를 확인했으며 본 실험 40회에서 제외한다. 검증 중 `results/pilot/reasoning_block/`로 결과가 분리된 것을 확인했다. 이후 Context 32k·출력 30k·reasoning 26k 조합을 결정했고, 이어 Context 64k·출력 60k·reasoning 52k를 두 모델 셸과 공통 Python 요청에 통합했다. 이는 결정·통합 이력이며 현재 서버·요청에 실제 적용됐는지는 미확인이다. 종료 메시지 기록을 보완했으며 새 프롬프트의 실제 실행 검증은 남아 있다.
+Tomahawk run `20260916_124351_312419`는 메시지 추가 후 진단이며, 당시 실제 요청은 `max_tokens=8192`·`reasoning_budget_tokens=2048`이었다. `stop`·코드 생성·`RE`를 확인했으며 본 실험 40회에서 제외한다. 검증 중 `results/pilot/reasoning_block/`로 결과가 분리된 것을 확인했다. 이후 Context 32k·출력 30k·reasoning 26k 조합을 결정했고, 이어 Context 64k·출력 60k·reasoning 52k를 두 모델 셸과 공통 Python 요청에 통합했다. 이는 결정·통합 이력이다. 최종 조합은 Context 65,536·출력 61,440·reasoning 53,248이며, **본 실험 80건의 `result.json` `generation_config`에 요청 설정과 종료 메시지가 그대로 기록돼 있어** 실행별로 확인할 수 있다. 다만 서버 측 실제 적재 상태는 요청 기록이 증명하지 않으므로 [실행 환경](environment.md)과 구분해 읽는다.
 
 로컬·Cloud는 `results/benchmark/<문제>/<모델>/round_<회차>/`에 저장한다. 로컬과 Luna·Motif-3는 각각 두 회차이며, 제공자별 생성 설정은 다르다. 동일 제공자 안에서 같은 문제와 해당 설정으로 독립 실행하고, 이전 답변·채점 결과를 전달하지 않는다. 동일 입력·설정의 완료 시도만 건너뛰며 조건이 다르면 호출 전에 중단한다. 시간·메모리 제한은 공통 프롬프트에 명시하고 Judge는 테스트별 시간과 stdout·stderr 합산 10 MiB 출력 한도를 적용한다. TLE/OLE는 first_trigger 정책을 따르며 인프라·처리 예외는 JUDGE_ERROR로 남긴다. Judge는 RSS 측정·메모리 제한 강제·MLE 판정을 하지 않으며 AC가 메모리 준수를 뜻하지 않는다. 평가 단계의 네 scoring 문항 유효 제한은 프롬프트 제한을 바꾸지 않고 오프라인 판정에만 적용한다.
 
@@ -43,4 +43,4 @@ Tomahawk run `20260916_124351_312419`는 메시지 추가 후 진단이며, 당�
 - 로컬 후처리는 `serialize_response`, `save_response`, `extract_response`, `save_candidate`, `build_record`, `save_record` 단계를 기록한다. 실패하면 `processing_error.stage/type`, `record_complete=false`를 저장하려 시도한다. Cloud도 후처리 오류를 저장하려 시도한다. 디스크 오류가 계속되면 오류 기록도 없을 수 있지만 예약한 폴더는 재호출을 막는다. 신규 로컬 run ID는 UTC·Z 표기를 사용하고 기존 ID·경로는 바꾸지 않는다.
 - 로컬 생성·워밍업·큐는 `logs/.workload.lock`, Cloud 생성은 `logs/.cloud-workload.lock`을 사용한다. 일괄 채점·단일 후보 실행은 로컬→Cloud 순서로 두 잠금을 확보하고 역순으로 반환한다. 획득·해제 실패 시에도 나머지 FD를 정리한다. Cloud와 로컬 생성·워밍업·큐·서버는 병행 가능하며 다른 Cloud 생성과 채점은 차단한다. 서버 자체는 잠금을 획득하지 않는다. 큐의 로컬 생성·워밍업 자식만 FD를 상속하고 파일 정체성·잠금 소유를 확인한다. 자식은 부모 잠금을 해제하지 않는다. 현재 root CLI와 이미 실행 중인 구형 script 이름을 프로세스 검사로 감지해 허용 조합 외의 충돌을 차단하며 발견한 프로세스에 신호를 보내지 않는다. 이전 script 감지는 호환 실행을 제공한다는 뜻이 아니다. 서로 다른 저장소의 동시 시작을 완전히 직렬화하는 전역 잠금은 아니며, 실제 FD 경쟁·상속·해제는 임시 저장소의 합성 프로세스로 검증했다.
 
-[유지보수 이력](../history/maintenance-log.md#최종-상태-2026-09-17-종료)에 후속 작업을 남겼다. 평가 명령·리뷰 형식·집계 경계는 [평가 실행 안내](evaluation.md)를 따른다. 자동 환경 기록을 다시 도입하거나 생성 프롬프트의 공식 제한을 바꾸는 작업은 포함하지 않는다.
+[유지보수 이력](../history/maintenance-log.md#최종-상태-2026-09-17-종료)에 종료 시점 검증 근거를 남겼다. 평가 명령·리뷰 형식·집계 경계는 [평가 실행 안내](evaluation.md)를 따른다. 자동 환경 기록을 다시 도입하거나 생성 프롬프트의 공식 제한을 바꾸는 작업은 포함하지 않는다.

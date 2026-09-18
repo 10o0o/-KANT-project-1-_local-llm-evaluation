@@ -1,5 +1,5 @@
 > 출처: [프로젝트 발제 Notion 페이지](https://app.notion.com/p/teamsparta/3d72dc3ef51480fc99f1f45d94780de3). 2026-09-14 사용자가 제공한 HTML의 전체 텍스트·표·링크를 Markdown으로 옮겼습니다. 아래 내용은 요약이 아닙니다.
-> [첨부 HTML 원본](sources/project-brief.html)은 바이트 그대로 보존했습니다. [이전 첨부 발제](sources/project-brief.previous.md)는 별도 보관하며, 현재 과제 안내는 이 문서를 기준으로 합니다.
+> [첨부 HTML 원본](project-brief.html)은 바이트 그대로 보존했습니다. [이전 첨부 발제](project-brief.previous.md)는 별도 보관하며, 현재 과제 안내는 이 문서를 기준으로 합니다.
 > 보존 범위는 첨부 HTML에 포함된 내용입니다. 연결된 다른 페이지의 본문은 포함하지 않습니다.
 
 # [발제] 프로젝트 : 오픈소스 활용

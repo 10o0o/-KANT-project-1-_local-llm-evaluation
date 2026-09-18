@@ -182,6 +182,10 @@ src/llm_eval/
 | `docs/project/learning-guide.md` | STEP 1~8 학습 단계와 완료 근거 |
 | `docs/project/model-candidates.md` | 모델 후보 조사와 제외 근거 |
 | `docs/project/requirements.md` | 사용자 정의 입력·반복·채점·선정 기준 |
+| `docs/project/evaluation-questions.md` | 질문 10개의 기대 결과·사례 구분·동일 조건과 차이 (발제 산출물) |
+| `docs/project/local-cloud-comparison.md` | Local–Cloud 실측과 운영 조건 분석 (발제 산출물) |
+| `docs/project/model-selection-report.md` | 최종 선정 결과·근거·한계 (발제 산출물) |
+| `docs/history/generation-diagnostics.md` | reasoning 반복·회차 중복·후보 코드 결함 진단 |
 | `docs/history/maintenance-log.md` | 유지보수 완료 근거·미확인 사항·종료 시점 상태; 종료로 닫힘 (이전 `docs/maintenance-handoff.md`) |
 | `docs/history/README.md` | 과거 경로와 Git 복원 안내 |
 | `docs/history/hyperclovax-runbook.md` | 과거 HyperCLOVA 실행·진단 절차 |
