@@ -241,7 +241,7 @@ src/llm_eval/
 | `results/benchmark/<problem>/<model>/round_<n>/` | local/cloud generation | `response.json`: 원본 응답, `candidate.py`: 추출 코드, `result.json`: 요청·상태·지표 |
 | `results/judging/<session>/` | judging workflow | `manifest.json`: 대상·정책·원본 해시, `judge.json`: 후보별 판정 |
 | `results/evaluation/<evaluation>/` | evaluation workflow/reporting | `manifest.json`·`policy.json`: 봉인된 기준·정책, `reviews/`: 사람 입력, `attempts/`: 제한/보조 스냅샷·판정, `reports/<unique>/`: report JSON/Markdown·review snapshot |
-| `results/pilot/`, `results/calibration/`, `results/diagnostics/`, `results/archive/` | 과거 실험 | 본 실험에서 제외하거나 별도로 해석 |
+| `results/pilot/`, `results/calibration/`, `results/diagnostics/`, `results/archive/` | 과거 실험·진단 | 본 실험에서 제외하거나 별도로 해석. `results/diagnostics/llama-cpp-startup/`은 서버 시작 로그 원본 |
 | `logs/.workload.lock`, `logs/.cloud-workload.lock` | shared workloads | 실행 잠금; 획득 중인 파일을 삭제하지 않음 |
 | `logs/local_queue/<session>/` | local queue | 큐 상태와 자신이 시작한 프로세스 로그 |
 | `__pycache__/`, `.ruff_cache/`, `.venv/` | 도구·런타임 | 로컬 환경과 캐시 |

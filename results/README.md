@@ -14,6 +14,7 @@
 | [pilot/6144](pilot/6144/) | 출력 한도 6144에서 중단한 초기 benchmark 8회 | 제외 |
 | [calibration/stress](calibration/stress/) | 생성 한도 결정용 스트레스 실행 | 제외 |
 | [diagnostics/struktura](diagnostics/struktura/) | WA 원인을 확인하기 위한 수동 코드 수정본 | 제외 |
+| [diagnostics/llama-cpp-startup](diagnostics/llama-cpp-startup/) | 2026-09-16 Qwen 적재·Context 조정 시작 로그 7건 | 제외 |
 | [archive/legacy-runs](archive/legacy-runs/) | 초기 연결·Ollama 실습·benchmark 개발 과정의 timestamp 결과 | 제외 |
 
 AI의 원본 조회에서 확인한 중단 기록은 Qwen 20건·Luna 10건·Gemma Round 1 5건, 합계 35건이며 호출 상태는 모두 성공이다. Qwen의 `skijanje` 2건은 코드 미추출이며 실제 후보 채점은 하지 않았다. 이는 당시 로컬 40회·Cloud 20회, 총 60회 계획의 완료나 Judge 실행 완료를 뜻하지 않는다. 현재 전체 계획은 로컬 40회와 Cloud 모델별 20회씩을 합한 80회이며, 당시 35건은 현재 경로에 있는 원본 보존 기록으로 남긴다. 이전 60회 계획은 계획 변경 이력으로 표시하되 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함하며 pilot으로 옮기지 않는다. 이번 문서 유지보수에서는 실제 모델·Cloud 생성과 후보 Judge를 실행하지 않았으며, 평가 보고서가 생성된 것으로 표시하지 않는다.

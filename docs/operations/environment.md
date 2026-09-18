@@ -67,7 +67,7 @@ Qwen에서 변경한 64k·60k·52k(k=1024)를 Gemma 셸과 공통 Python 기본�
 
 ### 이후 Qwen 시작 로그 인용
 
-[Reasoning 진단](../history/reasoning-budget-diagnostic.md)의 첨부 해석문에 인용된 값을 정리했다. AI가 서버 원본 로그 전체를 재검증한 것은 아니며 해당 시작 사례의 근거로 제한한다.
+[Reasoning 진단](../history/reasoning-budget-diagnostic.md)의 첨부 해석문에 인용된 값을 정리했다. 아래 표의 GGUF·구조·Context·offload·모델 버퍼·세부 버퍼 행은 저장소의 [Qwen 시작 로그 원본](../../results/diagnostics/llama-cpp-startup/)에서 같은 값을 확인했다(`qwen36-manual-offload-test-C.log`). **반면 fit 계산·fit 판정 두 행은 그 로그 7건 어디에도 없어 여전히 인용에 그친다.** 같은 설정의 시작 사례라는 뜻이며 해석문이 인용한 바로 그 세션이라고 단정하지 않는다.
 
 | 항목 | 인용된 값 |
 | --- | --- |
