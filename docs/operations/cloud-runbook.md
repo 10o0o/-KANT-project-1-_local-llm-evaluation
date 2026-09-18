@@ -1,6 +1,6 @@
 # Cloud 비교 실행
 
-모든 `uv run llm-eval` 명령은 저장소 루트 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 실행한다. Cloud `--model`은 필수이며 `luna` 또는 `motif3`를 선택한다. `--round`는 생략하면 1이며, 2를 선택하면 같은 입력·설정의 독립 회차를 새로 저장한다. 각 Cloud 모델의 계획은 20회이고 로컬 40회와 합쳐 전체 80회다. 이전 60회 계획은 계획 변경 이력으로 구분하며, 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다.
+모든 `uv run llm-eval` 명령은 저장소 루트 `/home/jake/workspace/projects/kant/local-llm-evaluation`에서 실행한다. Cloud `--model`은 필수이며 `luna` 또는 `motif3`를 선택한다. `--round 1/2`를 명시하면 같은 입력·설정의 독립 벤치마크 회차를 저장한다. 생략하면 별도 시연 폴더에 매번 새 API 호출·측정 결과를 덮어쓴다. 각 Cloud 모델의 계획은 20회이고 로컬 40회와 합쳐 전체 80회다. 이전 60회 계획은 계획 변경 이력으로 구분하며, 그 계획에서 생성된 현재 경로의 원본은 현재 80회에 포함한다.
 
 ## 범위와 발제 대응
 
@@ -52,7 +52,7 @@ Motif-3에는 검증한 예제가 보내는 `model`과 `messages`만 전송한�
 
 이 문서에서는 Cloud 호출이나 비밀 파일을 저장소에 복사하지 않는다. 아래 `.env` 상대 경로 명령은 최종 통합 저장소 루트에서 실행할 때만 사용한다.
 
-선택한 모델의 환경 변수(Luna는 `openai_secret_key`, Motif-3는 `morph_secret_key`)가 실행 환경에 있으면 최종 통합 저장소 루트에서 다음 명령을 사용한다. 회차를 생략하면 기존 기본값인 Round 1을 실행한다.
+선택한 모델의 환경 변수(Luna는 `openai_secret_key`, Motif-3는 `morph_secret_key`)가 실행 환경에 있으면 최종 통합 저장소 루트에서 다음 명령을 사용한다. 벤치마크에는 회차를 명시한다. 생략하면 발표 시연을 실행한다.
 
 Cloud 생성은 `logs/.cloud-workload.lock`을 사용한다. 다른 Cloud 생성이나 채점이 실행 중이면 요청·회차·모델이 달라도 시작을 차단한다. 두 Cloud 모델은 순차로 실행한다. 로컬 생성·워밍업·큐는 기존 `logs/.workload.lock`을 유지한다. 모델 서버는 잠금을 직접 획득하지 않으며 프로세스 검사 대상이다. 일괄 채점과 단일 후보 실행은 로컬→Cloud 순서로 두 잠금을 획득하고, 전체 생성 완료·서버 종료 후 실행한다.
 
@@ -70,13 +70,27 @@ uv run --env-file ../project1-python-start/.env llm-eval generate cloud --model 
 uv run --env-file ../project1-python-start/.env llm-eval generate cloud --model luna --problems all --round 2
 ```
 
-`--round`를 생략하면 표준 CLI의 기본값인 Round 1을 실행한다. Round 2는 Round 1이 없어도 실행할 수 있다. `--model`에는 기본값이 없다. 유료 호출의 대상을 추론하지 않기 위해 매번 명시한다.
+`--round`를 생략하면 발표 시연 모드로 실행한다. Round 2는 Round 1이 없어도 실행할 수 있다. `--model`에는 기본값이 없다. 유료 호출의 대상을 추론하지 않기 위해 매번 명시한다.
 
 선택 실행은 `--problems`에 기존 문제 ID를 쉼표로 나열한다. 이번 명령에서 선택한 ID 목록을 invocation에 남기며 회차당 10회와 전체 계획 20회를 구분한다. 중복 ID는 거부한다. 키가 없으면 요청 전에 중단한다. 키 값은 문서·코드·결과에 저장하지 않는다.
 
+## 발표 시연
+
+`--round`를 생략하면 `results/demo/<문제 이름>/<모델>/`에 저장한다. 기존 벤치마크가 있어도 매번 새로 호출하고 시간을 측정한다. 요청 설정·잠금·측정 항목은 벤치마크와 같다.
+
+```bash
+uv run llm-eval generate cloud --model luna --problems coci_2025_2026_c5_tezina
+```
+
+각 문제 호출 직전에 해당 시연의 `result.json`, `response.json`, `candidate.py`만 초기화한다. 호출 실패·코드 미추출·중단 후 재실행에도 이전 응답과 후보를 재사용하지 않는다. 실패한 재시연도 이전 성공 시연을 대체한다. 다른 파일·문제·모델은 건드리지 않고, 여러 문제 실행이 중단되면 아직 호출하지 않은 문제의 이전 시연은 남는다.
+
+시연 기록은 `experiment.type="demo"`, `round=null`이며 일괄 채점·평가 집계와 Git 저장에서 제외한다. 본 실험을 재개할 때는 반드시 `--round 1` 또는 `--round 2`를 명시한다.
+
+Cloud 시연은 재실행마다 새 유료 API 요청을 보내며 `planned_attempts`를 기록하지 않는다. 키 준비 방식은 벤치마크와 같다.
+
 ## 결과와 실패 보존
 
-신규 기록은 experiment.round에 선택 회차, planned_attempts에 전체 계획 20을 저장한다. 기존 Round 1의 planned_attempts=10과 저장 파일은 수정하지 않으며 같은 요청이면 SKIP한다.
+신규 벤치마크 기록은 experiment.round에 선택 회차, planned_attempts에 전체 계획 20을 저장한다. 기존 Round 1의 planned_attempts=10과 저장 파일은 수정하지 않으며 같은 요청이면 SKIP한다.
 
 `results/benchmark/<문제 이름>/<luna 또는 motif3>/round_<회차>/` 아래에 API 원본 `response.json`, 코드가 있으면 `candidate.py`, 정리된 `result.json`을 저장한다. Cloud 모델별로 round 1·2 각각 10문항을 저장해 모델당 20회로 관리한다. 두 모델의 결과 트리는 분리되어 있어 서로 덮어쓰거나 건너뛰지 않는다. 채점은 전체 생성 완료와 로컬 모델 서버 종료 후 별도로 실행한다. 요청 모델과 반환 모델·response ID·전체 입력·실제 전송 설정·usage·호출 상태·API 상태를 저장하며 `judge=null`을 유지한다.
 
@@ -84,8 +98,8 @@ uv run --env-file ../project1-python-start/.env llm-eval generate cloud --model 
 - Motif-3 기록의 `generation.status`는 응답 필드가 아니라 `finish_reason`에서 옮긴 값이며 원본 `finish_reason`도 함께 저장한다. `choices`가 비었거나 `stop`·`length`가 아닌 종료 사유는 비정상 상태로 저장한 뒤 중단한다. 저장한 `usage`는 제공자 원본 그대로이며 필드 이름 대응은 지표 계산에서만 적용한다.
 - incomplete도 코드를 추출해 저장한다. 후속 일괄 채점에서 코드가 있으면 실행하고 없으면 NO_CODE다. 거절 원문은 response.json에 보존한다. failed 등 비정상 API 상태는 저장 후 중단한다.
 - API 예외·timeout은 안전한 오류 유형·HTTP 상태와 실패까지의 시간만 기록한 뒤 중단한다. 헤더·전체 예외 문자열을 출력하거나 저장하지 않는다.
-- 입력·전송 설정이 같은 완료된 성공·실패 시도는 재실행 시 건너뛴다. 기존 기록과 입력·설정이 다르면 재호출하지 않고 중단한다. 원본 실패를 성공으로 교체하지 않는다. 불완전한 폴더나 생성 후처리 오류는 자동 재호출 없이 중단한다. 기존 채점 오류로 미완료인 폴더도 자동 복구하지 않는다. `record_complete`는 파일 처리 완료 표시로 모델의 정답 판정과 다르다.
-- 파일·기록을 삭제해서 재시도하지 않는다. 추가 실험·재시도는 별도 원본 보존과 집계 분리가 필요하며 이번 실행기는 자동 재시도를 지원하지 않는다.
+- `--round 1/2`를 명시하면 입력·전송 설정이 같은 완료된 성공·실패 시도는 재실행 시 건너뛴다. 기존 기록과 입력·설정이 다르면 재호출하지 않고 중단한다. 원본 실패를 성공으로 교체하지 않는다. 불완전한 폴더나 생성 후처리 오류는 자동 재호출 없이 중단한다. 기존 채점 오류로 미완료인 폴더도 자동 복구하지 않는다. `record_complete`는 파일 처리 완료 표시로 모델의 정답 판정과 다르다.
+- 벤치마크 파일·기록을 삭제해서 재시도하지 않는다. 추가 실험·재시도는 별도 원본 보존과 집계 분리가 필요하며 이번 실행기는 자동 재시도를 지원하지 않는다.
 
 네트워크 포함 전체 응답 시간은 API 호출 직전부터 반환 직후까지이며 저장·채점 시간은 제외한다. Cloud VRAM·로딩 시간·서버 generation tok/s는 API 미제공 사유와 함께 null이다. 출력 토큰÷전체 응답 시간을 로컬 생성 속도와 같은 지표로 만들지 않는다. 내부 reasoning 전문은 요청하거나 만들어 기록하지 않고 제공된 토큰 수만 보존한다.
 

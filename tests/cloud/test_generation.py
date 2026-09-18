@@ -308,3 +308,142 @@ class RunnerTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.run_problem()
         self.sdk.responses.create.assert_called_once()
+
+
+class DemoRunnerTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        (self.root / "statement.md").write_text("same statement", encoding="utf-8")
+        self.problem = {
+            "id": "test_id", "name": "test_problem", "title": "Test", "difficulty": 1,
+            "statement_path": "statement.md", "problem_dir": "testdata",
+            "time_limit_seconds": 1, "memory_limit_mib": 512,
+        }
+        self.sdk = Mock()
+        self.stdout = contextlib.redirect_stdout(io.StringIO())
+        self.stdout.__enter__()
+        self.addCleanup(self.stdout.__exit__, None, None, None)
+
+    def response(self, content="```python\nprint(1)\n```", response_id="resp_demo"):
+        response = Mock()
+        response.output_text = content
+        response.model_dump.return_value = {
+            "id": response_id, "model": client.LUNA.model, "status": "completed",
+            "service_tier": "default", "usage": usage(),
+            "incomplete_details": None,
+            "output": [{
+                "type": "message",
+                "content": [{"type": "output_text", "text": content}],
+            }],
+        }
+        return response
+
+    def run_demo(self):
+        return runner.run_problem(
+            self.root, self.problem, self.sdk, round_number=None
+        )
+
+    def record(self):
+        return json.loads(
+            (self.root / "results/demo/test_problem/luna/result.json").read_text()
+        )
+
+    def test_none_round_writes_demo_record_without_planned_attempts(self):
+        response = self.response()
+        self.sdk.responses.create.return_value = response
+        self.run_demo()
+
+        path = self.root / "results/demo/test_problem/luna/result.json"
+        self.assertTrue(path.exists())
+        self.assertEqual(
+            self.record()["experiment"], {"type": "demo", "round": None}
+        )
+        self.assertNotIn("planned_attempts", self.record()["experiment"])
+        self.assertFalse((self.root / "results/benchmark").exists())
+
+    def test_demo_rerun_success_uses_fresh_call_and_record(self):
+        first_response = self.response(response_id="resp_one")
+        second_response = self.response(
+            "```python\nprint(2)\n```", response_id="resp_two"
+        )
+        self.sdk.responses.create.side_effect = [first_response, second_response]
+        self.run_demo()
+        first = self.record()
+        self.run_demo()
+        second = self.record()
+
+        self.assertEqual(self.sdk.responses.create.call_count, 2)
+        self.assertNotEqual(first["run_id"], second["run_id"])
+        self.assertEqual(second["generation"]["response_id"], "resp_two")
+        self.assertEqual(
+            (self.root / "results/demo/test_problem/luna/candidate.py").read_text(),
+            "print(2)",
+        )
+
+    def test_demo_rerun_replaces_success_with_no_code_or_call_error(self):
+        for outcome in ("no_code", "call_error"):
+            with self.subTest(outcome=outcome):
+                self.setUp()
+                first_response = self.response()
+                replacement = (
+                    self.response("No code", response_id="resp_no_code")
+                    if outcome == "no_code"
+                    else RuntimeError("offline")
+                )
+                self.sdk.responses.create.side_effect = [first_response, replacement]
+                self.run_demo()
+                demo = self.root / "results/demo/test_problem/luna"
+                (demo / "unrelated.txt").write_text("keep me")
+                if outcome == "call_error":
+                    with self.assertRaises(SystemExit):
+                        self.run_demo()
+                else:
+                    self.run_demo()
+
+                record = self.record()
+                self.assertEqual(self.sdk.responses.create.call_count, 2)
+                self.assertEqual((demo / "unrelated.txt").read_text(), "keep me")
+                self.assertFalse((demo / "candidate.py").exists())
+                if outcome == "no_code":
+                    self.assertEqual(record["call"]["status"], "success")
+                    self.assertIsNone(record["extracted_code"])
+                    self.assertTrue((demo / "response.json").exists())
+                else:
+                    self.assertEqual(record["call"]["status"], "error")
+                    self.assertFalse((demo / "response.json").exists())
+
+    def test_partial_or_corrupt_demo_is_replaced(self):
+        for state in ("partial", "corrupt"):
+            with self.subTest(state=state):
+                self.setUp()
+                demo = self.root / "results/demo/test_problem/luna"
+                demo.mkdir(parents=True)
+                (demo / "unrelated.txt").write_text("keep me")
+                if state == "corrupt":
+                    (demo / "result.json").write_text("not json")
+                self.sdk.responses.create.return_value = self.response()
+                self.run_demo()
+
+                self.assertTrue((demo / "result.json").exists())
+                self.assertEqual((demo / "unrelated.txt").read_text(), "keep me")
+                self.assertTrue((demo / "candidate.py").exists())
+
+    def test_demo_replacement_preserves_other_models_and_benchmark(self):
+        other = self.root / "results/demo/test_problem/motif3/keep.txt"
+        other.parent.mkdir(parents=True)
+        other.write_bytes(b"other model")
+        benchmark = self.root / "results/benchmark/test_problem/luna/round_1/result.json"
+        benchmark.parent.mkdir(parents=True)
+        benchmark.write_bytes(b"benchmark")
+        target = self.root / "results/demo/test_problem/luna"
+        target.mkdir(parents=True)
+        (target / "unrelated.txt").write_text("keep me")
+        self.sdk.responses.create.return_value = self.response()
+
+        self.run_demo()
+
+        self.assertEqual(other.read_bytes(), b"other model")
+        self.assertEqual(benchmark.read_bytes(), b"benchmark")
+        self.assertEqual((target / "unrelated.txt").read_text(), "keep me")

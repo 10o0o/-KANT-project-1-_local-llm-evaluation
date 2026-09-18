@@ -116,6 +116,26 @@ class BatchTests(unittest.TestCase):
         self.assertIsNone(entries[1]["judge_path"])
         self.judge.assert_not_called()
 
+    def test_demo_records_are_not_collected_as_benchmark_sources(self):
+        self.source()
+        demo = self.root / "results/demo/a/qwen36"
+        demo.mkdir(parents=True)
+        write_json(
+            demo / "result.json",
+            {"experiment": {"type": "demo", "round": None}},
+        )
+
+        entries, missing, _ = batch.collect(
+            self.root, [self.problems[0]], ["qwen36"], ["1"]
+        )
+
+        self.assertEqual(missing, [])
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(
+            entries[0]["source_result"],
+            "results/benchmark/a/qwen36/round_1/result.json",
+        )
+
     def test_selection_uses_full_problem_id_model_and_round(self):
         self.source()
         self.source("b", "gemma4", 2)

@@ -6,6 +6,7 @@ from llm_eval.shared.problems import problem_prompt
 from llm_eval.shared.artifacts import (
     generation_dir,
     read_generation_record,
+    reset_demo_dir,
     validate_artifacts,
 )
 from llm_eval.shared.code_extraction import extract_python_code
@@ -28,9 +29,14 @@ def build_record(
     prompt,
     config,
 ):
+    experiment = (
+        {"type": "demo", "round": None}
+        if round_number is None
+        else {"type": "benchmark", "round": round_number}
+    )
     return {
         "run_id": run_id,
-        "experiment": {"type": "benchmark", "round": round_number},
+        "experiment": experiment,
         "model": {"id": model, "name": model, "runtime": "llama.cpp"},
         "problem": {
             "id": problem["id"],
@@ -86,7 +92,7 @@ def run_problem(
     project_root: Path,
     problem: dict,
     model: str,
-    round_number: int,
+    round_number: int | None,
     client,
 ):
     time_limit_seconds = problem["time_limit_seconds"]
@@ -94,10 +100,20 @@ def run_problem(
 
     expected_request, expected_config = request_conditions(project_root, problem)
     prompt = expected_request["messages"][0]["content"]
-    saved = inspect_existing(result_dir, problem, model, round_number, expected_request, expected_config)
-    if saved is not None:
-        print(f"SKIP: round={round_number} problem={problem['id']} model={model} (이미 기록한 시도)")
-        return
+    if round_number is None:
+        result_dir = reset_demo_dir(project_root, problem["name"], model)
+    else:
+        saved = inspect_existing(
+            result_dir,
+            problem,
+            model,
+            round_number,
+            expected_request,
+            expected_config,
+        )
+        if saved is not None:
+            print(f"SKIP: round={round_number} problem={problem['id']} model={model} (이미 기록한 시도)")
+            return
 
     _print_run(
         round_number,
@@ -106,10 +122,12 @@ def run_problem(
         expected_config["temperature"],
         expected_config["max_tokens"],
         expected_config["reasoning_budget_tokens"],
+        result_dir,
     )
 
     run_id = datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ")
-    result_dir.mkdir(parents=True, exist_ok=False)
+    if round_number is not None:
+        result_dir.mkdir(parents=True, exist_ok=False)
     result_path = result_dir / "result.json"
     response_start = perf_counter()
 
@@ -162,15 +180,25 @@ def run_problem(
 
 
 def _print_run(
-    round_number, model, problem, temperature, max_tokens, reasoning_budget_tokens
+    round_number,
+    model,
+    problem,
+    temperature,
+    max_tokens,
+    reasoning_budget_tokens,
+    result_dir,
 ):
-    print("===== Benchmark Run =====")
+    mode = "demo" if round_number is None else "benchmark"
+    heading = "===== Demo Run =====" if round_number is None else "===== Benchmark Run ====="
+    print(heading)
+    print("mode:", mode)
     print("round:", round_number)
     print("model:", model)
     print("problem:", problem["id"])
     print("temperature:", temperature)
     print("max_tokens:", max_tokens)
     print("reasoning_budget_tokens:", reasoning_budget_tokens)
+    print("saved:", result_dir)
     print()
 
     print("문제 요청...")
@@ -292,11 +320,15 @@ def save_response(
     )
 
 
-def run_selected(project_root: Path, model: str, selection: str, round_number: int):
+def run_selected(
+    project_root: Path, model: str, selection: str, round_number: int | None = None
+):
     if model not in {"qwen36", "gemma4"}:
         raise ValueError(f"지원하지 않는 로컬 모델: {model}")
-    if type(round_number) is not int or round_number not in (1, 2):
-        raise ValueError(f"잘못된 로컬 회차: {round_number}; 1 또는 2")
+    if round_number is not None and (
+        type(round_number) is not int or round_number not in (1, 2)
+    ):
+        raise ValueError(f"잘못된 로컬 회차: {round_number}; 생략 또는 1 또는 2")
     with workload(project_root, "local", allow_inherited=True):
         selected_problems = select_problems(load_problems(project_root), selection)
         print("선택한 문제:")

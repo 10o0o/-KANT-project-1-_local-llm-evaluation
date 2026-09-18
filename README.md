@@ -62,11 +62,21 @@ uv run llm-eval generate local --model qwen36 --problems all --round 1
 uv run llm-eval generate local --model qwen36 --problems all --round 2
 ```
 
-로컬은 `--round`가 필수입니다. 자리를 비울 때는 두 모델과 두 회차를 순차로 처리하는 큐를 씁니다.
+벤치마크 생성은 `--round 1/2`를 명시합니다. 자리를 비울 때는 두 모델과 두 회차를 순차로 처리하는 큐를 씁니다.
 
 ```bash
 uv run llm-eval queue
 ```
+
+### 발표 시연
+
+로컬·Cloud 모두 `--round`를 생략하면 기존 벤치마크와 분리해 매번 새로 호출·측정합니다.
+
+```bash
+uv run llm-eval generate local --model qwen36 --problems coci_2025_2026_c5_tezina
+```
+
+`results/demo/<문제 이름>/<모델>/`의 생성 파일을 덮어쓰며, 실패한 재시연도 이전 시연을 대체합니다. 시연은 일괄 채점·평가 집계와 Git 저장에서 제외합니다. Cloud도 같은 규칙이며 매번 새 API 요청을 보냅니다. 벤치마크 재개는 `--round 1/2`를 명시합니다.
 
 ### Cloud 생성
 

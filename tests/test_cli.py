@@ -48,11 +48,16 @@ class CommandTests(unittest.TestCase):
 
     def test_argument_contracts(self):
         cloud = cli.parse_args(['generate', 'cloud', '--model', 'luna', '--problems', 'all'])
-        self.assertEqual((cloud.round, cloud.model), (1, 'luna'))
+        self.assertEqual((cloud.round, cloud.model), (None, 'luna'))
+        for provider, model in [('local', 'qwen36'), ('cloud', 'motif3')]:
+            command = ['generate', provider, '--model', model, '--problems', 'all']
+            self.assertIsNone(cli.parse_args(command).round)
+            for number in (1, 2):
+                self.assertEqual(cli.parse_args([*command, '--round', str(number)]).round, number)
         self.assertEqual(cli.parse_args(['queue']).startup_timeout_seconds, 900)
         batch = cli.parse_args(['judge', 'batch'])
         self.assertEqual((batch.problems, batch.models, batch.rounds), ('all', 'all', 'all'))
-        for args in [[], ['generate', 'local', '--model', 'gemma4', '--problems', 'all'],
+        for args in [[], ['generate', 'local', '--model', 'gemma4', '--problems', 'all', '--round', '0'],
                      ['generate', 'cloud', '--model', 'luna', '--problems', 'all', '--round', '3'],
                      ['generate', 'cloud', '--problems', 'all'],
                      ['generate', 'cloud', '--model', 'gpt-luna', '--problems', 'all'],
@@ -80,6 +85,10 @@ class CommandTests(unittest.TestCase):
 
     def test_dispatch_preserves_selection_and_round(self):
         cases = [
+            (['generate','local','--model','qwen36','--problems','p1'],
+             'llm_eval.local.generation.run_selected', ('qwen36','p1',None)),
+            (['generate','cloud','--model','luna','--problems','p1'],
+             'llm_eval.cloud.generation.run_selected', ('luna','p1',None)),
             (['generate','local','--model','gemma4','--problems','p1','--round','2'],
              'llm_eval.local.generation.run_selected', ('gemma4','p1',2)),
             (['generate','cloud','--model','motif3','--problems','p1','--round','2'],
@@ -99,6 +108,22 @@ class CommandTests(unittest.TestCase):
                 workflow.assert_called_once_with(Path('/fixture'), *expected)
 
 class WorkflowBoundaryTests(unittest.TestCase):
+    def test_demo_generation_cannot_read_or_replace_before_lock(self):
+        from llm_eval.local import generation as local
+        from llm_eval.cloud import generation as cloud
+
+        for runner, model in [(local, 'qwen36'), (cloud, 'luna')]:
+            with self.subTest(model=model), \
+                    patch.object(runner, 'workload', side_effect=RuntimeError('busy')), \
+                    patch.object(runner, 'load_problems') as load, \
+                    patch.object(runner, 'run_problem') as generate, \
+                    patch.object(runner, 'create_client') as client:
+                with self.assertRaisesRegex(RuntimeError, 'busy'):
+                    runner.run_selected(Path('/fixture'), model, 'p')
+            load.assert_not_called()
+            generate.assert_not_called()
+            client.assert_not_called()
+
     def test_diagnostics_cannot_call_server_when_local_lock_is_refused(self):
         from llm_eval import diagnostics
         for function, arguments, target in [

@@ -16,6 +16,7 @@ from llm_eval.shared.artifacts import (
     generation_complete,
     generation_dir,
     read_generation_record,
+    reset_demo_dir,
     validate_artifacts,
 )
 from llm_eval.shared.code_extraction import extract_python_code
@@ -56,15 +57,19 @@ def run_problem(
     provider=LUNA,
     round_number=1,
 ):
-    if type(round_number) is not int or round_number not in (1, 2):
-        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 1 또는 2")
+    if round_number is not None and (
+        type(round_number) is not int or round_number not in (1, 2)
+    ):
+        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 생략 또는 1 또는 2")
     result_dir = generation_dir(
         project_root, problem["name"], provider.key, round_number
     )
     result_path = result_dir / "result.json"
     request = request_conditions(project_root, problem, provider)
 
-    if result_dir.exists():
+    if round_number is None:
+        result_dir = reset_demo_dir(project_root, problem["name"], provider.key)
+    elif result_dir.exists():
         if completed_record(result_path, problem, request, round_number, provider):
             print(f"SKIP: cloud problem={problem['id']} (이미 기록한 시도)")
             return
@@ -73,9 +78,13 @@ def run_problem(
     record = build_record(
         problem, request, selected_problem_ids, round_number, provider
     )
-    # Exclusive reservation prevents a second invocation from issuing the same paid request.
-    result_dir.mkdir(parents=True, exist_ok=False)
-    print(f"Cloud 요청: {problem['id']} / {provider.model}")
+    # Exclusive reservation prevents a second benchmark invocation from issuing
+    # the same paid request. The workload lock serializes replaceable demo runs.
+    if round_number is not None:
+        result_dir.mkdir(parents=True, exist_ok=False)
+    mode = "demo" if round_number is None else "benchmark"
+    print(f"Cloud {mode} 요청: {problem['id']} / {provider.model}")
+    print(f"저장 경로: {result_dir}")
     start = perf_counter()
     try:
         response = send(client, provider, request)
@@ -105,13 +114,14 @@ def request_conditions(project_root, problem, provider=LUNA):
 
 
 def build_record(problem, request, selected_problem_ids, round_number=1, provider=LUNA):
+    experiment = (
+        {"type": "demo", "round": None}
+        if round_number is None
+        else {"type": "cloud", "round": round_number, "planned_attempts": 20}
+    )
     return {
         "run_id": datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%fZ"),
-        "experiment": {
-            "type": "cloud",
-            "round": round_number,
-            "planned_attempts": 20,
-        },
+        "experiment": experiment,
         "invocation": {"selected_problem_ids": selected_problem_ids or [problem["id"]]},
         "model": {
             "id": provider.model,
@@ -187,10 +197,12 @@ def save_response(result_dir, record, response, elapsed, provider=LUNA):
     )
 
 
-def run_selected(project_root, model: str, selection: str, round_number: int = 1):
+def run_selected(project_root, model: str, selection: str, round_number: int | None = None):
     provider = get_provider(model)
-    if type(round_number) is not int or round_number not in (1, 2):
-        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 1 또는 2")
+    if round_number is not None and (
+        type(round_number) is not int or round_number not in (1, 2)
+    ):
+        raise ValueError(f"잘못된 Cloud 회차: {round_number}; 생략 또는 1 또는 2")
     with workload(project_root, "cloud"):
         selected = select_problems(load_problems(project_root), selection)
         if len({problem["id"] for problem in selected}) != len(selected):

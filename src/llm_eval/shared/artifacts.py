@@ -15,11 +15,44 @@ RESPONSE_FIELDS = {
 
 
 def generation_dir(
-    root: Path, problem_name: str, model: str, round_number: int
+    root: Path, problem_name: str, model: str, round_number: int | None
 ) -> Path:
+    if round_number is None:
+        return root / "results" / "demo" / problem_name / model
     return (
         root / "results" / "benchmark" / problem_name / model / f"round_{round_number}"
     )
+
+
+def reset_demo_dir(root: Path, problem_name: str, model: str) -> Path:
+    """Reset only generated files in one demo target without following symlinked paths."""
+    demo_root = root / "results" / "demo"
+    folder = demo_root / problem_name / model
+    try:
+        relative = folder.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"demo 경로가 저장소 밖을 가리킵니다: {folder}") from exc
+
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError(
+                f"demo 경로의 심볼릭 링크는 초기화할 수 없습니다: {current}"
+            )
+
+    benchmark_root = (root / "results" / "benchmark").resolve()
+    resolved_demo_root = demo_root.resolve()
+    resolved = folder.resolve()
+    if resolved != resolved_demo_root and resolved_demo_root not in resolved.parents:
+        raise ValueError(f"demo 경로가 demo 폴더 밖을 가리킵니다: {folder}")
+    if resolved == benchmark_root or benchmark_root in resolved.parents:
+        raise ValueError(f"demo 경로가 benchmark를 가리킵니다: {folder}")
+
+    folder.mkdir(parents=True, exist_ok=True)
+    for name in ("result.json", "response.json", "candidate.py"):
+        (folder / name).unlink(missing_ok=True)
+    return folder
 
 
 def read_generation_record(path: Path) -> dict:

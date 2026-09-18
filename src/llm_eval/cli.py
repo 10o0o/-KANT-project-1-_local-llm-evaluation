@@ -17,13 +17,19 @@ def parse_args(argv=None):
     local.add_argument(
         "--problems", required=True, help="all 또는 쉼표로 구분한 문제 ID"
     )
-    local.add_argument("--round", type=int, choices=(1, 2), required=True)
+    local.add_argument(
+        "--round", type=int, choices=(1, 2), default=None,
+        help="벤치마크 회차; 생략하면 results/demo에 매번 새로 생성·덮어쓰기",
+    )
     cloud = providers.add_parser("cloud", help="클라우드 서버에 요청")
     cloud.add_argument("--model", choices=("luna", "motif3"), required=True)
     cloud.add_argument(
         "--problems", required=True, help="all 또는 쉼표로 구분한 문제 ID"
     )
-    cloud.add_argument("--round", type=int, choices=(1, 2), default=1)
+    cloud.add_argument(
+        "--round", type=int, choices=(1, 2), default=None,
+        help="벤치마크 회차; 생략하면 results/demo에 매번 새 API 호출·덮어쓰기",
+    )
     queue = commands.add_parser("queue", help="Qwen·Gemma 서버와 두 회차를 순차 진행")
     queue.add_argument("--startup-timeout-seconds", type=float, default=900)
     warmup = commands.add_parser("warmup", help="로컬 워밍업; 본 실험 기록에서 제외")

@@ -7,7 +7,7 @@ from llm_eval.cloud import generation
 
 
 class SelectionTests(unittest.TestCase):
-    def run_selected(self, *, model="luna", round_number=1):
+    def run_selected(self, *, model="luna", round_number=None):
         root = Path("/fixture")
         problems = [{"id": "p1"}]
         client = Mock()
@@ -21,11 +21,18 @@ class SelectionTests(unittest.TestCase):
             patch.object(generation, "create_client", return_value=client_context) as factory,
             patch.object(generation, "run_problem") as run_problem,
         ):
-            generation.run_selected(root, model, "p1", round_number)
+            if round_number is None:
+                generation.run_selected(root, model, "p1")
+            else:
+                generation.run_selected(root, model, "p1", round_number)
         return run_problem, factory
 
-    def test_round_defaults_to_one(self):
+    def test_round_defaults_to_demo(self):
         run_problem, _ = self.run_selected()
+        self.assertIsNone(run_problem.call_args.kwargs["round_number"])
+
+    def test_explicit_round_one_is_forwarded(self):
+        run_problem, _ = self.run_selected(round_number=1)
         self.assertEqual(run_problem.call_args.kwargs["round_number"], 1)
 
     def test_round_two_is_forwarded(self):
